@@ -1,0 +1,189 @@
+"use client";
+
+import React, { useEffect, useState } from 'react';
+import { FaTrashAlt } from 'react-icons/fa'; // Import React Icon
+import Swal from 'sweetalert2'; // Import SweetAlert
+
+function getToken() {
+  // Implement the logic to retrieve the token, e.g., from localStorage or a cookie
+  return localStorage.getItem('authToken');
+}
+
+function AdminTable() {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchAdmins = async () => {
+      try {
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        const token = getToken();
+        if (token) {
+          myHeaders.append("Authorization", `Bearer ${token}`);
+        }
+
+        const requestOptions = {
+          method: "GET",
+          headers: myHeaders,
+          redirect: "follow"
+        };
+
+        const response = await fetch("http://localhost:5000/api/users/admins", requestOptions);
+        
+        if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error('Unauthorized');
+          }
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log("Response received:", result);
+        
+        if (result.success && result.data && Array.isArray(result.data.admins)) {
+          setUsers(result.data.admins);
+        } else {
+          console.error("Unexpected response format:", result);
+          setUsers([]);
+        }
+      } catch (error) {
+        if (error.message === 'Unauthorized') {
+          console.error("Unauthorized access - invalid token");
+        } else {
+          console.error("Error fetching users:", error);
+        }
+        setUsers([]);
+      }
+    };
+
+    fetchAdmins();
+  }, []);
+
+  const handleDelete = (userId) => {
+    console.log("Deleting user with ID:", userId);
+    if (!userId) {
+      console.error("User ID is undefined");
+      Swal.fire({
+        title: 'Error!',
+        text: 'Cannot delete user: User ID is missing',
+        icon: 'error',
+        timer: 3000,
+        showConfirmButton: false
+      });
+      return;
+    }
+    
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        const token = getToken();
+        if (token) {
+          myHeaders.append("Authorization", `Bearer ${token}`);
+        }
+
+        const requestOptions = {
+          method: "DELETE",
+          headers: myHeaders,
+          redirect: "follow"
+        };
+
+        fetch(`http://localhost:5000/api/users/${userId}`, requestOptions)
+          .then((response) => response.text())
+          .then((result) => {
+            console.log(result);
+            setUsers(users.filter(user => user._id !== userId));
+            Swal.fire({
+              title: 'Deleted!',
+              text: 'The user has been deleted.',
+              icon: 'success',
+              timer: 3000,
+              showConfirmButton: false
+            });
+          })
+          .catch((error) => {
+            console.error(error);
+            Swal.fire({
+              title: 'Error!',
+              text: 'An error occurred while deleting the user.',
+              icon: 'error',
+              timer: 3000,
+              showConfirmButton: false
+            });
+          });
+      }
+    });
+  };
+
+  const handleRowClick = (user) => {
+    Swal.fire({
+      title: 'User Details',
+      html: `
+        <div style="text-align: left;">
+          <p><strong>User Name:</strong> ${user.user_name}</p>
+          <p><strong>Email:</strong> ${user.email}</p>
+          <p><strong>Phone Number:</strong> ${user.phone_number}</p>
+          <p><strong>Branch Name:</strong> ${user.branch ? user.branch.name : 'N/A'}</p>
+          <p><strong>Year:</strong> ${user.year}</p>
+          <p><strong>Student Code:</strong> ${user.student_code}</p>
+          <p><strong>Role:</strong> ${user.role}</p>
+          <p><strong>Create Date:</strong> ${user.createdate}</p>
+          <p><strong>Update Date:</strong> ${user.updatedate}</p>
+        </div>
+      `,
+      icon: 'info'
+    });
+  };
+
+  const isAdmin = true; // Replace with actual logic to determine if the user is an admin
+
+  return (
+      <div>
+        <div>Admin Table</div>
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-green-600">
+          <tr>
+            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">#</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">User Name</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Email</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Role</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+          {users.map((user, index) => (
+            <tr key={`${user._id}-${index}`} className={index % 2 === 0 ? "bg-gray-50 cursor-pointer" : " cursor-pointer"} onClick={() => handleRowClick(user)}>
+              <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{user.user_name}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{user.role}</td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                {isAdmin && index !== 0 && (
+                  <button onClick={(e) => { 
+                    e.stopPropagation(); 
+                    console.log("Button clicked for user:", user); // Log the entire user object
+                    console.log("Button clicked for user ID:", user._id); // Log the user ID when button is clicked
+                    handleDelete(user._id); 
+                  }} className='text-red-600 hover:text-red-900'>
+                    <FaTrashAlt className="inline-block w-5 h-5" />
+                  </button>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    
+      </div>
+  );
+}
+
+export default AdminTable;
