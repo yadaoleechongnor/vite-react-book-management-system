@@ -5,11 +5,8 @@ import AdminBookLayout from "../AdminBookLayout";
 import Swal from "sweetalert2";
 import "sweetalert2/src/sweetalert2.scss";
 import { FaTrash, FaEdit } from "react-icons/fa";
-// import { getPdfThumbnail } from '@/utils/pdfUtils'; // Ensure this path is correct
-import { pdfjs } from 'react-pdf';
-
-// Set the workerSrc to the correct path
-pdfjs.GlobalWorkerOptions.workerSrc = '/pdfjs/pdf.worker.min.mjs'; // Ensure this path is correct
+// Update import to use getAuthToken instead of getToken
+import { getAuthToken, authenticatedFetch, isAuthenticated, logout } from "../../../utils/auth";
 
 function BookList() {
   const [books, setBooks] = useState([]);
@@ -26,60 +23,60 @@ function BookList() {
   const [preview, setPreview] = useState("");
 
   useEffect(() => {
-    fetchBooks();
-    fetchBranches();
+    // Check if user is authenticated before fetching data
+    if (isAuthenticated()) {
+      fetchBooks();
+      fetchBranches();
+    } else {
+      // Redirect to login or show message if not authenticated
+      Swal.fire({
+        title: "Authentication Required",
+        text: "Please log in to view this page",
+        icon: "warning",
+        confirmButtonText: "Go to Login",
+      }).then(() => {
+        // Redirect to login page
+        window.location.href = '/login';
+      });
+    }
   }, []);
-
-  const getToken = () => {
-    return localStorage.getItem("authToken");
-  };
 
   const fetchBooks = async () => {
     setLoading(true);
     try {
-      const token = getToken();
-      const myHeaders = new Headers();
-      myHeaders.append("Authorization", `Bearer ${token}`);
-
-      const requestOptions = {
-        method: "GET",
-        headers: myHeaders,
-        redirect: "follow",
-      };
-
-      const response = await fetch("http://localhost:5000/api/v1/books/", requestOptions);
+      const response = await authenticatedFetch("http://localhost:5000/api/v1/books/");
+      
       if (!response.ok) {
         throw new Error(`Error fetching books: ${response.status} - ${response.statusText}`);
       }
+      
       const result = await response.json();
-      console.log("Fetched books full response:", JSON.stringify(result, null, 2));
       if (result.success) {
-        const books = result.data.books;
-        setBooks(Array.isArray(books) ? books : []);
-        setBookCount(Array.isArray(books) ? books.length : 0);
+        const books = result.data?.books || [];
+        setBooks(books);
+        setBookCount(books.length);
       } else {
         console.error('Failed to fetch books:', result.message);
       }
     } catch (error) {
       console.error('Fetch error details:', error.message);
+      // Handle authentication errors here if needed
     } finally {
       setLoading(false);
     }
   };
 
   const fetchBranches = async () => {
-    const requestOptions = {
-      method: "GET",
-      redirect: "follow",
-    };
-
     try {
-      const response = await fetch("http://localhost:5000/api/branches/", requestOptions);
+      // Use authenticatedFetch to ensure consistent handling
+      const response = await authenticatedFetch("http://localhost:5000/api/branches/");
+      
       if (!response.ok) {
         throw new Error(`Error fetching branches: ${response.statusText}`);
       }
+      
       const result = await response.json();
-      setBranches(result.data.branches);
+      setBranches(result.data?.branches || []);
     } catch (error) {
       console.error('Error fetching branches:', error);
     }
@@ -96,19 +93,15 @@ function BookList() {
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const myHeaders = new Headers();
-        myHeaders.append("Authorization", `Bearer ${getToken()}`);
-
-        const requestOptions = {
-          method: "DELETE",
-          headers: myHeaders,
-          redirect: "follow",
-        };
-
         try {
-          const response = await fetch(`http://localhost:5000/api/v1/books/${bookId}`, requestOptions);
-          const result = await response.text();
-          console.log(result);
+          const response = await authenticatedFetch(`http://localhost:5000/api/v1/books/${bookId}`, {
+            method: "DELETE"
+          });
+          
+          if (!response.ok) {
+            throw new Error(`Failed to delete book: ${response.statusText}`);
+          }
+          
           Swal.fire({
             title: "Deleted!",
             text: "Your book has been deleted.",
@@ -116,11 +109,17 @@ function BookList() {
             timer: 2000,
             showConfirmButton: false,
           });
+          
           setTimeout(() => {
             fetchBooks();
           }, 2000);
         } catch (error) {
           console.error(error);
+          Swal.fire({
+            title: "Error",
+            text: `Failed to delete book: ${error.message}`,
+            icon: "error"
+          });
         }
       }
     });
@@ -194,49 +193,99 @@ function BookList() {
         };
         handleUpdateBook(book._id, updatedData);
       },
+      didOpen: () => {
+        // Add event listener after the modal is opened
+        document.getElementById("fileInput").addEventListener("change", (e) => {
+          const file = e.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              // Update preview in the modal
+              const previewContainer = document.querySelector('.swal2-html-container');
+              if (previewContainer) {
+                const existingPreview = previewContainer.querySelector('div.mt-4');
+                if (existingPreview) {
+                  existingPreview.innerHTML = `<embed src="${reader.result}" type="application/pdf" width="100%" height="400px" />`;
+                } else {
+                  const newPreview = document.createElement('div');
+                  newPreview.className = 'mt-4';
+                  newPreview.innerHTML = `<embed src="${reader.result}" type="application/pdf" width="100%" height="400px" />`;
+                  previewContainer.appendChild(newPreview);
+                }
+              }
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      }
     });
-
-    document.getElementById("fileInput").addEventListener("change", handleFileUpload);
   };
 
   const handleUpdateBook = async (bookId, updatedData) => {
-    const myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${getToken()}`);
-
     const formdata = new FormData();
+    
     Object.keys(updatedData).forEach((key) => {
-      formdata.append(key, updatedData[key]);
+      if (updatedData[key] !== undefined && updatedData[key] !== null) {
+        formdata.append(key, updatedData[key]);
+      }
     });
 
-    const requestOptions = {
-      method: "PATCH",
-      headers: myHeaders,
-      body: formdata,
-      redirect: "follow",
-    };
-
     try {
-      const response = await fetch(`http://localhost:5000/api/books/${bookId}`, requestOptions);
-      const result = await response.text();
-      console.log(result);
-      fetchBooks();
+      const response = await authenticatedFetch(`http://localhost:5000/api/v1/books/${bookId}`, {
+        method: "PATCH",
+        body: formdata,
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Update failed: ${response.statusText}`);
+      }
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        Swal.fire({
+          title: "Updated!",
+          text: "Book information has been updated successfully",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+        fetchBooks();
+      } else {
+        throw new Error(result.message || "Update failed");
+      }
     } catch (error) {
       console.error(error);
+      Swal.fire({
+        title: "Error",
+        text: `Failed to update book: ${error.message}`,
+        icon: "error"
+      });
     }
   };
 
   const searchBooks = async (query) => {
-    const requestOptions = {
-      method: "GET",
-      redirect: "follow",
-    };
-
+    if (!query.trim()) {
+      fetchBooks();
+      return;
+    }
+    
     try {
-      const response = await fetch(`http://localhost:5000/api/books?title=${query}`, requestOptions);
+      const response = await authenticatedFetch(`http://localhost:5000/api/v1/books?title=${encodeURIComponent(query)}`);
+      
+      if (!response.ok) {
+        throw new Error(`Search failed: ${response.statusText}`);
+      }
+      
       const result = await response.json();
-      setBooks(result.data.books);
+      
+      if (result.success) {
+        setBooks(result.data?.books || []);
+      } else {
+        console.error('Search failed:', result.message);
+      }
     } catch (error) {
-      console.error(error);
+      console.error('Search error:', error);
     }
   };
 
@@ -255,15 +304,20 @@ function BookList() {
         <p><strong>Branch:</strong> ${book.branch_id.branch_name}</p>
         <p><strong>Year:</strong> ${book.year}</p>
         <p><strong>Abstract:</strong> ${book.abstract}</p>
-        <p><strong>Uploaded By:</strong> ${book.uploaded_by.user_name}</p>
+        <p><strong>Uploaded By:</strong> ${book.uploaded_by?.user_name || 'Unknown'}</p>
         <p><strong>Upload Date:</strong> ${new Date(book.upload_date).toLocaleDateString()}</p>
         <iframe src="${pdfUrl}" width="100%" height="400px" title="PDF Preview"></iframe>
         <br/>
-        <a href="${downloadUrl}" download="${book.title}.pdf" target="_blank">Download PDF</a>
+        <a href="${downloadUrl}" download="${book.title}.pdf" target="_blank" class="btn btn-primary">Download PDF</a>
       `,
       icon: "info",
       width: "800px", // Make the popup wider to fit the iframe
     });
+  };
+
+  const handleViewPdf = (e, publicId) => {
+    e.stopPropagation(); // Prevent row click
+    window.open(`http://localhost:5000/uploads/${publicId}`, '_blank');
   };
 
   return (
@@ -298,14 +352,20 @@ function BookList() {
             <tbody>
               {Array.isArray(books) && books.length > 0 ? (
                 books.map((book, index) => (
-                  <tr key={book._id} onClick={() => showBookDetails(book)} className="hover:bg-gray-100 cursor-pointer">
+                  <tr key={book._id} className="hover:bg-gray-100 cursor-pointer" onClick={() => showBookDetails(book)}>
                     <td className="py-2 px-4 border-b text-center">{index + 1}</td>
                     <td className="py-2 px-4 border-b text-center">
-                      <a href={`http://localhost:5000/uploads/${book.book_file.public_id}`} target="_blank" rel="noopener noreferrer">View PDF</a>
+                      {/* Use button element instead of anchor to avoid nesting issues */}
+                      <button 
+                        className="text-blue-500 hover:underline"
+                        onClick={(e) => handleViewPdf(e, book.book_file.public_id)}
+                      >
+                        View PDF
+                      </button>
                     </td>
                     <td className="py-2 px-4 border-b text-center">{book.title}</td>
                     <td className="py-2 px-4 border-b text-center">{book.author}</td>
-                    <td className="py-2 px-4 border-b text-center">{book.branch_id.branch_name}</td>
+                    <td className="py-2 px-4 border-b text-center">{book.branch_id?.branch_name || "N/A"}</td>
                     <td className="py-2 px-4 border-b text-center">{book.year}</td>
                     <td className="py-2 px-4 border-b text-center">
                       <button

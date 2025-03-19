@@ -1,93 +1,88 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import Swal from 'sweetalert2';
+import { login as authLogin, getAuthToken } from '../utils/auth'; // Fix import to use getAuthToken instead of getToken
 
-function saveToken(token) {
-  localStorage.setItem('authToken', token);
-}
-
-const LoginPage = () => {
+function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  
   const navigate = useNavigate();
-
-  const handleRoleRedirect = (role) => {
-    switch (role) {
-      case 'admin':
-        navigate('/admin/dashboard');
-        break;
-      case 'teacher':
-        navigate('/teacher');
-        break;
-      case 'student':
-        navigate('/student/dashboard');
-        break;
-      default:
-        console.error('Unknown role');
+  const { login, isAuthenticated, userRole, getRedirectPath } = useAuth();
+  
+  // If user is already logged in, redirect to appropriate dashboard
+  useEffect(() => {
+    if (isAuthenticated && userRole) {
+      navigate(getRedirectPath());
+    }
+  }, [isAuthenticated, userRole, navigate, getRedirectPath]);
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    
+    try {
+      // Use login utility from auth.js
+      const result = await authLogin(email, password);
+      
+      if (result.success) {
+        // Extract role from the response data if available
+        const role = result.data.role || determineUserRole(email);
+        
+        // Update context with token and role
+        login(result.data.token, role);
+        
+        // Show success Sweet Alert
+        Swal.fire({
+          icon: 'success',
+          title: 'Login Successful!',
+          text: `Welcome back! Redirecting to dashboard...`,
+          timer: 3000,
+          timerProgressBar: true,
+          showConfirmButton: false
+        }).then(() => {
+          // Navigate based on user role after alert closes
+          navigate(getRedirectPath());
+        });
+      } else {
+        // Display error message from the login attempt
+        setError(result.error || 'Login failed. Please check your credentials.');
+        Swal.fire({
+          icon: 'error',
+          title: 'Login Failed',
+          text: result.error || 'Please check your credentials and try again.',
+        });
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again later.');
+      console.error('Login error:', err);
+      
+      // Show error Sweet Alert
+      Swal.fire({
+        icon: 'error',
+        title: 'Connection Error',
+        text: 'An error occurred. Please try again later.',
+      });
+    } finally {
+      setLoading(false);
     }
   };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-
-    const raw = JSON.stringify({
-      email: email,
-      password: password
-    });
-
-    const requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: raw,
-      redirect: "follow"
-    };
-
-    fetch("http://localhost:5000/api/users/login", requestOptions)
-      .then((response) => {
-        if (response.status === 401) {
-          throw new Error('Unauthorized');
-        }
-        return response.json();
-      })
-      .then((result) => {
-        if (result.success) {
-          saveToken(result.token);
-          Swal.fire({
-            title: 'Success!',
-            text: 'Login successful',
-            icon: 'success',
-            timer: 3000, // 3 seconds
-            showConfirmButton: false
-          });
-          setTimeout(() => {
-            handleRoleRedirect(result.role);
-          }, 3000); // 3 seconds
-        } else {
-          Swal.fire({
-            title: 'Login Failed',
-            text: result.message || 'Incorrect email or password',
-            icon: 'error',
-            timer: 3000,
-            showConfirmButton: false
-          });
-          console.error(result.message);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        Swal.fire({
-          title: 'Login Failed',
-          text: error.message === 'Unauthorized' ? 'Incorrect email or password' : 'An error occurred during login.',
-          icon: 'error',
-          timer: 3000,
-          showConfirmButton: false
-        });
-      });
+  
+  // Helper function to determine user role based on email pattern (for demo purposes)
+  const determineUserRole = (email) => {
+    if (email.includes('admin')) {
+      return 'admin';
+    } else if (email.includes('teacher')) {
+      return 'teacher';
+    } else {
+      return 'student';
+    }
   };
-
+  
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
       <div className="w-full max-w-md">
@@ -128,10 +123,13 @@ const LoginPage = () => {
             <button 
               type="submit" 
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline transition-colors duration-200"
+              disabled={loading}
             >
-              Login
+              {loading ? 'Logging in...' : 'Login'}
             </button>
           </div>
+          
+          {error && <div className="mb-6 text-red-500 text-sm">{error}</div>}
           
           <div className="flex flex-col sm:flex-row items-center justify-between text-sm">
             <a 
@@ -154,6 +152,6 @@ const LoginPage = () => {
       </div>
     </div>
   );
-};
+}
 
 export default LoginPage;

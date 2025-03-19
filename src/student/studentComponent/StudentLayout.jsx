@@ -57,7 +57,17 @@ const StudentLayout = ({ children }) => {
             <div className="w-8 h-8 rounded-full bg-blue-400 flex items-center justify-center">
               <FaUser />
             </div>
-          </div>
+          </div> 
+          <button 
+            className="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded"
+            onClick={() => {
+              localStorage.clear(); // Clear all tokens or user data
+              window.location.href = '/'; // Redirect to the login or home page
+            }}
+          >
+            <FaSignOutAlt />
+            <span>Logout</span>
+          </button>
         </div>
       </header>
 

@@ -29,6 +29,31 @@ function NavbarForTeacher() {
               Profile
             </Link>
           </li>
+            <li>
+            <button
+              onClick={() => {
+              localStorage.removeItem("token");
+              window.location.href = "/login";
+              }}
+              className="text-gray-700 font-semibold hover:text-red-500 transition-all flex items-center"
+            >
+              <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 mr-1"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+              >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10V5m0 14a9 9 0 100-18 9 9 0 000 18z"
+              />
+              </svg>
+              Logout
+            </button>
+            </li>
         </ul>
       </nav>
     </header>

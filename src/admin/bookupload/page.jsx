@@ -2,8 +2,13 @@
 
 import React, { useState, useEffect } from 'react';
 import AdminLayout from '../dashboard/adminLayout';
-import AdminBookLayout from './AdminBookLayout'; // Ensure correct import path
+import AdminBookLayout from './AdminBookLayout';
 import Swal from 'sweetalert2';
+import { 
+  getAuthToken, 
+  saveAuthToken, 
+  authenticatedFetch 
+} from '../../utils/auth';
 
 const BookUpload = () => {
   const [file, setFile] = useState(null);
@@ -16,6 +21,8 @@ const BookUpload = () => {
   const [abstract, setAbstract] = useState('');
   const [uploadedBy, setUploadedBy] = useState('');
   const [uploadedByName, setUploadedByName] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(null); // Changed to null for initial loading state
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchBranches = async () => {
@@ -37,31 +44,76 @@ const BookUpload = () => {
     fetchBranches();
   }, []);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const token = localStorage.getItem('authToken');
-      const myHeaders = new Headers();
-      myHeaders.append("Authorization", `Bearer ${token}`);
-
-      try {
-        const response = await fetch('http://localhost:5000/api/users/me', {
-          method: 'GET',
-          headers: myHeaders
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setUploadedBy(data._id || '');
-          setUploadedByName(data.user_name || '');
-        } else {
-          console.error('Error fetching user data');
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
+  const checkAuthentication = async () => {
+    setIsLoading(true);
+    const token = getAuthToken();
+    
+    console.log("Checking authentication with token:", token ? "Token exists" : "No token found");
+    
+    if (!token) {
+      console.log("No token found, setting isAuthenticated to false");
+      setIsAuthenticated(false);
+      setIsLoading(false);
+      
+      // If no token is found, attempt to get it from URL parameters (in case of redirect after login)
+      const urlParams = new URLSearchParams(window.location.search);
+      const tokenFromUrl = urlParams.get('token');
+      
+      if (tokenFromUrl) {
+        console.log("Found token in URL, saving to localStorage");
+        saveAuthToken(tokenFromUrl);
+        // Reload page to use the new token
+        window.location.href = window.location.pathname;
+        return;
       }
-      console.log('Uploaded by:', uploadedBy, uploadedByName);
-    };
+      
+      return;
+    }
+    
+    try {
+      console.log("Sending authentication request with token");
+      // Use authenticatedFetch instead of manual header creation
+      const response = await authenticatedFetch('http://localhost:5000/api/users/me', {
+        method: 'GET'
+      });
+      
+      console.log("Auth response status:", response.status);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log("User data retrieved:", data);
+        setUploadedBy(data._id || '');
+        setUploadedByName(data.user_name || '');
+        setIsAuthenticated(true);
+      } else {
+        console.log("Auth failed with status:", response.status);
+        if (response.status === 401) {
+          setIsAuthenticated(false);
+          // Clear invalid token
+          localStorage.removeItem('authToken');
+          
+          Swal.fire({
+            title: 'Session Expired',
+            text: 'Your login session has expired. Please log in again.',
+            icon: 'warning',
+            confirmButtonText: 'Go to Login'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = '/login';
+            }
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      setIsAuthenticated(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    fetchUser();
+  useEffect(() => {
+    checkAuthentication();
   }, []);
 
   const handleFileChange = (e) => {
@@ -95,10 +147,18 @@ const BookUpload = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('authToken');
-    const myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${token}`);
-
+    
+    if (!isAuthenticated) {
+      Swal.fire({
+        title: 'Authentication Required',
+        text: 'Please login to upload files',
+        icon: 'warning',
+        showConfirmButton: true
+      });
+      return;
+    }
+    
+    // Use authenticatedFetch for form submission
     const formData = new FormData();
     formData.append("title", title);
     formData.append("author", author);
@@ -117,14 +177,10 @@ const BookUpload = () => {
       }
     });
 
-    const requestOptions = {
+    authenticatedFetch("http://localhost:5000/api/books/", {
       method: "POST",
-      headers: myHeaders,
-      body: formData,
-      redirect: "follow"
-    };
-
-    fetch("http://localhost:5000/api/books/", requestOptions)
+      body: formData
+    })
       .then((response) => response.text())
       .then((result) => {
         console.log(result);
@@ -149,104 +205,148 @@ const BookUpload = () => {
       });
   };
 
+  if (isLoading) {
+    return (
+      <AdminBookLayout>
+        <div className="p-6 bg-white rounded-lg shadow-md w-full max-w-[70%] mx-auto text-center">
+          <h2 className="text-xl font-semibold text-gray-600 mb-4">Checking Authentication...</h2>
+          <div className="flex justify-center">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
+          </div>
+        </div>
+      </AdminBookLayout>
+    );
+  }
+
+  if (isAuthenticated === false) {
+    return (
+      <AdminBookLayout>
+        <div className="p-6 bg-white rounded-lg shadow-md w-full max-w-[70%] mx-auto text-center">
+          <h2 className="text-xl font-semibold text-red-600 mb-4">Authentication Required</h2>
+          <p className="mb-4">You need to be logged in to upload books.</p>
+          <div className="flex flex-col space-y-2 items-center">
+            <button 
+              onClick={() => window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname)} 
+              className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 w-32"
+            >
+              Go to Login
+            </button>
+            <button 
+              onClick={checkAuthentication} 
+              className="bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300 w-32"
+            >
+              Retry
+            </button>
+            <div className="mt-4 text-sm text-gray-500">
+              <p>If you've already logged in but seeing this message:</p>
+              <ol className="list-decimal text-left pl-5 mt-2">
+                <li>Check if you're using the correct account</li>
+                <li>Your session might have expired</li>
+                <li>Try logging in again</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </AdminBookLayout>
+    );
+  }
+
   return (
     <AdminBookLayout>
-    <form onSubmit={handleSubmit} className="p-6 bg-white rounded-lg shadow-md w-full max-w-[70%]  mx-auto">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">Upload Files</h2>
-      <div className="grid grid-cols-3 gap-4">
-         <div>
-         <div className="col-span-1 flex flex-col justify-center items-center border-4 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer bg-gray-50 w-full h-64">
-          <input
-            type="file"
-            accept="application/pdf"
-            onChange={handleFileChange}
-            required
-            className="hidden"
-            id="fileInput"
-          />
-          
-          <label htmlFor="fileInput" className="block text-lg font-medium text-gray-700">
-            {file ? file.name : "Drop files here or click to upload"}
-          </label>
-          
+      <form onSubmit={handleSubmit} className="p-6 bg-white rounded-lg shadow-md w-full max-w-[70%] mx-auto">
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">Upload Files</h2>
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <div className="col-span-1 flex flex-col justify-center items-center border-4 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer bg-gray-50 w-full h-64">
+              <input
+                type="file"
+                accept="application/pdf"
+                onChange={handleFileChange}
+                required
+                className="hidden"
+                id="fileInput"
+              />
+              
+              <label htmlFor="fileInput" className="block text-lg font-medium text-gray-700">
+                {file ? file.name : "Drop files here or click to upload"}
+              </label>
+              
+            </div>
+            {preview && (
+              <div className="mt-4">
+                <embed src={preview} type="application/pdf" width="100%" height="400px" className="rounded-md shadow" />
+              </div>
+            )}
+          </div>
+          <div className="col-span-2 space-y-4">
+            <div>
+              <label className="block text-lg font-medium text-gray-700">Title</label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+                className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
+              />
+            </div>
+            <div>
+              <label className="block text-lg font-medium text-gray-700">Author</label>
+              <input
+                type="text"
+                value={author}
+                onChange={(e) => setAuthor(e.target.value)}
+                required
+                className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
+              />
+            </div>
+            <div>
+              <label className="block text-lg font-medium text-gray-700">Branch ID</label>
+              <select
+                value={branchId}
+                onChange={(e) => setBranchId(e.target.value)}
+                required
+                className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
+              >
+                <option value="">Select Branch</option>
+                {branches.map(branch => (
+                  <option key={branch._id} value={branch._id}>
+                    {branch.branch_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-lg font-medium text-gray-700">Year</label>
+              <input
+                type="text"
+                value={year}
+                onChange={(e) => setYear(e.target.value)}
+                required
+                className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
+              />
+            </div>
+            <div>
+              <label className="block text-lg font-medium text-gray-700">Abstract</label>
+              <textarea
+                value={abstract}
+                onChange={(e) => setAbstract(e.target.value)}
+                required
+                className="mt-1 block w-full h-32 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
+              />
+            </div>
+          </div>
         </div>
-        {preview && (
-        <div className="mt-4">
-          <embed src={preview} type="application/pdf" width="100%" height="400px" className="rounded-md shadow" />
+       
+        <div className="flex justify-end space-x-2 mt-4">
+          <button type="button" className="bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300">
+            Cancel
+          </button>
+          <button type="submit" className="bg-gradient-to-tr from-blue-400 to-blue-600 hover:from-blue-300 hover:to-blue-500 text-white py-2 px-4 rounded-md shadow-md">
+            Upload Files
+          </button>
         </div>
-      )}
-         </div>
-        <div className="col-span-2 space-y-4">
-          <div>
-            <label className="block text-lg font-medium text-gray-700">Title</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
-            />
-          </div>
-          <div>
-            <label className="block text-lg font-medium text-gray-700">Author</label>
-            <input
-              type="text"
-              value={author}
-              onChange={(e) => setAuthor(e.target.value)}
-              required
-              className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
-            />
-          </div>
-          <div>
-            <label className="block text-lg font-medium text-gray-700">Branch ID</label>
-            <select
-              value={branchId}
-              onChange={(e) => setBranchId(e.target.value)}
-              required
-              className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
-            >
-              <option value="">Select Branch</option>
-              {branches.map(branch => (
-                <option key={branch._id} value={branch._id}>
-                  {branch.branch_name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="block text-lg font-medium text-gray-700">Year</label>
-            <input
-              type="text"
-              value={year}
-              onChange={(e) => setYear(e.target.value)}
-              required
-              className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
-            />
-          </div>
-          <div>
-            <label className="block text-lg font-medium text-gray-700">Abstract</label>
-            <textarea
-              value={abstract}
-              onChange={(e) => setAbstract(e.target.value)}
-              required
-              className="mt-1 block w-full h-32 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
-            />
-          </div>
-        </div>
-      </div>
-     
-      <div className="flex justify-end space-x-2 mt-4">
-        <button type="button" className="bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300">
-          Cancel
-        </button>
-        <button type="submit" className="bg-gradient-to-tr from-blue-400 to-blue-600 hover:from-blue-300 hover:to-blue-500 text-white py-2 px-4 rounded-md shadow-md">
-          Upload Files
-        </button>
-      </div>
-    </form>
-  </AdminBookLayout>
-  
-  
+      </form>
+    </AdminBookLayout>
   );
 };
 

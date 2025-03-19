@@ -27,31 +27,29 @@ const AdminBookLayout = ({ children }) => {
           <nav className=" flex justify-end">
             <ul className="flex space-x-4">
               <li>
-                <Link to="/admin/bookupload">
-                  <a
-                    className={`text-sky-600 hover:text-sky-800 ${
-                      activeItem === "upload"
-                        ? "bg-sky-300 text-white rounded-full p-2"
-                        : ""
-                    }`}
-                    onClick={() => handleItemClick("upload")}
-                  >
-                    Upload Book
-                  </a>
+                <Link 
+                  to="/admin/bookupload"
+                  className={`text-sky-600 hover:text-sky-800 ${
+                    activeItem === "upload"
+                      ? "bg-sky-300 text-white rounded-full p-2"
+                      : ""
+                  }`}
+                  onClick={() => handleItemClick("upload")}
+                >
+                  Upload Book
                 </Link>
               </li>
               <li>
-                <Link to="/admin/bookupload/booklist">
-                  <a
-                    className={`text-sky-600 hover:text-sky-800 ${
-                      activeItem === "booklist"
-                        ? "bg-sky-300 text-white rounded-full p-2"
-                        : ""
-                    }`}
-                    onClick={() => handleItemClick("booklist")}
-                  >
-                    Book List
-                  </a>
+                <Link 
+                  to="/admin/bookmanagement"
+                  className={`text-sky-600 hover:text-sky-800 ${
+                    activeItem === "booklist"
+                      ? "bg-sky-300 text-white rounded-full p-2"
+                      : ""
+                  }`}
+                  onClick={() => handleItemClick("booklist")}
+                >
+                  Book List
                 </Link>
               </li>
               {/* <li>
