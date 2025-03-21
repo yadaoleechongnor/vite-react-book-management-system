@@ -27,33 +27,30 @@ const UserManagementLayout = ({ children }) => {
         <nav className=" flex justify-end">
           <ul className="flex space-x-4">
             <li>
-              <Link to="/admin/usermanagement">
-                <a
-                  className={`text-sky-600 hover:text-sky-800 ${activeItem === 'users' ? 'bg-sky-300 text-white rounded-full p-2' : ''}`}
-                  onClick={() => handleItemClick('users')}
-                >
-                  Users
-                </a>
+              <Link 
+                to="/admin/usermanagement"
+                className={`text-sky-600 hover:text-sky-800 ${activeItem === 'users' ? 'bg-sky-300 text-white rounded-full p-2' : ''}`}
+                onClick={() => handleItemClick('users')}
+              >
+                Users
               </Link>
             </li>
             <li>
-              <Link to="/admin/addteacheraddmin">
-                <a
-                  className={`text-sky-600 hover:text-sky-800 ${activeItem === 'roles' ? 'bg-sky-300 text-white rounded-full p-2' : ''}`}
-                  onClick={() => handleItemClick('roles')}
-                >
-                  Teacher-Admin-Management
-                </a>
+              <Link 
+                to="/admin/addteacheraddmin"
+                className={`text-sky-600 hover:text-sky-800 ${activeItem === 'roles' ? 'bg-sky-300 text-white rounded-full p-2' : ''}`}
+                onClick={() => handleItemClick('roles')}
+              >
+                Teacher-Admin-Management
               </Link>
             </li>
              <li>
-              <Link to="/admin/usermanagement">
-                <a
-                  className={`text-sky-600 hover:text-sky-800 ${activeItem === 'permissions' ? 'bg-sky-300 text-white rounded-full p-2' : ''}`}
-                  onClick={() => handleItemClick('permissions')}
-                >
-                  Permissions
-                </a>
+              <Link 
+                to="/admin/usermanagement"
+                className={`text-sky-600 hover:text-sky-800 ${activeItem === 'permissions' ? 'bg-sky-300 text-white rounded-full p-2' : ''}`}
+                onClick={() => handleItemClick('permissions')}
+              >
+                Permissions
               </Link>
             </li> 
           </ul>

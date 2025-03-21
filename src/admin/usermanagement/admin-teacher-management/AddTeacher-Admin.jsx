@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
+import { API_BASE_URL } from '../../../utils/api';
 
 function AddTeacherAdmin() {
   const [formData, setFormData] = useState({
@@ -17,7 +18,7 @@ function AddTeacherAdmin() {
   useEffect(() => {
     const fetchBranches = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/branches/");
+        const response = await fetch(`${API_BASE_URL}/branches/`);
         const result = await response.json();
         
         console.log("Full API response:", result);
@@ -116,7 +117,7 @@ function AddTeacherAdmin() {
       redirect: "follow"
     };
 
-    fetch("http://localhost:5000/api/users/", requestOptions)
+    fetch(`${API_BASE_URL}/users/`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {

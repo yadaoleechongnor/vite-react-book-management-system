@@ -7,6 +7,8 @@ import "sweetalert2/src/sweetalert2.scss";
 import { FaTrash, FaEdit } from "react-icons/fa";
 // Update import to use getAuthToken instead of getToken
 import { getAuthToken, authenticatedFetch, isAuthenticated, logout } from "../../../utils/auth";
+// Import API base URL from config
+import { API_BASE_URL } from "../../../utils/api";
 
 function BookList() {
   const [books, setBooks] = useState([]);
@@ -25,6 +27,8 @@ function BookList() {
   useEffect(() => {
     // Check if user is authenticated before fetching data
     if (isAuthenticated()) {
+      // Remove process.env reference that's causing the error
+      console.log("API Base URL:", API_BASE_URL);
       fetchBooks();
       fetchBranches();
     } else {
@@ -44,7 +48,8 @@ function BookList() {
   const fetchBooks = async () => {
     setLoading(true);
     try {
-      const response = await authenticatedFetch("http://localhost:5000/api/v1/books/");
+      // Use the imported API_BASE_URL constant
+      const response = await authenticatedFetch(`${API_BASE_URL}/v1/books`);
       
       if (!response.ok) {
         throw new Error(`Error fetching books: ${response.status} - ${response.statusText}`);
@@ -68,8 +73,7 @@ function BookList() {
 
   const fetchBranches = async () => {
     try {
-      // Use authenticatedFetch to ensure consistent handling
-      const response = await authenticatedFetch("http://localhost:5000/api/branches/");
+      const response = await authenticatedFetch(`${API_BASE_URL}/branches/`);
       
       if (!response.ok) {
         throw new Error(`Error fetching branches: ${response.statusText}`);
@@ -94,7 +98,7 @@ function BookList() {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const response = await authenticatedFetch(`http://localhost:5000/api/v1/books/${bookId}`, {
+          const response = await authenticatedFetch(`${API_BASE_URL}/v1/books/${bookId}`, {
             method: "DELETE"
           });
           
@@ -231,7 +235,7 @@ function BookList() {
     });
 
     try {
-      const response = await authenticatedFetch(`http://localhost:5000/api/v1/books/${bookId}`, {
+      const response = await authenticatedFetch(`${API_BASE_URL}/v1/books/${bookId}`, {
         method: "PATCH",
         body: formdata,
       });
@@ -271,7 +275,7 @@ function BookList() {
     }
     
     try {
-      const response = await authenticatedFetch(`http://localhost:5000/api/v1/books?title=${encodeURIComponent(query)}`);
+      const response = await authenticatedFetch(`${API_BASE_URL}/v1/books?title=${encodeURIComponent(query)}`);
       
       if (!response.ok) {
         throw new Error(`Search failed: ${response.statusText}`);
@@ -295,7 +299,8 @@ function BookList() {
   };
 
   const showBookDetails = (book) => {
-    const pdfUrl = `http://localhost:5000/uploads/${book.book_file.public_id}`; // Use the local storage URL
+    const baseUrl = "http://localhost:5000";
+    const pdfUrl = `${baseUrl}/uploads/${book.book_file.public_id}`; // Use the local storage URL
     const downloadUrl = pdfUrl; // For downloading
     Swal.fire({
       title: book.title,
@@ -317,7 +322,8 @@ function BookList() {
 
   const handleViewPdf = (e, publicId) => {
     e.stopPropagation(); // Prevent row click
-    window.open(`http://localhost:5000/uploads/${publicId}`, '_blank');
+    const baseUrl = "http://localhost:5000";
+    window.open(`${baseUrl}/uploads/${publicId}`, '_blank');
   };
 
   return (

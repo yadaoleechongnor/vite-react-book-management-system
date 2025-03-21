@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import AdminLayout from "../dashboard/adminLayout";
+import { API_BASE_URL } from "../../utils/api";
 
 export default function FacultyPage() {
     const [faculties, setFaculties] = useState([]);
@@ -14,7 +15,7 @@ export default function FacultyPage() {
             redirect: "follow"
         };
 
-        fetch("http://localhost:5000/api/faculties/", requestOptions)
+        fetch(`${API_BASE_URL}/faculties/`, requestOptions)
             .then((response) => response.json())
             .then((result) => setFaculties(result.data.faculties))
             .catch((error) => console.error(error));
@@ -45,7 +46,7 @@ export default function FacultyPage() {
                     redirect: "follow"
                 };
 
-                return fetch("http://localhost:5000/api/faculties/", requestOptions)
+                return fetch(`${API_BASE_URL}/faculties/`, requestOptions)
                     .then((response) => response.json())
                     .then((result) => {
                         if (result.success) {
@@ -83,7 +84,7 @@ export default function FacultyPage() {
                     redirect: "follow"
                 };
 
-                fetch(`http://localhost:5000/api/faculties/${id}`, requestOptions)
+                fetch(`${API_BASE_URL}/faculties/${id}`, requestOptions)
                     .then((response) => response.json())
                     .then((result) => {
                         if (result.success) {
@@ -133,7 +134,7 @@ export default function FacultyPage() {
                     redirect: "follow"
                 };
 
-                return fetch(`http://localhost:5000/api/faculties/${id}`, requestOptions)
+                return fetch(`${API_BASE_URL}/faculties/${id}`, requestOptions)
                     .then((response) => response.json())
                     .then((result) => {
                         if (result.success) {

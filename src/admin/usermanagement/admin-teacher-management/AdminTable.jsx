@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { FaTrashAlt } from 'react-icons/fa'; // Import React Icon
 import Swal from 'sweetalert2'; // Import SweetAlert
+import { API_BASE_URL } from '../../../utils/api'; // Import API base URL
 
 function getToken() {
   // Implement the logic to retrieve the token, e.g., from localStorage or a cookie
@@ -28,7 +29,7 @@ function AdminTable() {
           redirect: "follow"
         };
 
-        const response = await fetch("http://localhost:5000/api/users/admins", requestOptions);
+        const response = await fetch(`${API_BASE_URL}/users/admins`, requestOptions);
         
         if (!response.ok) {
           if (response.status === 401) {
@@ -96,7 +97,7 @@ function AdminTable() {
           redirect: "follow"
         };
 
-        fetch(`http://localhost:5000/api/users/${userId}`, requestOptions)
+        fetch(`${API_BASE_URL}/users/${userId}`, requestOptions)
           .then((response) => response.text())
           .then((result) => {
             console.log(result);

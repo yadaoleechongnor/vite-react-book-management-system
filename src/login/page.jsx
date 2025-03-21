@@ -26,12 +26,22 @@ function LoginPage() {
     setLoading(true);
     
     try {
+      // Validate inputs before sending request
+      if (!email || !password) {
+        throw new Error('Email and password are required');
+      }
+      
       // Use login utility from auth.js
       const result = await authLogin(email, password);
       
-      if (result.success) {
+      if (result && result.success) {
         // Extract role from the response data if available
-        const role = result.data.role || determineUserRole(email);
+        const role = result.data?.role || determineUserRole(email);
+        
+        // Ensure we have a token before proceeding
+        if (!result.data?.token) {
+          throw new Error('Authentication successful but no token received');
+        }
         
         // Update context with token and role
         login(result.data.token, role);
@@ -50,22 +60,32 @@ function LoginPage() {
         });
       } else {
         // Display error message from the login attempt
-        setError(result.error || 'Login failed. Please check your credentials.');
+        setError(result?.error || 'Login failed. Please check your credentials.');
         Swal.fire({
           icon: 'error',
           title: 'Login Failed',
-          text: result.error || 'Please check your credentials and try again.',
+          text: result?.error || 'Please check your credentials and try again.',
         });
       }
     } catch (err) {
-      setError('An error occurred. Please try again later.');
       console.error('Login error:', err);
       
-      // Show error Sweet Alert
+      // Provide more specific error messages based on the error
+      let errorMessage = 'An error occurred. Please try again later.';
+      
+      if (err.message.includes('correctPassword')) {
+        errorMessage = 'Authentication method error. Please contact support.';
+      } else if (err.message.includes('400')) {
+        errorMessage = 'Invalid login credentials. Please check your email and password.';
+      }
+      
+      setError(errorMessage);
+      
+      // Show error Sweet Alert with more specific message
       Swal.fire({
         icon: 'error',
-        title: 'Connection Error',
-        text: 'An error occurred. Please try again later.',
+        title: 'Login Failed',
+        text: errorMessage,
       });
     } finally {
       setLoading(false);
@@ -131,19 +151,22 @@ function LoginPage() {
           
           {error && <div className="mb-6 text-red-500 text-sm">{error}</div>}
           
-          <div className="flex flex-col sm:flex-row items-center justify-between text-sm">
-            <a 
-              href="/register" 
-              className="text-blue-600 hover:text-blue-800 font-medium mb-2 sm:mb-0 transition-colors"
-            >
-              Sign up for an account
-            </a>
-            <a 
-              href="/forgotpassword" 
-              className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
-            >
-              Forgot password?
-            </a>
+          <div className="text-center mb-4">
+            <p className="text-gray-600 mb-2">Having trouble logging in?</p>
+            <div className="flex flex-col sm:flex-row items-center justify-between text-sm">
+              <a 
+                href="/register" 
+                className="text-blue-600 hover:text-blue-800 font-medium mb-2 sm:mb-0 transition-colors"
+              >
+                Sign up for an account
+              </a>
+              <a 
+                href="/requestotp" 
+                className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
+              >
+                Forgot password?
+              </a>
+            </div>
           </div>
         </form>
         <p className="text-center text-gray-500 text-sm">

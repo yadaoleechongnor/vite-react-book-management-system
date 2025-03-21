@@ -6,6 +6,7 @@ import { FaTrashAlt } from 'react-icons/fa'; // Import React Icon
 import Swal from 'sweetalert2'; // Import SweetAlert
 import AdminTable from "./AdminTable"
 import AddTeacherAdmin from "./AddTeacher-Admin"
+import { API_BASE_URL } from '../../../utils/api';
 
 function getToken() {
   // Implement the logic to retrieve the token, e.g., from localStorage or a cookie
@@ -32,7 +33,7 @@ function AddminTeacherManagement() {
       redirect: "follow"
     };
 
-    fetch("http://localhost:5000/api/users/teachers", requestOptions)
+    fetch(`${API_BASE_URL}/users/teachers`, requestOptions)
       .then((response) => {
         if (response.status === 401) {
           throw new Error('Unauthorized');
@@ -67,7 +68,7 @@ function AddminTeacherManagement() {
       redirect: "follow"
     };
 
-    fetch("http://localhost:5000/api/branches/", requestOptionsBranches)
+    fetch(`${API_BASE_URL}/branches/`, requestOptionsBranches)
       .then((response) => response.json())
       .then((result) => {
         console.log("Response received:", result);
@@ -109,7 +110,7 @@ function AddminTeacherManagement() {
           redirect: "follow"
         };
 
-        fetch(`http://localhost:5000/api/users/${userId}`, requestOptions)
+        fetch(`${API_BASE_URL}/users/${userId}`, requestOptions)
           .then((response) => response.text())
           .then((result) => {
             console.log(result);

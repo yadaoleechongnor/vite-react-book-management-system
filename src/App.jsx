@@ -18,6 +18,12 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider, useAuth } from './contexts/AuthContext';  // Add useAuth here
 import BookList from './admin/bookupload/booklist/page';
 import ForgotPasswordPage from './forgotpassword/page';
+import ResetPasswordPage from './resetpassword/page';
+import AdminForgotPassword from './forgotpassword/AdminForgotPassword';
+import AdminResetPasswordPage from './resetpassword/AdminResetPassowrd';
+import OTPForgotPassword from './OTP/ResetPassword/ForgotPassword';
+import OTPResetPassword from './OTP/ResetPassword/ResetPassword';
+import OTPVerifyEmail from './OTP/ResetPassword/VerifyEmail';
 
 // Simple NotFound component
 const NotFound = () => (
@@ -52,6 +58,9 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
+
+ {/*------------------------------------Public routes - redirect to dashboard if already logged in------------------------------------------------------------------- */}
+
           {/* Public routes - redirect to dashboard if already logged in */}
           <Route path="/" element={
             <PublicRoute>
@@ -73,8 +82,63 @@ function App() {
               <ForgotPasswordPage/>
             </PublicRoute>
           } />
+          <Route path="/resetpassword/:token" element={
+            <PublicRoute>
+              <ResetPasswordPage/>
+            </PublicRoute>
+          } />
           
-          {/* Admin Routes */}
+ {/*------------------------------------Public routes - redirect to dashboard if already logged in------------------------------------------------------------------ */}
+
+
+ {/*------------------------------------adminResetPassword Routes------------------------------------------------------------------- */}
+
+          {/* adminResetPassword Routes  */}
+          <Route path="/admin-forgot-password" element={
+            <PublicRoute>
+              <AdminForgotPassword/>
+            </PublicRoute>
+          } />
+          <Route path="/admin-reset-password/:token" element={
+            <PublicRoute>
+              <AdminResetPasswordPage/>
+            </PublicRoute>
+          } />
+
+ {/*-------------------------------------- adminResetPassword Routes----------------------------------------------------------------- */}
+
+
+
+ {/*-------------------------------------- OTP Routes---------------------------------------------------------------------- */}
+
+
+
+          <Route path="/requestotp" element={
+            <PublicRoute>
+              <OTPForgotPassword/>
+            </PublicRoute>
+          } />
+
+          <Route path="/verifyotp" element={
+            <PublicRoute>
+              <OTPVerifyEmail/>
+            </PublicRoute>
+          } />
+
+          <Route path="/resetpassword" element={
+            <PublicRoute>
+              <OTPResetPassword/>
+            </PublicRoute>
+          } />
+
+      
+
+ {/*-------------------------------------- OTP Routes---------------------------------------------------------------------- */}
+
+
+
+ {/*--------------------------------------Admin Routes ------------------------------------------------------------------- */}
+
           <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
             <Route path="/admin/dashboard" element={<Dashboard />} />
             <Route path="/admin/usermanagement" element={<UserMagementPage />} />
@@ -86,6 +150,11 @@ function App() {
             <Route path="/admin/bookmanagement" element={<BookList />} />
           </Route>
           
+ {/*--------------------------------------Admin Routes ------------------------------------------------------------------- */}
+
+ {/*--------------------------------------Teacher Routes----------------------------------------------------------------- */}
+
+          
           {/* Teacher Routes */}
           <Route element={<ProtectedRoute allowedRoles={['teacher']} />}>
             <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
@@ -93,11 +162,19 @@ function App() {
             <Route path="/teacher/uploadbook" element={<TeacherUploadPage />} />
           </Route>
           
+ {/*--------------------------------------Teacher Routes------------------------------------------------------------------- */}
+
+ {/*-------------------------------------Student routes----------------------------------------------------------------- */}
+
+          
           {/* Student routes */}
           <Route element={<ProtectedRoute allowedRoles={['student']} />}>
             <Route path="/student/dashboard" element={<StudentDashboard />} />
             <Route path="/student/bookpage" element={<StudentBookPage />} />
           </Route>
+          
+ {/*--------------------------------------Student routes------------------------------------------------------------------- */}
+
 
           {/* Optional: Add a catch-all route for 404 pages */}
           <Route path="*" element={<NotFound />} />

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import TeacherLayout from "../TeacherComponent/TeacherLayout";
+import { API_BASE_URL } from "../../utils/api";
 
 /**
  * @typedef {Object} Branch
@@ -33,7 +34,7 @@ const TeacherUploadPage = () => {
   useEffect(() => {
     const fetchBranches = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/branches/");
+        const response = await fetch(`${API_BASE_URL}/branches/`);
         if (!response.ok) throw new Error("Failed to fetch branches");
         const data = await response.json();
         setBranches(data.data.branches || []);
@@ -55,7 +56,7 @@ const TeacherUploadPage = () => {
       const headers = new Headers({ Authorization: `Bearer ${token}` });
 
       try {
-        const response = await fetch("http://localhost:5000/api/users/me", {
+        const response = await fetch(`${API_BASE_URL}/users/me`, {
           method: "GET",
           headers,
         });
@@ -134,7 +135,7 @@ const TeacherUploadPage = () => {
       formData.append("uploaded_by", uploadedBy);
 
       // Set up headers without including them in the FormData
-      const response = await fetch("http://localhost:5000/api/v1/books", {
+      const response = await fetch(`${API_BASE_URL}/v1/books`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`

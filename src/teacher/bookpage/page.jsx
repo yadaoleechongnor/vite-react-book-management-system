@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import TeacherLayout from "../TeacherComponent/TeacherLayout";
 import book_img from "../../../public/images/book_img.jpeg";
+import { API_BASE_URL } from "../../utils/api";
 
 function BookPage() {
   const [books, setBooks] = useState([]);
@@ -12,7 +13,7 @@ function BookPage() {
         const token = localStorage.getItem("authToken");
         if (!token) throw new Error("No authentication token found");
 
-        const response = await fetch("http://localhost:5000/api/v1/books", {
+        const response = await fetch(`${API_BASE_URL}/v1/books`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

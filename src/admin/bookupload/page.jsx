@@ -9,6 +9,7 @@ import {
   saveAuthToken, 
   authenticatedFetch 
 } from '../../utils/auth';
+import { API_BASE_URL } from '../../utils/api';
 
 const BookUpload = () => {
   const [file, setFile] = useState(null);
@@ -27,7 +28,7 @@ const BookUpload = () => {
   useEffect(() => {
     const fetchBranches = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/branches/');
+        const response = await fetch(`${API_BASE_URL}/branches/`);
         if (response.ok) {
           const data = await response.json();
           console.log('Branch API data:', data); // Log the fetched data
@@ -73,7 +74,7 @@ const BookUpload = () => {
     try {
       console.log("Sending authentication request with token");
       // Use authenticatedFetch instead of manual header creation
-      const response = await authenticatedFetch('http://localhost:5000/api/users/me', {
+      const response = await authenticatedFetch(`${API_BASE_URL}/users/me`, {
         method: 'GET'
       });
       
@@ -177,7 +178,7 @@ const BookUpload = () => {
       }
     });
 
-    authenticatedFetch("http://localhost:5000/api/books/", {
+    authenticatedFetch(`${API_BASE_URL}/v1/books/`, {
       method: "POST",
       body: formData
     })

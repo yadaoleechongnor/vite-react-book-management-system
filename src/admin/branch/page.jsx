@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import AdminLayout from "../dashboard/adminLayout";
+import { API_BASE_URL } from "../../utils/api";
 
 function saveToken(token) {
     localStorage.setItem('authToken', token);
@@ -25,7 +26,7 @@ export default function BranchPage() {
             redirect: "follow"
         };
 
-        fetch("http://localhost:5000/api/branches/", requestOptions)
+        fetch(`${API_BASE_URL}/branches/`, requestOptions)
             .then((response) => response.json())
             .then((result) => {
                 console.log("Branches response:", result);
@@ -42,7 +43,7 @@ export default function BranchPage() {
                 setLoading(false);
             });
 
-        fetch("http://localhost:5000/api/departments/", requestOptions)
+        fetch(`${API_BASE_URL}/departments/`, requestOptions)
             .then((response) => response.json())
             .then((result) => {
                 console.log("Departments fetched:", result.data.departments);
@@ -50,7 +51,7 @@ export default function BranchPage() {
             })
             .catch((error) => console.error(error));
 
-        // fetch("http://localhost:5000/api/faculties/", requestOptions)
+        // fetch(`${API_BASE_URL}/faculties/`, requestOptions)
         //     .then((response) => response.json())
         //     .then((result) => {
         //         console.log("Faculties fetched:", result.data.faculties);
@@ -108,7 +109,7 @@ export default function BranchPage() {
                     redirect: "follow"
                 };
 
-                return fetch("http://localhost:5000/api/branches/", requestOptions)
+                return fetch(`${API_BASE_URL}/branches/`, requestOptions)
                     .then((response) => response.json())
                     .then((result) => {
                         if (result.success) {
@@ -159,7 +160,7 @@ export default function BranchPage() {
                     redirect: "follow"
                 };
 
-                fetch(`http://localhost:5000/api/branches/${id}`, requestOptions)
+                fetch(`${API_BASE_URL}/branches/${id}`, requestOptions)
                     .then((response) => response.json())
                     .then((result) => {
                         if (result.success) {
@@ -233,7 +234,7 @@ export default function BranchPage() {
                     redirect: "follow"
                 };
 
-                return fetch(`http://localhost:5000/api/branches/${id}`, requestOptions)
+                return fetch(`${API_BASE_URL}/branches/${id}`, requestOptions)
                     .then((response) => response.json())
                     .then((result) => {
                         if (result.success) {
@@ -313,7 +314,6 @@ export default function BranchPage() {
                 </AdminLayout>
             );
         };
-        
-  
-        
-  
+
+
+

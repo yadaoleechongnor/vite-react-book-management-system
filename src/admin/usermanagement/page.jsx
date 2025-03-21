@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import UserManagementLayout from './UserManagementLayout';
 import { FaTrashAlt } from 'react-icons/fa';
 import Swal from 'sweetalert2';
+import { API_BASE_URL } from '../../utils/api';
 
 function getToken() {
   return localStorage.getItem('authToken');
@@ -26,7 +27,7 @@ function UserMagementPage() {
       redirect: "follow"
     };
 
-    fetch("http://localhost:5000/api/users", requestOptions)
+    fetch(`${API_BASE_URL}/users`, requestOptions)
       .then((response) => {
         if (response.status === 401) {
           throw new Error('Unauthorized');
@@ -78,7 +79,7 @@ function UserMagementPage() {
           redirect: "follow"
         };
 
-        fetch(`http://localhost:5000/api/users/${userId}`, requestOptions)
+        fetch(`${API_BASE_URL}/users/${userId}`, requestOptions)
           .then((response) => response.text())
           .then((result) => {
             console.log(result);

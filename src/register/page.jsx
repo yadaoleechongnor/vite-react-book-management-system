@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import sphlogo from '../assets/sphlogo.png';
+import { API_BASE_URL } from "../utils/api";
 
 const RegisterPage = () => {
   const [branches, setBranches] = useState([]);
@@ -43,7 +44,7 @@ const RegisterPage = () => {
       redirect: "follow",
     };
 
-    fetch("http://localhost:5000/api/branches/", requestOptions)
+    fetch(`${API_BASE_URL}/branches/`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
         console.log("Fetched data:", result);
@@ -146,7 +147,7 @@ const RegisterPage = () => {
       redirect: "follow",
     };
 
-    fetch("http://localhost:5000/api/users/register", requestOptions)
+    fetch(`${API_BASE_URL}/users/register`, requestOptions)
       .then((response) => {
         console.log("Status:", response.status);
         return response.json();
