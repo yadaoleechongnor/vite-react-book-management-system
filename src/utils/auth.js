@@ -1,6 +1,7 @@
 /**
  * Authentication utilities for the application
  */
+import { API_BASE_URL } from './api';
 
 // Save authentication token to localStorage
 export const saveAuthToken = (token) => {
@@ -34,7 +35,7 @@ export const isAuthenticated = async () => {
   if (!token) return false;
   
   try {
-    const response = await fetch('http://localhost:5000/api/users/me', {
+    const response = await fetch(`${API_BASE_URL}/users/me`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`
@@ -51,7 +52,7 @@ export const isAuthenticated = async () => {
 // Function to handle login
 export const login = async (username, password) => {
   try {
-    const response = await fetch('http://localhost:5000/api/users/login', {
+    const response = await fetch(`${API_BASE_URL}/users/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
