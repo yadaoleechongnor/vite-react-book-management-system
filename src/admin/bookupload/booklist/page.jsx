@@ -14,6 +14,7 @@ function BookList() {
   const [searchQuery, setSearchQuery] = useState("");
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null); // Add error state
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [branchId, setBranchId] = useState("");
@@ -23,6 +24,7 @@ function BookList() {
   const [preview, setPreview] = useState("");
 
   useEffect(() => {
+    console.log("Is authenticated:", isAuthenticated());
     if (isAuthenticated()) {
       console.log("API Base URL:", API_BASE_URL);
       fetchBooks();
@@ -34,13 +36,14 @@ function BookList() {
         icon: "warning",
         confirmButtonText: "Go to Login",
       }).then(() => {
-        window.location.href = '/login';
+        window.location.href = "/login";
       });
     }
   }, []);
 
   const fetchBooks = async () => {
     setLoading(true);
+    setError(null);
     try {
       const response = await authenticatedFetch(`${API_BASE_URL}/v1/books`);
       
@@ -50,14 +53,21 @@ function BookList() {
       
       const result = await response.json();
       if (result.success) {
-        const books = result.data?.books || [];
+        // Check for both possible data structures
+        const books = Array.isArray(result.data) ? result.data : (result.data?.books || []);
+        console.log("Fetched books:", books);
         setBooks(books);
         setBookCount(books.length);
       } else {
-        console.error('Failed to fetch books:', result.message);
+        setError(result.message || "Failed to fetch books");
+        setBooks([]);
+        setBookCount(0);
       }
     } catch (error) {
       console.error('Fetch error details:', error.message);
+      setError(error.message || "An error occurred while fetching books");
+      setBooks([]);
+      setBookCount(0);
     } finally {
       setLoading(false);
     }
@@ -274,12 +284,20 @@ function BookList() {
       const result = await response.json();
       
       if (result.success) {
-        setBooks(result.data?.books || []);
+        // Check for both possible data structures
+        const searchResults = Array.isArray(result.data) ? result.data : (result.data?.books || []);
+        console.log("Search results:", searchResults);
+        setBooks(searchResults);
+        setBookCount(searchResults.length);
       } else {
         console.error('Search failed:', result.message);
+        setBooks([]);
+        setBookCount(0);
       }
     } catch (error) {
       console.error('Search error:', error);
+      setBooks([]);
+      setBookCount(0);
     }
   };
 
@@ -316,7 +334,6 @@ function BookList() {
     window.open(`${baseUrl}/uploads/${publicId}`, '_blank');
   };
 
-  // Helper function to truncate text
   const truncateText = (text, maxLength) => {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + "...";
@@ -334,7 +351,9 @@ function BookList() {
           className="mb-4 p-2 border border-gray-300 rounded"
         />
         <p className="mb-4">Total Books: {bookCount}</p>
-        {loading ? (
+        {error ? (
+          <div className="text-red-500 text-center">{error}</div>
+        ) : loading ? (
           <div className="flex justify-center items-center">
             <div className="loader"></div>
           </div>
