@@ -33,9 +33,9 @@ const AdminLayout = ({ children }) => {
           </button>
         </div>
       </header>
-      <div className="flex">
+      <div className="flex h-screen overflow-hidden">
         <Sidebar /> {/* Add Sidebar */}
-        <main className=" p-2 flex-grow">
+        <main className=" p-2 flex-grow flex overflow-x-scroll">
           {children}
         </main>
       </div>

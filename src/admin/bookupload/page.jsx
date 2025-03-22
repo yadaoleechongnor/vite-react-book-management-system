@@ -253,7 +253,7 @@ const BookUpload = () => {
   }
 
   return (
-    <AdminBookLayout>
+    <AdminBookLayout className="w-full">
       <form onSubmit={handleSubmit} className="p-6 bg-white rounded-lg shadow-md w-full max-w-[70%] mx-auto">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">Upload Files</h2>
         <div className="grid grid-cols-3 gap-4">

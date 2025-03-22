@@ -21,7 +21,7 @@ const AdminBookLayout = ({ children }) => {
 
   return (
     <AdminLayout>
-      <div className="admin-layout h-screen flex flex-col">
+      <div className="admin-layout h-screen flex flex-col w-full">
         <header className="flex p-4 justify-between items-center bg-white rounded-full border ">
           <h1 className="text-xl">Book Management</h1>
           <nav className=" flex justify-end">

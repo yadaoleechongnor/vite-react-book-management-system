@@ -222,7 +222,7 @@ export default function DepartmentPage() {
 
     return (
         <AdminLayout>
-            <div className="p-6">
+            <div className="p-6 w-full">
                 <h1 className="text-2xl font-bold mb-4">Department Page</h1>
                 <p className="mb-6">Welcome to the Department Page.</p>
                 <button 
@@ -235,11 +235,11 @@ export default function DepartmentPage() {
                 <table className="min-w-full bg-white border mt-6 border-gray-200">
                     <thead>
                         <tr className="bg-gray-100">
-                            <th className="py-2 px-4 border-b text-center">#</th>
-                            <th className="py-2 px-4 border-b text-center">Department</th>
-                            <th className="py-2 px-4 border-b text-center">Faculty</th>
-                            <th className="py-2 px-4 border-b text-center">Created At</th>
-                            <th className="py-2 px-4 border-b text-center">Updated At</th>
+                            <th className="py-2 px-4 border-b text-start ">#</th>
+                            <th className="py-2 px-4 border-b  ">Department</th>
+                            <th className="py-2 px-4 border-b ">Faculty</th>
+                            <th className="py-2 px-4 border-b ">Created At</th>
+                            <th className="py-2 px-4 border-b ">Updated At</th>
                             <th className="py-2 px-4 border-b text-center">Actions</th>
                         </tr>
                     </thead>
@@ -247,10 +247,10 @@ export default function DepartmentPage() {
                         {departments.map((department, index) => (
                             <tr key={department._id} className="hover:bg-gray-50">
                                 <td className="py-2 px-4 border-b text-center">{index + 1}</td>
-                                <td className="py-2 px-4 border-b text-center">{department.department_name}</td>
-                                <td className="py-2 px-4 border-b text-center">{department.faculties_id?.faculties_name}</td>
-                                <td className="py-2 px-4 border-b text-center">{new Date(department.createdAt).toLocaleDateString()}</td>
-                                <td className="py-2 px-4 border-b text-center">{new Date(department.updatedAt).toLocaleDateString()}</td>
+                                <td className="py-2 px-4 border-b ">{department.department_name}</td>
+                                <td className="py-2 px-4 border-b ">{department.faculties_id?.faculties_name}</td>
+                                <td className="py-2 px-4 border-b text-center ">{new Date(department.createdAt).toLocaleDateString()}</td>
+                                <td className="py-2 px-4 border-b text-center ">{new Date(department.updatedAt).toLocaleDateString()}</td>
                                 <td className="py-2 px-4 border-b text-center">
                                     <button 
                                         className="text-blue-500 hover:text-blue-700 mr-2"

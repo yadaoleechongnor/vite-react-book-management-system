@@ -5,9 +5,7 @@ import AdminBookLayout from "../AdminBookLayout";
 import Swal from "sweetalert2";
 import "sweetalert2/src/sweetalert2.scss";
 import { FaTrash, FaEdit } from "react-icons/fa";
-// Update import to use getAuthToken instead of getToken
 import { getAuthToken, authenticatedFetch, isAuthenticated, logout } from "../../../utils/auth";
-// Import API base URL from config
 import { API_BASE_URL } from "../../../utils/api";
 
 function BookList() {
@@ -25,21 +23,17 @@ function BookList() {
   const [preview, setPreview] = useState("");
 
   useEffect(() => {
-    // Check if user is authenticated before fetching data
     if (isAuthenticated()) {
-      // Remove process.env reference that's causing the error
       console.log("API Base URL:", API_BASE_URL);
       fetchBooks();
       fetchBranches();
     } else {
-      // Redirect to login or show message if not authenticated
       Swal.fire({
         title: "Authentication Required",
         text: "Please log in to view this page",
         icon: "warning",
         confirmButtonText: "Go to Login",
       }).then(() => {
-        // Redirect to login page
         window.location.href = '/login';
       });
     }
@@ -48,7 +42,6 @@ function BookList() {
   const fetchBooks = async () => {
     setLoading(true);
     try {
-      // Use the imported API_BASE_URL constant
       const response = await authenticatedFetch(`${API_BASE_URL}/v1/books`);
       
       if (!response.ok) {
@@ -65,7 +58,6 @@ function BookList() {
       }
     } catch (error) {
       console.error('Fetch error details:', error.message);
-      // Handle authentication errors here if needed
     } finally {
       setLoading(false);
     }
@@ -198,13 +190,11 @@ function BookList() {
         handleUpdateBook(book._id, updatedData);
       },
       didOpen: () => {
-        // Add event listener after the modal is opened
         document.getElementById("fileInput").addEventListener("change", (e) => {
           const file = e.target.files[0];
           if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-              // Update preview in the modal
               const previewContainer = document.querySelector('.swal2-html-container');
               if (previewContainer) {
                 const existingPreview = previewContainer.querySelector('div.mt-4');
@@ -300,8 +290,8 @@ function BookList() {
 
   const showBookDetails = (book) => {
     const baseUrl = "http://localhost:5000";
-    const pdfUrl = `${baseUrl}/uploads/${book.book_file.public_id}`; // Use the local storage URL
-    const downloadUrl = pdfUrl; // For downloading
+    const pdfUrl = `${baseUrl}/uploads/${book.book_file.public_id}`;
+    const downloadUrl = pdfUrl;
     Swal.fire({
       title: book.title,
       html: `
@@ -316,19 +306,25 @@ function BookList() {
         <a href="${downloadUrl}" download="${book.title}.pdf" target="_blank" class="btn btn-primary">Download PDF</a>
       `,
       icon: "info",
-      width: "800px", // Make the popup wider to fit the iframe
+      width: "800px",
     });
   };
 
   const handleViewPdf = (e, publicId) => {
-    e.stopPropagation(); // Prevent row click
+    e.stopPropagation();
     const baseUrl = "http://localhost:5000";
     window.open(`${baseUrl}/uploads/${publicId}`, '_blank');
   };
 
+  // Helper function to truncate text
+  const truncateText = (text, maxLength) => {
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + "...";
+  };
+
   return (
     <AdminBookLayout>
-      <div className="container mx-auto p-4">
+      <div className="container mx-auto p-4 w-full">
         <h1 className="text-2xl font-bold mb-4">Book List</h1>
         <input
           type="text"
@@ -361,7 +357,6 @@ function BookList() {
                   <tr key={book._id} className="hover:bg-gray-100 cursor-pointer" onClick={() => showBookDetails(book)}>
                     <td className="py-2 px-4 border-b text-center">{index + 1}</td>
                     <td className="py-2 px-4 border-b text-center">
-                      {/* Use button element instead of anchor to avoid nesting issues */}
                       <button 
                         className="text-blue-500 hover:underline"
                         onClick={(e) => handleViewPdf(e, book.book_file.public_id)}
@@ -369,7 +364,9 @@ function BookList() {
                         View PDF
                       </button>
                     </td>
-                    <td className="py-2 px-4 border-b text-center">{book.title}</td>
+                    <td className="py-2 px-4 border-b text-center" title={book.title}>
+                      {truncateText(book.title, 60)}
+                    </td>
                     <td className="py-2 px-4 border-b text-center">{book.author}</td>
                     <td className="py-2 px-4 border-b text-center">{book.branch_id?.branch_name || "N/A"}</td>
                     <td className="py-2 px-4 border-b text-center">{book.year}</td>

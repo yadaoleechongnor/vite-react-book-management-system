@@ -153,7 +153,7 @@ export default function FacultyPage() {
 
     return (
         <AdminLayout>
-            <div className="p-6">
+            <div className="p-6 w-full">
                 <h1 className="text-2xl font-bold mb-4">Faculty Page</h1>
                 <p className="mb-6">Welcome to the Faculty Page.</p>
                 <button 

@@ -4,7 +4,7 @@ import { API_BASE_URL } from '../../../utils/api';
 
 function AddTeacherAdmin() {
   const [formData, setFormData] = useState({
-    user_name: '',
+    name: '',
     email: '',
     password: '',
     phone_number: '',
@@ -170,13 +170,13 @@ function AddTeacherAdmin() {
         <form onSubmit={handleSubmit} className="bg-white p-4 mt-8 shadow-md rounded px-8 pt-6 pb-8 mb-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="user_name">
-                Username
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
+                Name
               </label>
               <input
                 type="text"
-                name="user_name"
-                value={formData.user_name}
+                name="name"
+                value={formData.name}
                 onChange={handleChange}
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 required

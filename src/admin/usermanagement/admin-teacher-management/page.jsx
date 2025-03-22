@@ -142,15 +142,15 @@ function AddminTeacherManagement() {
       title: 'User Details',
       html: `
         <div style="text-align: left;">
-          <p><strong>User Name:</strong> ${user.user_name}</p>
+          <p><strong>User Name:</strong> ${user.name}</p>
           <p><strong>Email:</strong> ${user.email}</p>
           <p><strong>Phone Number:</strong> ${user.phone_number}</p>
-          <p><strong>Branch Name:</strong> ${user.branch ? user.branch.name : 'N/A'}</p>
+          <p><strong>Branch Name:</strong> ${user.branch ? user.branch_name: 'N/A'}</p>
           <p><strong>Year:</strong> ${user.year}</p>
           
           <p><strong>Role:</strong> ${user.role}</p>
-          <p><strong>Create Date:</strong> ${user.createdate}</p>
-          <p><strong>Update Date:</strong> ${user.updatedate}</p>
+          <p><strong>Create Date:</strong> ${user.createdAt}</p>
+          <p><strong>Update Date:</strong> ${user.updatedAt}</p>
         </div>
       `,
       icon: 'info'
@@ -191,7 +191,7 @@ function AddminTeacherManagement() {
         </div>
       )}
       <div>Teacher Table</div>
-      <table className="min-w-full divide-y divide-gray-200">
+      <table className="min-w-full divide-y w-full divide-gray-200">
         <thead className="bg-green-600">
           <tr>
             <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">#</th>
@@ -205,7 +205,7 @@ function AddminTeacherManagement() {
           {users.map((user, index) => (
             <tr key={`${user._id}-${index}`} className={index % 2 === 0 ? "bg-gray-50 cursor-pointer" : "cursor-pointer"} onClick={() => handleRowClick(user)}>
               <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{user.user_name}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{user.name}</td>
               <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
               <td className="px-6 py-4 whitespace-nowrap">{user.role}</td>
               <td className="px-6 py-4 whitespace-nowrap">

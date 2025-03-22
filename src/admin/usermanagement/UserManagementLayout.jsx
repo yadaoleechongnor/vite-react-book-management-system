@@ -21,7 +21,7 @@ const UserManagementLayout = ({ children }) => {
 
   return (
     <AdminLayout>
-    <div className="admin-layout h-screen flex flex-col">
+    <div className="admin-layout w-full h-screen flex flex-col">
      <header className='flex p-4 justify-between bg-white rounded-full border items-center'>
      <h1 className="text-xl">User Management</h1>
         <nav className=" flex justify-end">
@@ -44,7 +44,7 @@ const UserManagementLayout = ({ children }) => {
                 Teacher-Admin-Management
               </Link>
             </li>
-             <li>
+             {/* <li>
               <Link 
                 to="/admin/usermanagement"
                 className={`text-sky-600 hover:text-sky-800 ${activeItem === 'permissions' ? 'bg-sky-300 text-white rounded-full p-2' : ''}`}
@@ -52,7 +52,7 @@ const UserManagementLayout = ({ children }) => {
               >
                 Permissions
               </Link>
-            </li> 
+            </li>  */}
           </ul>
         </nav>
      </header>

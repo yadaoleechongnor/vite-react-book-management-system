@@ -4,12 +4,12 @@ import AdminLayout from './adminLayout'; // Import AdminLayout
 
 const DashboardPage = () => {
   return (
-    <div className=" min-h-screen">
+    
       <AdminLayout>
-      <div className="flex h-screen bg-gray-100">
+      <div className="flex h-screen bg-gray-100 w-full">
     
    
-      <div className="flex-1 p-6">
+      <div className="flex-1 p-6 w-full">
         {/* Header */}
         <div className="flex justify-end items-center mb-6">
           <div className="flex items-center space-x-2 text-gray-500">
@@ -191,7 +191,7 @@ const DashboardPage = () => {
       </div>
     </div>
       </AdminLayout>
-    </div>
+   
   );
 };
 

@@ -21,7 +21,7 @@ const Sidebar = () => {
   };
 
   return (
-    <aside className="sidebar bg-gradient-to-br from-sky-200 to-sky-400 h-screen p-4 shadow-2xl shadow-sky-200 w-64 rounded-tr-lg">
+    <aside className="sidebar border border-black   bg-gradient-to-br from-sky-200 to-sky-400 h-screen p-4 shadow-2xl shadow-sky-200 w-64 rounded-tr-lg">
       <nav>
         <ul className="space-y-2">
           <li

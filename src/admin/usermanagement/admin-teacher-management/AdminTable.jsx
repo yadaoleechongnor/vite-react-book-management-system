@@ -129,15 +129,14 @@ function AdminTable() {
       title: 'User Details',
       html: `
         <div style="text-align: left;">
-          <p><strong>User Name:</strong> ${user.user_name}</p>
+          <p><strong>User Name:</strong> ${user.name}</p>
           <p><strong>Email:</strong> ${user.email}</p>
           <p><strong>Phone Number:</strong> ${user.phone_number}</p>
-          <p><strong>Branch Name:</strong> ${user.branch ? user.branch.name : 'N/A'}</p>
+          <p><strong>Branch Name:</strong> ${user.branch ? user.branch.branch_name : 'N/A'}</p>
           <p><strong>Year:</strong> ${user.year}</p>
-          <p><strong>Student Code:</strong> ${user.student_code}</p>
           <p><strong>Role:</strong> ${user.role}</p>
-          <p><strong>Create Date:</strong> ${user.createdate}</p>
-          <p><strong>Update Date:</strong> ${user.updatedate}</p>
+          <p><strong>Create Date:</strong> ${user.createdAt}</p>
+          <p><strong>Update Date:</strong> ${user.updatedAt}</p>
         </div>
       `,
       icon: 'info'
@@ -163,7 +162,7 @@ function AdminTable() {
           {users.map((user, index) => (
             <tr key={`${user._id}-${index}`} className={index % 2 === 0 ? "bg-gray-50 cursor-pointer" : " cursor-pointer"} onClick={() => handleRowClick(user)}>
               <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{user.user_name}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{user.name}</td>
               <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
               <td className="px-6 py-4 whitespace-nowrap">{user.role}</td>
               <td className="px-6 py-4 whitespace-nowrap">
