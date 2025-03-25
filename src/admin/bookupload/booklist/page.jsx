@@ -56,6 +56,10 @@ function BookList() {
         // Check for both possible data structures
         const books = Array.isArray(result.data) ? result.data : (result.data?.books || []);
         console.log("Fetched books:", books);
+        // Look at the first book's branch data structure for debugging
+        if (books.length > 0) {
+          console.log("First book branch structure:", books[0].branch_id);
+        }
         setBooks(books);
         setBookCount(books.length);
       } else {
@@ -339,6 +343,31 @@ function BookList() {
     return text.substring(0, maxLength) + "...";
   };
 
+  // Helper function to safely get branch name
+  const getBranchName = (branchId) => {
+    if (!branchId) return "N/A";
+    
+    // If branchId is an object with branch_name property, use that directly
+    if (typeof branchId === 'object') {
+      if (branchId.branch_name) return branchId.branch_name;
+      if (branchId.name) return branchId.name;
+      
+      // If we only have the ID, find the branch in our branches array
+      if (branchId._id && branches.length > 0) {
+        const foundBranch = branches.find(branch => branch._id === branchId._id);
+        if (foundBranch) return foundBranch.branch_name;
+      }
+    }
+    
+    // If it's a string ID, try to find it in our branches array
+    if (typeof branchId === 'string' && branches.length > 0) {
+      const foundBranch = branches.find(branch => branch._id === branchId);
+      if (foundBranch) return foundBranch.branch_name;
+    }
+    
+    return "Unknown Branch";
+  };
+
   return (
     <AdminBookLayout>
       <div className="container mx-auto p-4 w-full">
@@ -387,7 +416,9 @@ function BookList() {
                       {truncateText(book.title, 60)}
                     </td>
                     <td className="py-2 px-4 border-b text-center">{book.author}</td>
-                    <td className="py-2 px-4 border-b text-center">{book.branch_id?.branch_name || "N/A"}</td>
+                    <td className="py-2 px-4 border-b text-center">
+                      {getBranchName(book.branch_id)}
+                    </td>
                     <td className="py-2 px-4 border-b text-center">{book.year}</td>
                     <td className="py-2 px-4 border-b text-center">
                       <button

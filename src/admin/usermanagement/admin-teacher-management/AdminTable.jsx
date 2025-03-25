@@ -4,60 +4,54 @@ import React, { useEffect, useState } from 'react';
 import { FaTrashAlt } from 'react-icons/fa'; // Import React Icon
 import Swal from 'sweetalert2'; // Import SweetAlert
 import { API_BASE_URL } from '../../../utils/api'; // Import API base URL
-
-function getToken() {
-  // Implement the logic to retrieve the token, e.g., from localStorage or a cookie
-  return localStorage.getItem('authToken');
-}
+import { getAuthToken } from '../../../utils/auth'; // Import the auth utility
 
 function AdminTable() {
-  const [users, setUsers] = useState([]);
+  const [adminUsers, setAdminUsers] = useState([]);
 
   useEffect(() => {
-    const fetchAdmins = async () => {
-      try {
-        const myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
-        const token = getToken();
-        if (token) {
-          myHeaders.append("Authorization", `Bearer ${token}`);
-        }
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    const token = getAuthToken(); // Use the imported function
+    
+    if (token) {
+      console.log("Found admin table token, length:", token.length);
+      myHeaders.append("Authorization", `Bearer ${token}`);
+    } else {
+      console.warn("No authentication token found for admin table, API call will likely fail");
+    }
 
-        const requestOptions = {
-          method: "GET",
-          headers: myHeaders,
-          redirect: "follow"
-        };
-
-        const response = await fetch(`${API_BASE_URL}/users/admins`, requestOptions);
-        
-        if (!response.ok) {
-          if (response.status === 401) {
-            throw new Error('Unauthorized');
-          }
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        
-        const result = await response.json();
-        console.log("Response received:", result);
-        
-        if (result.success && result.data && Array.isArray(result.data.admins)) {
-          setUsers(result.data.admins);
-        } else {
-          console.error("Unexpected response format:", result);
-          setUsers([]);
-        }
-      } catch (error) {
-        if (error.message === 'Unauthorized') {
-          console.error("Unauthorized access - invalid token");
-        } else {
-          console.error("Error fetching users:", error);
-        }
-        setUsers([]);
-      }
+    const requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow"
     };
 
-    fetchAdmins();
+    fetch(`${API_BASE_URL}/users/admins`, requestOptions)
+      .then((response) => {
+        if (response.status === 401) {
+          throw new Error('Unauthorized');
+        }
+        return response.json();
+      })
+      .then((result) => {
+        console.log("Admin response received:", result);
+        if (result.success && Array.isArray(result.data?.admins)) {
+          setAdminUsers(result.data.admins);
+        } else {
+          console.error("Unexpected admin response format:", result);
+          setAdminUsers([]);
+        }
+      })
+      .catch((error) => {
+        if (error.message === 'Unauthorized') {
+          console.error("Unauthorized access - invalid token for admins");
+          // We don't need to show another error message here as the teacher management page will handle it
+        } else {
+          console.error("Error fetching admin users:", error);
+        }
+        setAdminUsers([]);
+      });
   }, []);
 
   const handleDelete = (userId) => {
@@ -86,7 +80,7 @@ function AdminTable() {
       if (result.isConfirmed) {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-        const token = getToken();
+        const token = getAuthToken();
         if (token) {
           myHeaders.append("Authorization", `Bearer ${token}`);
         }
@@ -101,7 +95,7 @@ function AdminTable() {
           .then((response) => response.text())
           .then((result) => {
             console.log(result);
-            setUsers(users.filter(user => user._id !== userId));
+            setAdminUsers(adminUsers.filter(user => user._id !== userId));
             Swal.fire({
               title: 'Deleted!',
               text: 'The user has been deleted.',
@@ -126,17 +120,15 @@ function AdminTable() {
 
   const handleRowClick = (user) => {
     Swal.fire({
-      title: 'User Details',
+      title: 'Admin Details',
       html: `
         <div style="text-align: left;">
-          <p><strong>User Name:</strong> ${user.name}</p>
-          <p><strong>Email:</strong> ${user.email}</p>
-          <p><strong>Phone Number:</strong> ${user.phone_number}</p>
-          <p><strong>Branch Name:</strong> ${user.branch ? user.branch.branch_name : 'N/A'}</p>
-          <p><strong>Year:</strong> ${user.year}</p>
-          <p><strong>Role:</strong> ${user.role}</p>
-          <p><strong>Create Date:</strong> ${user.createdAt}</p>
-          <p><strong>Update Date:</strong> ${user.updatedAt}</p>
+          <p><strong>User Name:</strong> ${user.name || 'N/A'}</p>
+          <p><strong>Email:</strong> ${user.email || 'N/A'}</p>
+          <p><strong>Phone Number:</strong> ${user.phone_number || 'N/A'}</p>
+          <p><strong>Role:</strong> ${user.role || 'N/A'}</p>
+          <p><strong>Created At:</strong> ${user.createdAt || 'N/A'}</p>
+          <p><strong>Updated At:</strong> ${user.updatedAt || 'N/A'}</p>
         </div>
       `,
       icon: 'info'
@@ -146,10 +138,10 @@ function AdminTable() {
   const isAdmin = true; // Replace with actual logic to determine if the user is an admin
 
   return (
-      <div>
-        <div>Admin Table</div>
+    <div className="mt-10">
+      <h2 className="text-xl font-semibold mb-4">Admin Users</h2>
       <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-green-600">
+        <thead className="bg-blue-600">
           <tr>
             <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">#</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">User Name</th>
@@ -159,12 +151,14 @@ function AdminTable() {
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {users.map((user, index) => (
-            <tr key={`${user._id}-${index}`} className={index % 2 === 0 ? "bg-gray-50 cursor-pointer" : " cursor-pointer"} onClick={() => handleRowClick(user)}>
+          {adminUsers.map((user, index) => (
+            <tr key={`${user._id || index}-${index}`} 
+                className={index % 2 === 0 ? "bg-gray-50 cursor-pointer" : "cursor-pointer"} 
+                onClick={() => handleRowClick(user)}>
               <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
               <td className="px-6 py-4 whitespace-nowrap">{user.name}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{user.role}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{user.email || 'N/A'}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{user.role || 'N/A'}</td>
               <td className="px-6 py-4 whitespace-nowrap">
                 {isAdmin && index !== 0 && (
                   <button onClick={(e) => { 
@@ -179,10 +173,16 @@ function AdminTable() {
               </td>
             </tr>
           ))}
+          {adminUsers.length === 0 && (
+            <tr>
+              <td colSpan="4" className="px-6 py-4 text-center text-gray-500">
+                No admin users found
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
-    
-      </div>
+    </div>
   );
 }
 

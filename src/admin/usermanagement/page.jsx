@@ -5,10 +5,7 @@ import UserManagementLayout from './UserManagementLayout';
 import { FaTrashAlt } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import { API_BASE_URL } from '../../utils/api';
-
-function getToken() {
-  return localStorage.getItem('authToken');
-}
+import { getAuthToken } from '../../utils/auth'; // Import the getAuthToken from auth.js
 
 function UserMagementPage() {
   const [users, setUsers] = useState([]);
@@ -16,9 +13,14 @@ function UserMagementPage() {
   useEffect(() => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-    const token = getToken();
+    // Use the imported getAuthToken function instead
+    const token = getAuthToken(); 
+    
     if (token) {
+      console.log("Found token, length:", token.length);
       myHeaders.append("Authorization", `Bearer ${token}`);
+    } else {
+      console.warn("No authentication token found, API call will likely fail");
     }
 
     const requestOptions = {
@@ -46,6 +48,15 @@ function UserMagementPage() {
       .catch((error) => {
         if (error.message === 'Unauthorized') {
           console.error("Unauthorized access - invalid token");
+          Swal.fire({
+            title: 'Authentication Error',
+            text: 'Your session has expired or you do not have permission to access this resource.',
+            icon: 'error',
+            confirmButtonText: 'Login Again'
+          }).then(() => {
+            // Redirect to login page
+            window.location.href = "/login";
+          });
         } else {
           console.error("Error fetching users:", error);
         }
@@ -71,7 +82,8 @@ function UserMagementPage() {
       if (result.isConfirmed) {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-        myHeaders.append("Authorization", `Bearer ${getToken()}`);
+        // Use imported function here as well
+        myHeaders.append("Authorization", `Bearer ${getAuthToken()}`);
 
         const requestOptions = {
           method: "DELETE",

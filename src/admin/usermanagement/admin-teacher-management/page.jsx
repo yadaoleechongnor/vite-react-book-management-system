@@ -7,11 +7,7 @@ import Swal from 'sweetalert2'; // Import SweetAlert
 import AdminTable from "./AdminTable"
 import AddTeacherAdmin from "./AddTeacher-Admin"
 import { API_BASE_URL } from '../../../utils/api';
-
-function getToken() {
-  // Implement the logic to retrieve the token, e.g., from localStorage or a cookie
-  return localStorage.getItem('authToken');
-}
+import { getAuthToken } from '../../../utils/auth'; // Import the auth utility
 
 function AddminTeacherManagement() {
   const [users, setUsers] = useState([]);
@@ -22,9 +18,13 @@ function AddminTeacherManagement() {
   useEffect(() => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-    const token = getToken();
+    const token = getAuthToken(); // Use the imported function
+    
     if (token) {
+      console.log("Found teacher management token, length:", token.length);
       myHeaders.append("Authorization", `Bearer ${token}`);
+    } else {
+      console.warn("No authentication token found for teacher management, API call will likely fail");
     }
 
     const requestOptions = {
@@ -41,19 +41,28 @@ function AddminTeacherManagement() {
         return response.json();
       })
       .then((result) => {
-        console.log("Response received:", result);
+        console.log("Teacher response received:", result);
         if (result.success && result.data && Array.isArray(result.data.teachers)) {
           setUsers(result.data.teachers);
         } else {
-          console.error("Unexpected response format:", result);
+          console.error("Unexpected teacher response format:", result);
           setUsers([]);
         }
       })
       .catch((error) => {
         if (error.message === 'Unauthorized') {
-          console.error("Unauthorized access - invalid token");
+          console.error("Unauthorized access - invalid token for teachers");
+          // Show error message and redirect
+          Swal.fire({
+            title: 'Authentication Error',
+            text: 'Your session has expired or you do not have permission to access this resource.',
+            icon: 'error',
+            confirmButtonText: 'Login Again'
+          }).then(() => {
+            window.location.href = "/login";
+          });
         } else {
-          console.error("Error fetching users:", error);
+          console.error("Error fetching teachers:", error);
         }
         setUsers([]);
       });
@@ -61,6 +70,9 @@ function AddminTeacherManagement() {
     // Fetch branches
     const myHeadersBranches = new Headers();
     myHeadersBranches.append("Content-Type", "application/json");
+    if (token) {
+      myHeadersBranches.append("Authorization", `Bearer ${token}`);
+    }
 
     const requestOptionsBranches = {
       method: "GET",
@@ -71,8 +83,8 @@ function AddminTeacherManagement() {
     fetch(`${API_BASE_URL}/branches/`, requestOptionsBranches)
       .then((response) => response.json())
       .then((result) => {
-        console.log("Response received:", result);
-       
+        console.log("Branches response received:", result);
+        // Handle branches data if needed
       })
       .catch((error) => {
         console.error("Error fetching branches:", error);
@@ -99,7 +111,7 @@ function AddminTeacherManagement() {
       if (result.isConfirmed) {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-        const token = getToken();
+        const token = getAuthToken(); // Use the imported function
         if (token) {
           myHeaders.append("Authorization", `Bearer ${token}`);
         }

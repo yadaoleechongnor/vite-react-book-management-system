@@ -35,28 +35,74 @@ function LoginPage() {
       const result = await authLogin(email, password);
       
       if (result && result.success) {
-        // Extract role from the response data if available
-        const role = result.data?.role || determineUserRole(email);
+        // Extract token from response - handle both structures
+        const token = result.data?.token || (result.data?.data?.token || '');
         
-        // Ensure we have a token before proceeding
-        if (!result.data?.token) {
+        // Prioritize the role from the server response
+        let role;
+        // Check for nested user object first (most common structure)
+        if (result.data?.user?.role) {
+          role = result.data.user.role;
+          console.log('Using server-provided role from user object:', role);
+        }
+        // Check data.data.user.role structure
+        else if (result.data?.data?.user?.role) {
+          role = result.data.data.user.role;
+          console.log('Using server-provided nested role from user object:', role);
+        }
+        // Check for direct role property
+        else if (result.data?.role) {
+          role = result.data.role;
+          console.log('Using server-provided direct role property:', role);
+        }
+        // Fallback to email pattern detection
+        else {
+          role = determineUserRole(email);
+          console.log('Server did not provide role, determined from email:', role);
+        }
+        
+        // Debug log the found role and token
+        console.log('Final assigned role:', role);
+        console.log('Token found:', token ? 'Yes (length: ' + token.length + ')' : 'No');
+        
+        if (!token) {
           throw new Error('Authentication successful but no token received');
         }
         
+        // Set up redirect path before login updates the context
+        // This ensures we navigate with the correct role
+        let redirectPath;
+        switch(role.toLowerCase()) {  // Case-insensitive role check
+          case 'admin':
+            redirectPath = '/admin/dashboard';
+            break;
+          case 'teacher':
+            redirectPath = '/teacher/dashboard';
+            break;
+          case 'student':
+            redirectPath = '/student/bookpage';
+            break;
+          default:
+            redirectPath = '/';
+        }
+        
+        console.log(`Role determined: '${role}', redirecting to: ${redirectPath}`);
+        
         // Update context with token and role
-        login(result.data.token, role);
+        login(token, role);
         
         // Show success Sweet Alert
         Swal.fire({
           icon: 'success',
           title: 'Login Successful!',
-          text: `Welcome back! Redirecting to dashboard...`,
+          text: `Welcome back! Logged in as ${role}. Redirecting to ${redirectPath}...`,
           timer: 3000,
           timerProgressBar: true,
           showConfirmButton: false
         }).then(() => {
-          // Navigate based on user role after alert closes
-          navigate(getRedirectPath());
+          // Navigate directly to the predetermined path
+          console.log(`Navigating to: ${redirectPath}`);
+          navigate(redirectPath);
         });
       } else {
         // Display error message from the login attempt
@@ -94,11 +140,23 @@ function LoginPage() {
   
   // Helper function to determine user role based on email pattern (for demo purposes)
   const determineUserRole = (email) => {
-    if (email.includes('admin')) {
+    // Convert email to lowercase for case-insensitive matching
+    const emailLower = email.toLowerCase();
+    
+    console.log('Determining role for email:', emailLower);
+    
+    // More specific checks for roles based on email patterns
+    if (emailLower.includes('admin')) {
+      console.log('Email contains "admin", setting role as admin');
       return 'admin';
-    } else if (email.includes('teacher')) {
+    } else if (emailLower.includes('teacher') || 
+              emailLower.includes('lecturer') || 
+              emailLower.includes('professor') || 
+              emailLower.includes('instructor')) {
+      console.log('Email contains teacher-related terms, setting role as teacher');
       return 'teacher';
     } else {
+      console.log('No special patterns found, defaulting to student role');
       return 'student';
     }
   };

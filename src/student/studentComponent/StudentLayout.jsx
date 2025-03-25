@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FaBook, FaUser, FaSignOutAlt, FaHome, FaBars, FaTimes } from 'react-icons/fa';
 import StudentNavbar from './StudentNavbar';
+import GetbookBybranch from './GetbookBybranch';
 
 const StudentLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -74,39 +75,9 @@ const StudentLayout = ({ children }) => {
                   Browse Books
                 </Link>
               </li>
-              <li>
-                <Link 
-                  to="/student/borrowed" 
-                  className={`flex items-center p-2 rounded hover:bg-gray-700 ${
-                    activeMenu === '/student/borrowed' ? 'bg-gray-700' : ''
-                  }`}
-                  onClick={handleMenuClick}
-                >
-                  <FaBook className="mr-3" />
-                  My Borrowed Books
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/student/profile" 
-                  className={`flex items-center p-2 rounded hover:bg-gray-700 ${
-                    activeMenu === '/student/profile' ? 'bg-gray-700' : ''
-                  }`}
-                  onClick={handleMenuClick}
-                >
-                  <FaUser className="mr-3" />
-                  Profile
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/" 
-                  className="flex items-center p-2 rounded hover:bg-gray-700"
-                  onClick={handleMenuClick}
-                >
-                  <FaSignOutAlt className="mr-3" />
-                  Logout
-                </Link>
+            
+              <li className='text-white '>
+              <GetbookBybranch/>
               </li>
             </ul>
           </nav>

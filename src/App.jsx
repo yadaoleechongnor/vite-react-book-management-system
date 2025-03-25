@@ -24,6 +24,9 @@ import AdminResetPasswordPage from './resetpassword/AdminResetPassowrd';
 import OTPForgotPassword from './OTP/ResetPassword/ForgotPassword';
 import OTPResetPassword from './OTP/ResetPassword/ResetPassword';
 import OTPVerifyEmail from './OTP/ResetPassword/VerifyEmail';
+import Agriculture from './student/studentBranchbook/Agriculture';
+import AnimalSciense from './student/studentBranchbook/AnimalSciense';
+import ShowBookWithEachBranch from './student/studentBranchbook/ShowBookWithEachBranch';
 
 // Simple NotFound component
 const NotFound = () => (
@@ -171,7 +174,12 @@ function App() {
           <Route element={<ProtectedRoute allowedRoles={['student']} />}>
             <Route path="/student/dashboard" element={<StudentDashboard />} />
             <Route path="/student/bookpage" element={<StudentBookPage />} />
+            {/* Fix: Changed "${branchId}" to ":branchId" for proper route parameter */}
+            <Route path="/student/getbookwithbranch/:branchId" element={<ShowBookWithEachBranch />} />
+            <Route path="/student/agriculture" element={<Agriculture />} />
+            <Route path="/student/animalsciense" element={<AnimalSciense />} />
           </Route>
+         
           
  {/*--------------------------------------Student routes------------------------------------------------------------------- */}
 

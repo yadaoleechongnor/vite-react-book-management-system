@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { API_BASE_URL } from '../../../utils/api';
+import { getAuthToken } from '../../../utils/auth'; // Import the auth utility
 
 function AddTeacherAdmin() {
   const [formData, setFormData] = useState({
@@ -93,17 +94,23 @@ function AddTeacherAdmin() {
 
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-    const token = localStorage.getItem('authToken');
+    
+    // Use the imported getAuthToken function
+    const token = getAuthToken();
+    
     if (token) {
-      console.log("Token found:", token);
+      console.log("Token found, length:", token.length);
       myHeaders.append("Authorization", `Bearer ${token}`);
     } else {
       console.error("No token found. Please log in.");
       Swal.fire({
         icon: 'error',
         title: 'Authentication Error',
-        text: 'No token found. Please log in.',
+        text: 'Your session has expired or you are not logged in. Please login again.',
         showConfirmButton: true
+      }).then(() => {
+        // Redirect to login
+        window.location.href = "/login";
       });
       return;
     }

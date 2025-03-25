@@ -5,7 +5,6 @@ import { useRouter } from "next/router";
 import { FcNext } from "react-icons/fc";
 import { IoChevronBackOutline } from "react-icons/io5";
 import {
-  AiOutlineMenu,
   AiOutlineDashboard,
   AiOutlineSwap,
   AiOutlineWallet,

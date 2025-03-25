@@ -6,7 +6,7 @@ import { API_BASE_URL } from './api';
 // Save authentication token to localStorage
 export const saveAuthToken = (token) => {
   if (token) {
-    localStorage.setItem('authToken', token);
+    localStorage.setItem('token', token); // Changed from 'authToken' to 'token' to match AuthContext
     console.log("Token saved to localStorage");
     return true;
   }
@@ -15,7 +15,7 @@ export const saveAuthToken = (token) => {
 
 // Get token from localStorage
 export const getAuthToken = () => {
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem('token'); // Changed from 'authToken' to 'token' to match AuthContext
   if (!token) {
     console.log("No token found in localStorage");
     return null;
@@ -25,8 +25,10 @@ export const getAuthToken = () => {
 
 // Clear authentication token
 export const clearAuthToken = () => {
-  localStorage.removeItem('authToken');
-  console.log("Token removed from localStorage");
+  localStorage.removeItem('token'); // Changed from 'authToken' to 'token' to match AuthContext
+  localStorage.removeItem('userRole'); // Also clear the role
+  localStorage.removeItem('tokenExpiry'); // And the expiry
+  console.log("Token and role removed from localStorage");
 };
 
 // Check if user is authenticated
@@ -66,9 +68,14 @@ export const login = async (username, password) => {
     }
     
     const data = await response.json();
+    console.log("Login response:", data); // Log full response for debugging
     
     if (data.token) {
       saveAuthToken(data.token);
+      return { success: true, data };
+    } else if (data.data?.token) {
+      // Handle nested token structure
+      saveAuthToken(data.data.token);
       return { success: true, data };
     } else {
       throw new Error('No token received from server');

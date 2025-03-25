@@ -37,7 +37,7 @@ const TeacherLayout = ({ children }) => {
   return (
     <div className="teacher-layout">
       <NavbarForTeacher />
-      <main className="flex h-screen">
+      <main className="flex h-screen overflow-hidden">
         <div
           className={`h-screen left-0 bg-white shadow-lg transition-all duration-300 ease-in-out flex flex-col group
             ${isExpanded ? "w-64" : "w-16 hover:w-64"}`} // Wide by default, expands on hover when collapsed
@@ -106,13 +106,11 @@ const TeacherLayout = ({ children }) => {
             />
           </div>
         </div>
-        <div className={`transition-all duration-300 ease-in-out p-2 w-full `}>
+        <div className={`transition-all duration-300 ease-in-out p-2 w-full overflow-scroll `}>
           {children}
+      
         </div>
       </main>
-      <footer className={`ml-${isExpanded ? '64' : '16'} transition-all duration-300 ease-in-out p-2`}>
-        <p>© 2023 Teacher Portal</p>
-      </footer>
     </div>
   );
 };
