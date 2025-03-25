@@ -23,7 +23,7 @@ const UserManagementLayout = ({ children }) => {
     <AdminLayout>
     <div className="admin-layout w-full h-screen flex flex-col">
      <header className='flex p-4 justify-between bg-white rounded-full border items-center'>
-     <h1 className="text-xl">User Management</h1>
+     <h1 className="text-xl hidden md:block">User Management</h1>
         <nav className=" flex justify-end">
           <ul className="flex space-x-4">
             <li>

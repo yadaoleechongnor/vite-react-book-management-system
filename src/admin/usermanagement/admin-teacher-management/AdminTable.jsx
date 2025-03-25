@@ -140,48 +140,50 @@ function AdminTable() {
   return (
     <div className="mt-10">
       <h2 className="text-xl font-semibold mb-4">Admin Users</h2>
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-blue-600">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">#</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">User Name</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Email</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Role</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {adminUsers.map((user, index) => (
-            <tr key={`${user._id || index}-${index}`} 
-                className={index % 2 === 0 ? "bg-gray-50 cursor-pointer" : "cursor-pointer"} 
-                onClick={() => handleRowClick(user)}>
-              <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{user.name}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{user.email || 'N/A'}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{user.role || 'N/A'}</td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {isAdmin && index !== 0 && (
-                  <button onClick={(e) => { 
-                    e.stopPropagation(); 
-                    console.log("Button clicked for user:", user); // Log the entire user object
-                    console.log("Button clicked for user ID:", user._id); // Log the user ID when button is clicked
-                    handleDelete(user._id); 
-                  }} className='text-red-600 hover:text-red-900'>
-                    <FaTrashAlt className="inline-block w-5 h-5" />
-                  </button>
-                )}
-              </td>
-            </tr>
-          ))}
-          {adminUsers.length === 0 && (
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-blue-600">
             <tr>
-              <td colSpan="4" className="px-6 py-4 text-center text-gray-500">
-                No admin users found
-              </td>
+              <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">#</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">User Name</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider md:table-cell hidden">Email</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider lg:table-cell hidden">Role</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {adminUsers.map((user, index) => (
+              <tr key={`${user._id || index}-${index}`} 
+                  className={index % 2 === 0 ? "bg-gray-50 cursor-pointer" : "cursor-pointer"} 
+                  onClick={() => handleRowClick(user)}>
+                <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{user.name}</td>
+                <td className="px-6 py-4 whitespace-nowrap md:table-cell hidden">{user.email || 'N/A'}</td>
+                <td className="px-6 py-4 whitespace-nowrap lg:table-cell hidden">{user.role || 'N/A'}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {isAdmin && index !== 0 && (
+                    <button onClick={(e) => { 
+                      e.stopPropagation(); 
+                      console.log("Button clicked for user:", user); // Log the entire user object
+                      console.log("Button clicked for user ID:", user._id); // Log the user ID when button is clicked
+                      handleDelete(user._id); 
+                    }} className='text-red-600 hover:text-red-900'>
+                      <FaTrashAlt className="inline-block w-5 h-5" />
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+            {adminUsers.length === 0 && (
+              <tr>
+                <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
+                  No admin users found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

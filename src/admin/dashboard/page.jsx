@@ -20,7 +20,7 @@ const DashboardPage = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-6">
           <div className="bg-Purple-300 p-4 rounded-lg shadow">
             <h2 className="text-2xl font-semibold text-primaryPurple">178+</h2>
             <p className="text-sm text-gray-500">Save</p>
@@ -40,19 +40,19 @@ const DashboardPage = () => {
         </div>
 
         {/* Chart and Analytics Section */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="col-span-2 bg-white p-4 rounded-lg shadow">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">Overview of Latest Month</h2>
-              <div className="flex space-x-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          <div className="lg:col-span-2 bg-white p-4 rounded-lg shadow">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
+              <h2 className="text-lg font-semibold mb-2 md:mb-0">Overview of Latest Month</h2>
+              <div className="flex flex-wrap gap-2">
                 <button className="px-3 py-1 bg-gray-100 rounded-lg text-sm">Daily</button>
                 <button className="px-3 py-1 bg-gray-100 rounded-lg text-sm">Weekly</button>
                 <button className="px-3 py-1 bg-gray-100 rounded-lg text-sm">Monthly</button>
                 <button className="px-3 py-1 bg-gray-100 rounded-lg text-sm">Yearly</button>
               </div>
             </div>
-            <div className="flex justify-between mb-4">
-              <div>
+            <div className="flex flex-col sm:flex-row justify-between mb-4">
+              <div className="mb-2 sm:mb-0">
                 <p className="text-2xl font-semibold">$6468.96</p>
                 <p className="text-sm text-gray-500">Current Month Earnings</p>
               </div>
@@ -72,12 +72,12 @@ const DashboardPage = () => {
                 <p className="text-2xl font-semibold">80%</p>
               </div>
             </div>
-            <div className="flex justify-around mt-4">
-              <div className="flex items-center">
+            <div className="flex flex-col sm:flex-row justify-around mt-4">
+              <div className="flex items-center mb-2 sm:mb-0">
                 <div className="w-4 h-4 bg-primaryPurple rounded-full mr-2"></div>
                 <span>Sale</span>
               </div>
-              <div className="flex items-center">
+              <div className="flex items-center mb-2 sm:mb-0">
                 <div className="w-4 h-4 bg-orange rounded-full mr-2"></div>
                 <span>Distribute</span>
               </div>
@@ -90,7 +90,7 @@ const DashboardPage = () => {
         </div>
 
         {/* Summary and Recent Activities */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           
           <div className="bg-white p-4 rounded-lg shadow">
             <h2 className="text-lg font-semibold mb-4">Recent Activities</h2>
@@ -118,9 +118,9 @@ const DashboardPage = () => {
               </li>
             </ul>
           </div>
-          <div className="col-span-2 bg-white p-4 rounded-lg shadow">
+          <div className="md:col-span-2 bg-white p-4 rounded-lg shadow">
             <h2 className="text-lg font-semibold mb-4">Last Month Summary</h2>
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="p-4 bg-lightPink rounded-lg">
                 <p className="text-sm text-gray-500">Wallet Balance</p>
                 <p className="text-xl font-semibold">$357.80</p>
@@ -142,13 +142,13 @@ const DashboardPage = () => {
         </div>
 
         {/* Orders Table */}
-        <div className="bg-white p-4 rounded-lg shadow">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold">Order of Latest Month</h2>
+        <div className="bg-white p-4 rounded-lg shadow overflow-x-auto">
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold mb-2 sm:mb-0">Order of Latest Month</h2>
             <input
               type="text"
               placeholder="Search"
-              className="border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-primaryPurple"
+              className="border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-primaryPurple w-full sm:w-auto"
             />
           </div>
           <table className="w-full text-left">

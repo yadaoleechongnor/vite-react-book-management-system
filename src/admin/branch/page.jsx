@@ -270,16 +270,16 @@ export default function BranchPage() {
                 {loading ? (
                     <p>Loading...</p>
                 ) : (
-                    <div className="bg-white p-4 rounded-lg shadow-md">
+                    <div className="bg-white p-4 rounded-lg shadow-md overflow-x-auto">
                         <table className="w-full">
                             <thead>
                                 <tr className="bg-gray-100">
                                     <th className="py-2 px-4 text-left">#</th>
                                     <th className="py-2 px-4 text-left">Branch</th>
-                                    <th className="py-2 px-4 text-left">Department</th>
-                                    <th className="py-2 px-4 text-left">Faculty</th>
-                                    <th className="py-2 px-4 text-left">Created At</th>
-                                    <th className="py-2 px-4 text-left">Updated At</th>
+                                    <th className="py-2 px-4 text-left md:table-cell hidden">Department</th>
+                                    <th className="py-2 px-4 text-left lg:table-cell hidden">Faculty</th>
+                                    <th className="py-2 px-4 text-left lg:table-cell hidden">Created At</th>
+                                    <th className="py-2 px-4 text-left md:table-cell hidden">Updated At</th>
                                     <th className="py-2 px-4 text-left">Actions</th>
                                 </tr>
                             </thead>
@@ -288,10 +288,10 @@ export default function BranchPage() {
                                     <tr key={branch._id} className="border-t hover:bg-gray-50">
                                         <td className="py-3 px-4">{index + 1}</td>
                                         <td className="py-3 px-4">{branch.branch_name}</td>
-                                        <td className="py-3 px-4">{branch.department_id?.department_name || 'N/A'}</td>
-                                        <td className="py-3 px-4">{branch.department_id?.faculties_id?.faculties_name || 'N/A'}</td>
-                                        <td className="py-3 px-4">{new Date(branch.createdAt).toLocaleDateString()}</td>
-                                        <td className="py-3 px-4">{new Date(branch.updatedAt).toLocaleDateString()}</td>
+                                        <td className="py-3 px-4 md:table-cell hidden">{branch.department_id?.department_name || 'N/A'}</td>
+                                        <td className="py-3 px-4 lg:table-cell hidden">{branch.department_id?.faculties_id?.faculties_name || 'N/A'}</td>
+                                        <td className="py-3 px-4 lg:table-cell hidden">{new Date(branch.createdAt).toLocaleDateString()}</td>
+                                        <td className="py-3 px-4 md:table-cell hidden">{new Date(branch.updatedAt).toLocaleDateString()}</td>
                                         <td className="py-3 px-4 flex space-x-2">
                                             <button className="text-blue-500 hover:text-blue-700" onClick={() => handleEditBranch(branch._id, branch.branch_name, branch.department_id._id)}>
                                                 <FaEdit />

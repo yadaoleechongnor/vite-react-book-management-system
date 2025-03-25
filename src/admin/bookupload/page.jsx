@@ -254,11 +254,11 @@ const BookUpload = () => {
 
   return (
     <AdminBookLayout className="w-full">
-      <form onSubmit={handleSubmit} className="p-6 bg-white rounded-lg shadow-md w-full max-w-[70%] mx-auto">
+      <form onSubmit={handleSubmit} className="p-4 sm:p-6 bg-white rounded-lg shadow-md w-full max-w-[95%] sm:max-w-[90%] md:max-w-[80%] lg:max-w-[70%] mx-auto">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">Upload Files</h2>
-        <div className="grid grid-cols-3 gap-4">
-          <div>
-            <div className="col-span-1 flex flex-col justify-center items-center border-4 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer bg-gray-50 w-full h-64">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="col-span-1">
+            <div className="flex flex-col justify-center items-center border-4 border-dashed border-gray-300 rounded-lg p-4 sm:p-6 text-center cursor-pointer bg-gray-50 w-full h-48 sm:h-64">
               <input
                 type="file"
                 accept="application/pdf"
@@ -268,18 +268,18 @@ const BookUpload = () => {
                 id="fileInput"
               />
               
-              <label htmlFor="fileInput" className="block text-lg font-medium text-gray-700">
+              <label htmlFor="fileInput" className="block text-base sm:text-lg font-medium text-gray-700">
                 {file ? file.name : "Drop files here or click to upload"}
               </label>
               
             </div>
             {preview && (
               <div className="mt-4">
-                <embed src={preview} type="application/pdf" width="100%" height="400px" className="rounded-md shadow" />
+                <embed src={preview} type="application/pdf" width="100%" height="300px" className="rounded-md shadow" />
               </div>
             )}
           </div>
-          <div className="col-span-2 space-y-4">
+          <div className="col-span-1 md:col-span-1 lg:col-span-2 space-y-4">
             <div>
               <label className="block text-lg font-medium text-gray-700">Title</label>
               <input
@@ -287,7 +287,7 @@ const BookUpload = () => {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required
-                className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
+                className="mt-1 block w-full h-10 sm:h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
               />
             </div>
             <div>
@@ -297,7 +297,7 @@ const BookUpload = () => {
                 value={author}
                 onChange={(e) => setAuthor(e.target.value)}
                 required
-                className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
+                className="mt-1 block w-full h-10 sm:h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
               />
             </div>
             <div>
@@ -306,7 +306,7 @@ const BookUpload = () => {
                 value={branchId}
                 onChange={(e) => setBranchId(e.target.value)}
                 required
-                className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
+                className="mt-1 block w-full h-10 sm:h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
               >
                 <option value="">Select Branch</option>
                 {branches.map(branch => (
@@ -323,7 +323,7 @@ const BookUpload = () => {
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
                 required
-                className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
+                className="mt-1 block w-full h-10 sm:h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
               />
             </div>
             <div>
@@ -332,13 +332,13 @@ const BookUpload = () => {
                 value={abstract}
                 onChange={(e) => setAbstract(e.target.value)}
                 required
-                className="mt-1 block w-full h-32 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
+                className="mt-1 block w-full h-24 sm:h-32 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
               />
             </div>
           </div>
         </div>
        
-        <div className="flex justify-end space-x-2 mt-4">
+        <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2 mt-4">
           <button type="button" className="bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300">
             Cancel
           </button>

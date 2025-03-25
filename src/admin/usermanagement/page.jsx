@@ -140,40 +140,44 @@ function UserMagementPage() {
 
   return (
     <UserManagementLayout>
-      <div>hi from the user management</div>
-      <table className="min-w-full divide-y  divide-gray-200">
-        <thead className="bg-green-600">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">#</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">User Name</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Email</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Role</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {users.map((user, index) => (
-            <tr key={`${user._id}-${index}`} className={index % 2 === 0 ? "bg-gray-50 cursor-pointer" : " cursor-pointer "} onClick={() => handleRowClick(user)}>
-              <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{user.user_name}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{user.role}</td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {user.role !== 'admin' && (
-                  <button onClick={(e) => { 
-                    e.stopPropagation(); 
-                    console.log("Button clicked for user:", user);
-                    console.log("Button clicked for user ID:", user._id);
-                    handleDelete(user._id); 
-                  }} className='text-red-600 hover:text-red-900'>
-                    <FaTrashAlt className="inline-block w-5 h-5" />
-                  </button>
-                )}
-              </td>
+      <div className="pb-4 font-semibold text-lg">User Management Dashboard</div>
+      <div className="overflow-x-auto shadow-md sm:rounded-lg">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-green-600">
+            <tr>
+              <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">#</th>
+              {/* Increased minimum width to allow for longer names */}
+              <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[200px]">User Name</th>
+              <th className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Email</th>
+              <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Role</th>
+              <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider w-14 sm:w-20">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {users.map((user, index) => (
+              <tr key={`${user._id}-${index}`} className={index % 2 === 0 ? "bg-gray-50 cursor-pointer" : "cursor-pointer"} onClick={() => handleRowClick(user)}>
+                <td className="px-2 sm:px-4 py-3 whitespace-nowrap">{index + 1}</td>
+                {/* Removed truncate class and improved styling to show full name */}
+                <td className="px-3 sm:px-6 py-3 break-words">{user.name}</td>
+                <td className="hidden md:table-cell px-6 py-3 whitespace-nowrap">{user.email}</td>
+                <td className="hidden lg:table-cell px-6 py-3 whitespace-nowrap">{user.role}</td>
+                <td className="px-2 sm:px-4 py-3 whitespace-nowrap">
+                  {user.role !== 'admin' && (
+                    <button onClick={(e) => { 
+                      e.stopPropagation();
+                      console.log("Button clicked for user:", user);
+                      console.log("Button clicked for user ID:", user._id);
+                      handleDelete(user._id); 
+                    }} className='text-red-600 hover:text-red-900'>
+                      <FaTrashAlt className="inline-block w-4 h-4 sm:w-5 sm:h-5" />
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </UserManagementLayout>
   );
 }

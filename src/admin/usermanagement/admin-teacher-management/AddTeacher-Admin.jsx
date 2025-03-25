@@ -175,7 +175,7 @@ function AddTeacherAdmin() {
       </div>
       {showForm && (
         <form onSubmit={handleSubmit} className="bg-white p-4 mt-8 shadow-md rounded px-8 pt-6 pb-8 mb-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="mb-4">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
                 Name
@@ -260,7 +260,7 @@ function AddTeacherAdmin() {
                 required
               />
             </div>
-            <div className="mb-4 col-span-2">
+            <div className="mb-4 col-span-1 sm:col-span-2">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="role">
                 Role
               </label>

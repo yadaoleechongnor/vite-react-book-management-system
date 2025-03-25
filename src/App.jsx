@@ -27,6 +27,8 @@ import OTPVerifyEmail from './OTP/ResetPassword/VerifyEmail';
 import Agriculture from './student/studentBranchbook/Agriculture';
 import AnimalSciense from './student/studentBranchbook/AnimalSciense';
 import ShowBookWithEachBranch from './student/studentBranchbook/ShowBookWithEachBranch';
+import TeacherBookEditePage from './teacher/TeacherComponent/BookEdite';
+import TeacherOwnBookPage from './teacher/TeacherComponent/TeacherOwnBook';
 
 // Simple NotFound component
 const NotFound = () => (
@@ -163,6 +165,8 @@ function App() {
             <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
             <Route path="/teacher/bookpage" element={<BookPage />} />
             <Route path="/teacher/uploadbook" element={<TeacherUploadPage />} />
+            <Route path="/teacher/bookpage/edit/:bookId" element={<TeacherBookEditePage />} />
+            <Route path="/teacher/teacherownerbook" element={<TeacherOwnBookPage />} />
           </Route>
           
  {/*--------------------------------------Teacher Routes------------------------------------------------------------------- */}

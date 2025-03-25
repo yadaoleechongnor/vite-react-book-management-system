@@ -208,8 +208,8 @@ function AddminTeacherManagement() {
           <tr>
             <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">#</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">User Name</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Email</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Role</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider md:table-cell hidden">Email</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider lg:table-cell hidden">Role</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
           </tr>
         </thead>
@@ -218,8 +218,8 @@ function AddminTeacherManagement() {
             <tr key={`${user._id}-${index}`} className={index % 2 === 0 ? "bg-gray-50 cursor-pointer" : "cursor-pointer"} onClick={() => handleRowClick(user)}>
               <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
               <td className="px-6 py-4 whitespace-nowrap">{user.name}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{user.role}</td>
+              <td className="px-6 py-4 whitespace-nowrap md:table-cell hidden">{user.email}</td>
+              <td className="px-6 py-4 whitespace-nowrap lg:table-cell hidden">{user.role}</td>
               <td className="px-6 py-4 whitespace-nowrap">
                 {isAdmin && (
                   <button onClick={(e) => { 

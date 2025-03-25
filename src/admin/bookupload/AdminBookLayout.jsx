@@ -23,7 +23,7 @@ const AdminBookLayout = ({ children }) => {
     <AdminLayout>
       <div className="admin-layout h-screen flex flex-col w-full">
         <header className="flex p-4 justify-between items-center bg-white rounded-full border ">
-          <h1 className="text-xl">Book Management</h1>
+          <h1 className="text-xl hidden md:block ">Book Management</h1>
           <nav className=" flex justify-end">
             <ul className="flex space-x-4">
               <li>

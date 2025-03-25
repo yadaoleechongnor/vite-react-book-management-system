@@ -167,8 +167,8 @@ export default function FacultyPage() {
                         <tr className="bg-gray-100">
                             {/* <th className="py-2 px-4 border-b">ID</th> */}
                             <th className="py-2 px-4 border-b text-center">Name</th>
-                            <th className="py-2 px-4 border-b text-center">Created At</th>
-                            <th className="py-2 px-4 border-b text-center">Updated At</th>
+                            <th className="py-2 px-4 border-b text-center hidden md:table-cell">Created At</th>
+                            <th className="py-2 px-4 border-b text-center hidden lg:table-cell">Updated At</th>
                             <th className="py-2 px-4 border-b text-center">Actions</th>
                         </tr>
                     </thead>
@@ -177,8 +177,8 @@ export default function FacultyPage() {
                             <tr key={faculty._id} className="hover:bg-gray-50">
                                 {/* <td className="py-2 px-4 border-b text-center">{faculty._id}</td> */}
                                 <td className="py-2 px-4 border-b text-center">{faculty.faculties_name}</td>
-                                <td className="py-2 px-4 border-b text-center">{new Date(faculty.createdAt).toLocaleDateString()}</td>
-                                <td className="py-2 px-4 border-b text-center">{new Date(faculty.updatedAt).toLocaleDateString()}</td>
+                                <td className="py-2 px-4 border-b text-center hidden md:table-cell">{new Date(faculty.createdAt).toLocaleDateString()}</td>
+                                <td className="py-2 px-4 border-b text-center hidden lg:table-cell">{new Date(faculty.updatedAt).toLocaleDateString()}</td>
                                 <td className="py-2 px-4 border-b text-center">
                                     <button 
                                         className="text-blue-500 hover:text-blue-700 mr-2"

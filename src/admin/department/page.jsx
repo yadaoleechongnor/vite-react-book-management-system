@@ -232,43 +232,45 @@ export default function DepartmentPage() {
                     Add Department
                 </button>
                 <p className="mt-4">Total Departments: {countDepartments()}</p>
-                <table className="min-w-full bg-white border mt-6 border-gray-200">
-                    <thead>
-                        <tr className="bg-gray-100">
-                            <th className="py-2 px-4 border-b text-start ">#</th>
-                            <th className="py-2 px-4 border-b  ">Department</th>
-                            <th className="py-2 px-4 border-b ">Faculty</th>
-                            <th className="py-2 px-4 border-b ">Created At</th>
-                            <th className="py-2 px-4 border-b ">Updated At</th>
-                            <th className="py-2 px-4 border-b text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {departments.map((department, index) => (
-                            <tr key={department._id} className="hover:bg-gray-50">
-                                <td className="py-2 px-4 border-b text-center">{index + 1}</td>
-                                <td className="py-2 px-4 border-b ">{department.department_name}</td>
-                                <td className="py-2 px-4 border-b ">{department.faculties_id?.faculties_name}</td>
-                                <td className="py-2 px-4 border-b text-center ">{new Date(department.createdAt).toLocaleDateString()}</td>
-                                <td className="py-2 px-4 border-b text-center ">{new Date(department.updatedAt).toLocaleDateString()}</td>
-                                <td className="py-2 px-4 border-b text-center">
-                                    <button 
-                                        className="text-blue-500 hover:text-blue-700 mr-2"
-                                        onClick={() => handleEditDepartment(department._id, department.department_name, department.faculty?._id)}
-                                    >
-                                        <FaEdit />
-                                    </button>
-                                    <button 
-                                        className="text-red-500 hover:text-red-700"
-                                        onClick={() => handleDeleteDepartment(department._id)}
-                                    >
-                                        <FaTrash />
-                                    </button>
-                                </td>
+                <div className="overflow-x-auto">
+                    <table className="min-w-full bg-white border mt-6 border-gray-200">
+                        <thead>
+                            <tr className="bg-gray-100">
+                                <th className="py-2 px-4 border-b text-start">#</th>
+                                <th className="py-2 px-4 border-b">Department</th>
+                                <th className="py-2 px-4 border-b md:table-cell hidden">Faculty</th>
+                                <th className="py-2 px-4 border-b lg:table-cell hidden">Created At</th>
+                                <th className="py-2 px-4 border-b lg:table-cell hidden">Updated At</th>
+                                <th className="py-2 px-4 border-b text-center">Actions</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {departments.map((department, index) => (
+                                <tr key={department._id} className="hover:bg-gray-50">
+                                    <td className="py-2 px-4 border-b text-center">{index + 1}</td>
+                                    <td className="py-2 px-4 border-b">{department.department_name}</td>
+                                    <td className="py-2 px-4 border-b md:table-cell hidden">{department.faculties_id?.faculties_name}</td>
+                                    <td className="py-2 px-4 border-b text-center lg:table-cell hidden">{new Date(department.createdAt).toLocaleDateString()}</td>
+                                    <td className="py-2 px-4 border-b text-center lg:table-cell hidden">{new Date(department.updatedAt).toLocaleDateString()}</td>
+                                    <td className="py-2 px-4 border-b text-center">
+                                        <button 
+                                            className="text-blue-500 hover:text-blue-700 mr-2"
+                                            onClick={() => handleEditDepartment(department._id, department.department_name, department.faculty?._id)}
+                                        >
+                                            <FaEdit />
+                                        </button>
+                                        <button 
+                                            className="text-red-500 hover:text-red-700"
+                                            onClick={() => handleDeleteDepartment(department._id)}
+                                        >
+                                            <FaTrash />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </AdminLayout>
     );
