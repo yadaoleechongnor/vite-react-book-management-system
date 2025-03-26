@@ -325,12 +325,10 @@ function StudentBookPage() {
           <div className="w-full flex flex-col gap-2">
             {(book.book_file?.url || book.fileUrl || book.pdf || book.download_url) ? (
               <a
-                href={book.book_file?.url || book.fileUrl || book.pdf || book.download_url}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={`/student/viewbookpage/${book.id || book._id}`}
                 className="mt-auto px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-lg w-full text-center"
               >
-                View
+                View Details
               </a>
             ) : (
               <span className="mt-auto px-3 py-1 bg-gray-300 text-gray-600 rounded-lg w-full text-center">

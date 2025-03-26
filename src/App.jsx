@@ -32,6 +32,7 @@ import TeacherOwnBookPage from './teacher/TeacherComponent/TeacherOwnBook';
 import BookAsUser from './admin/bookupload/booklist/BookAsuser';
 import AdminOwnBookPage from './admin/bookupload/booklist/AdminOwnBook';
 import AdminBookUpdate from './admin/AdminComponents/AdminBookEdite';
+import StudentViewBookPage from './student/studentComponent/ViewBook';
 
 // Simple NotFound component
 const NotFound = () => (
@@ -185,7 +186,7 @@ function App() {
           <Route element={<ProtectedRoute allowedRoles={['student']} />}>
             <Route path="/student/dashboard" element={<StudentDashboard />} />
             <Route path="/student/bookpage" element={<StudentBookPage />} />
-            {/* Fix: Changed "${branchId}" to ":branchId" for proper route parameter */}
+            <Route path="/student/viewbookpage/:bookId" element={<StudentViewBookPage />} />
             <Route path="/student/getbookwithbranch/:branchId" element={<ShowBookWithEachBranch />} />
             {/* <Route path="/student/agriculture" element={<Agriculture />} />
             <Route path="/student/animalsciense" element={<AnimalSciense />} /> */}
