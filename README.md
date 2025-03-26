@@ -382,3 +382,11 @@ export default StudentBookPage;
 
 
 
+the scripts package of deploy the do man railway:
+  "scripts": {
+  "dev": "vite",
+  "build": "vite build",
+  "lint": "eslint .",
+  "preview": "vite preview",
+  "start": "vite preview"
+},

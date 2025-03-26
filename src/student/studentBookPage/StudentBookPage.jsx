@@ -10,6 +10,7 @@ function StudentBookPage() {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [downloadStatus, setDownloadStatus] = useState({});
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -220,6 +221,83 @@ function StudentBookPage() {
     return title;
   };
 
+  // Function to handle book download and record
+  const handleDownload = async (bookId) => {
+    try {
+      // Set download status to "loading" for this book
+      setDownloadStatus(prev => ({...prev, [bookId]: 'loading'}));
+      
+      const token = getAuthToken();
+      if (!token) throw new Error("No authentication token found");
+      
+      console.log(`Recording download for book ID: ${bookId}`);
+      
+      // First, record the download
+      const recordResponse = await fetch(`${API_BASE_URL}/downloads/books/${bookId}/record`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      if (!recordResponse.ok) {
+        throw new Error(`Failed to record download: ${recordResponse.status} ${recordResponse.statusText}`);
+      }
+      
+      const recordResult = await recordResponse.json();
+      console.log("Download recorded:", recordResult);
+      
+      // Check if we got a direct download URL
+      if (recordResult.success && recordResult.data && recordResult.data.bookUrl) {
+        // Initiate file download using the URL
+        const link = document.createElement('a');
+        link.href = recordResult.data.bookUrl;
+        link.setAttribute('download', ''); // This will preserve the original filename
+        link.setAttribute('target', '_blank');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        setDownloadStatus(prev => ({...prev, [bookId]: 'success'}));
+        
+        // Reset status after 3 seconds
+        setTimeout(() => {
+          setDownloadStatus(prev => {
+            const newStatus = {...prev};
+            delete newStatus[bookId];
+            return newStatus;
+          });
+        }, 3000);
+      } else {
+        // If direct URL not available, try the download endpoint
+        window.open(`${API_BASE_URL}/downloads/books/${bookId}/download`, '_blank');
+        setDownloadStatus(prev => ({...prev, [bookId]: 'success'}));
+        
+        // Reset status after 3 seconds
+        setTimeout(() => {
+          setDownloadStatus(prev => {
+            const newStatus = {...prev};
+            delete newStatus[bookId];
+            return newStatus;
+          });
+        }, 3000);
+      }
+    } catch (error) {
+      console.error("Error downloading book:", error);
+      setDownloadStatus(prev => ({...prev, [bookId]: 'error'}));
+      
+      // Reset error status after 5 seconds
+      setTimeout(() => {
+        setDownloadStatus(prev => {
+          const newStatus = {...prev};
+          delete newStatus[bookId];
+          return newStatus;
+        });
+      }, 5000);
+    }
+  };
+
   // Safely render book cards
   const renderBookCard = (book, index) => {
     try {
@@ -244,20 +322,60 @@ function StudentBookPage() {
             <h4 className="text-sm font-medium text-left">{truncateTitle(book.title)}</h4>
             <p className="text-sm text-gray-600 text-left">ຂຽນໂດຍ:ທ່ານ {book.author || book.writer || 'Unknown'}</p>
           </div>
-          {(book.book_file?.url || book.fileUrl || book.pdf || book.download_url) ? (
-            <a
-              href={book.book_file?.url || book.fileUrl || book.pdf || book.download_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-auto px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-lg w-full text-center"
-            >
-              View
-            </a>
-          ) : (
-            <span className="mt-auto px-3 py-1 bg-gray-300 text-gray-600 rounded-lg w-full text-center">
-              No file available
-            </span>
-          )}
+          <div className="w-full flex flex-col gap-2">
+            {(book.book_file?.url || book.fileUrl || book.pdf || book.download_url) ? (
+              <a
+                href={book.book_file?.url || book.fileUrl || book.pdf || book.download_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-auto px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-lg w-full text-center"
+              >
+                View
+              </a>
+            ) : (
+              <span className="mt-auto px-3 py-1 bg-gray-300 text-gray-600 rounded-lg w-full text-center">
+                No file available
+              </span>
+            )}
+            
+            {/* Download button */}
+            {(book.book_file?.url || book.fileUrl || book.pdf || book.download_url) && (
+              <button
+                onClick={() => handleDownload(book.id || book._id)}
+                disabled={downloadStatus[book.id || book._id] === 'loading'}
+                className={`px-3 py-1 rounded-lg w-full text-center flex items-center justify-center ${
+                  downloadStatus[book.id || book._id] === 'loading'
+                    ? 'bg-green-300 cursor-wait' 
+                    : downloadStatus[book.id || book._id] === 'error'
+                    ? 'bg-red-500 hover:bg-red-600 text-white'
+                    : downloadStatus[book.id || book._id] === 'success'
+                    ? 'bg-green-500 text-white'
+                    : 'bg-green-500 hover:bg-green-600 text-white'
+                }`}
+              >
+                {downloadStatus[book.id || book._id] === 'loading' ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Downloading...
+                  </>
+                ) : downloadStatus[book.id || book._id] === 'error' ? (
+                  'Download Failed'
+                ) : downloadStatus[book.id || book._id] === 'success' ? (
+                  'Downloaded!'
+                ) : (
+                  <>
+                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    Download
+                  </>
+                )}
+              </button>
+            )}
+          </div>
         </div>
       );
     } catch (err) {
