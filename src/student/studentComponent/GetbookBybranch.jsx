@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "../../utils/api";
 
 const GetbookBybranch = () => {
     const [branches, setBranches] = useState([]);
@@ -27,7 +28,7 @@ const GetbookBybranch = () => {
         };
 
         setLoading(true);
-        fetch("http://localhost:5000/v1/books/getbookwithbranch", requestOptions)
+        fetch(`${API_BASE_URL}/v1/books/getbookwithbranch`, requestOptions)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
