@@ -202,7 +202,8 @@ function AddminTeacherManagement() {
           </form>
         </div>
       )}
-      <div>Teacher Table</div>
+      <div className=' font-bold text-lg '>Teacher Table</div>
+      <div className='border rounded-lg shadow-2xl p-6 bg-white mt-2 '>
       <table className="min-w-full divide-y w-full divide-gray-200">
         <thead className="bg-green-600">
           <tr>
@@ -236,6 +237,7 @@ function AddminTeacherManagement() {
           ))}
         </tbody>
       </table>
+      </div>
       <div>
         <AdminTable/>
       </div>

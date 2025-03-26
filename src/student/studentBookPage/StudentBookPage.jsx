@@ -229,7 +229,7 @@ function StudentBookPage() {
       return (
         <div
           key={`${book.id || index}-${index}`}
-          className="p-4 bg-white shadow-md rounded-lg flex flex-col items-center justify-between h-full"
+          className="p-4 bg-white border border-sky-500 shadow-md rounded-lg flex flex-col items-center justify-between h-full"
         >
           <div className="mb-2 flex flex-col w-full">
             <img
@@ -272,15 +272,15 @@ function StudentBookPage() {
 
   return (
     <StudentLayout>
-      <div className="border p-6 min-h-screen bg-gradient-to-b from-[#fdf6e3] to-[#f7e8c5] flex justify-center">
-        <div className="w-full p-6 bg-[#fdf6e3] shadow-lg rounded-2xl">
+      <div className="border p-6 min-h-screen bg-white rounded-lg flex justify-center">
+        <div className="w-full p-6 rounded-2xl">
           <div className="flex justify-between items-center mb-6">
-            <button className="px-4 py-2 bg-[#e4c99b] text-white rounded-lg">Shelves</button>
-            <div className="relative w-1/2 flex">
+            <button className="px-4 py-2 hidden md:block bg-[#e4c99b] text-white rounded-lg">Shelves</button>
+            <div className="relative w-full md:w-1/2 flex">
               <input
                 type="text"
                 placeholder="Search in My Library"
-                className="p-2 pr-10 border border-gray-300 rounded-l-lg w-full"
+                className="p-2 pr-10 outline-none border border-sky-500 rounded-l-lg w-full"
                 value={searchTerm}
                 onChange={handleSearchChange}
                 onKeyPress={handleKeyPress}

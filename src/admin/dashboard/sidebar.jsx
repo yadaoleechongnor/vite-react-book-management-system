@@ -102,6 +102,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
               <FaUsers />
               <Link to="/admin/bookupload">Book management</Link>
             </li>
+          
           </ul>
         </nav>
       </aside>

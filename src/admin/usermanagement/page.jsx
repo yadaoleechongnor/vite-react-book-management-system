@@ -141,7 +141,7 @@ function UserMagementPage() {
   return (
     <UserManagementLayout>
       <div className="pb-4 font-semibold text-lg">User Management Dashboard</div>
-      <div className="overflow-x-auto shadow-md sm:rounded-lg">
+      <div className="overflow-x-auto shadow-2xl bg-white rounded-lg  p-6 ">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-green-600">
             <tr>

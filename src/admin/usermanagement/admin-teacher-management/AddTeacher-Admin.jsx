@@ -167,7 +167,7 @@ function AddTeacherAdmin() {
     <div className="max-w-md mx-auto mt-10">
       <div className="flex justify-end">
         <button 
-          className="border p-4 cursor-pointer hover:bg-gradient-to-tl hover:from-sky-300 hover:to-sky-500 rounded-full bg-gradient-to-tr from-sky-300 to-sky-500 text-white font-bold"
+          className="border p-2 md:p-3 lg:p-4 cursor-pointer hover:bg-gradient-to-tl hover:from-sky-300 hover:to-sky-500 rounded-full bg-gradient-to-tr from-sky-300 to-sky-500 text-white font-bold"
           onClick={toggleForm}
         >
           Add Teacher/Admin

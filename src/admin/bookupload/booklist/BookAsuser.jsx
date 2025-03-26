@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import TeacherLayout from "../TeacherComponent/TeacherLayout";
-import book_img from "../../../public/images/book_img.jpeg";
-import { API_BASE_URL } from "../../utils/api";
-import { getAuthToken } from "../../utils/auth"; // Import the auth utility
+import React, { useEffect, useState, useRef } from "react";
+import book_img from "../../../../public/images/book_img.jpeg";
+import { API_BASE_URL } from "../../../utils/api";
+import { getAuthToken } from "../../../utils/auth"; // Import the auth utility
+import AdminLayout from "../AdminBookLayout";
 
-function BookPage() {
+function BookAsUser() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,10 +12,57 @@ function BookPage() {
   const [searching, setSearching] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
-  // Add state for debug panel position
-  const [debugPosition, setDebugPosition] = useState({ x: 20, y: 80 });
+  const [position, setPosition] = useState({ x: null, y: null });
   const [isDragging, setIsDragging] = useState(false);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const debugPanelRef = useRef(null);
+
+  // Handle the start of dragging
+  const handleMouseDown = (e) => {
+    if (debugPanelRef.current && e.target.closest('.debug-panel-header')) {
+      setIsDragging(true);
+      
+      // Calculate the offset of the mouse pointer from the panel's top-left corner
+      const rect = debugPanelRef.current.getBoundingClientRect();
+      const offsetX = e.clientX - rect.left;
+      const offsetY = e.clientY - rect.top;
+      
+      // Store the offset as an attribute on the ref
+      debugPanelRef.current.setAttribute('data-offset-x', offsetX);
+      debugPanelRef.current.setAttribute('data-offset-y', offsetY);
+    }
+  };
+
+  // Handle the dragging motion
+  const handleMouseMove = (e) => {
+    if (isDragging && debugPanelRef.current) {
+      const offsetX = Number(debugPanelRef.current.getAttribute('data-offset-x'));
+      const offsetY = Number(debugPanelRef.current.getAttribute('data-offset-y'));
+      
+      // Calculate new position
+      const x = e.clientX - offsetX;
+      const y = e.clientY - offsetY;
+      
+      setPosition({ x, y });
+    }
+  };
+
+  // Handle the end of dragging
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // Add and remove event listeners for dragging
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
+    
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging]);
 
   // Get current user ID from API using the token
   useEffect(() => {
@@ -317,7 +364,7 @@ function BookPage() {
   // Function to handle book edit (redirect to edit page)
   const handleEditBook = (bookId) => {
     // Navigate to edit page - adjust this based on your routing solution
-    window.location.href = `/teacher/bookpage/edit/${bookId}`;
+    window.location.href = `/admin/bookupdate/${bookId}`;
   };
 
   // Function to check if current user is the uploader of the book
@@ -396,53 +443,9 @@ function BookPage() {
     return uploaderId ? `User ${String(uploaderId).substring(0, 6)}` : "Unknown User";
   };
 
-  // Add handlers for draggable debug panel
-  const handleMouseDown = (e) => {
-    e.preventDefault(); // Prevent text selection while dragging
-    setIsDragging(true);
-    // Calculate the offset between mouse position and panel position
-    const rect = e.currentTarget.getBoundingClientRect();
-    setDragOffset({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    });
-  };
-
-  const handleMouseMove = (e) => {
-    if (isDragging) {
-      // Ensure position is constrained to visible area of the screen
-      const newX = Math.max(0, Math.min(e.clientX - dragOffset.x, window.innerWidth - 150));
-      const newY = Math.max(0, Math.min(e.clientY - dragOffset.y, window.innerHeight - 100));
-      
-      setDebugPosition({
-        x: newX,
-        y: newY
-      });
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  // Add effect to handle mouse events on document
-  useEffect(() => {
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-    } else {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    }
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging]);
-
   return (
-    <TeacherLayout>
-      <div className="rounded-lg h-screen p-6 min-h-screen overflow-hidden flex justify-center">
+    <AdminLayout>
+      <div className="rounded-lg h-screen p-6 min-h-screen overflow-hidden bg-white flex justify-center">
         {/* Success Message Alert */}
         {successMessage && (
           <div className="fixed top-24 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out">
@@ -450,38 +453,35 @@ function BookPage() {
           </div>
         )}
         
-        {/* Debug info panel - keep it minimal for production */}
+        {/* Debug info panel - now draggable */}
         {process.env.NODE_ENV === 'development' && (
           <div 
-            className="fixed z-50 bg-black bg-opacity-70 text-white p-2 rounded text-xs max-w-xs overflow-hidden cursor-move shadow-lg"
+            ref={debugPanelRef}
+            className="fixed bg-black bg-opacity-70 text-white p-2 rounded text-xs z-50 max-w-xs overflow-hidden shadow-lg"
             style={{
-              position: 'fixed',
-              left: `${debugPosition.x}px`,
-              top: `${debugPosition.y}px`,
-              touchAction: 'none' // For better touch device support
+              top: position.y !== null ? `${position.y}px` : '20px',
+              left: position.x !== null ? `${position.x}px` : 'auto',
+              right: position.x !== null ? 'auto' : '20px',
+              cursor: isDragging ? 'grabbing' : 'default'
             }}
             onMouseDown={handleMouseDown}
-            onTouchStart={(e) => {
-              const touch = e.touches[0];
-              handleMouseDown({ preventDefault: () => {}, clientX: touch.clientX, clientY: touch.clientY, currentTarget: e.currentTarget });
-            }}
           >
-            <div className="p-1 bg-gray-800 mb-1 rounded select-none flex justify-between items-center">
-              <p className="font-bold select-none text-xs">Debug Panel</p>
-              <span className="text-gray-400 text-xs select-none">(drag me)</span>
-            </div>
-            <p className="select-none">Books: {books.length}</p>
-            <p className="select-none">Your Books: {books.filter(book => isBookUploader(book)).length}</p>
+            <p className="font-bold border-b pb-1 mb-1 debug-panel-header cursor-grab select-none">
+              Book Pannel
+            </p>
+            {/* <p>User ID: {currentUserId || 'Not set'}</p> */}
+            <p>Books: {books.length}</p>
+            <p>Your Books: {books.filter(book => isBookUploader(book)).length}</p>
           </div>
         )}
         
-        <div className="w-full flex flex-col overflow-auto p-6 rounded-2xl">
+        <div className="w-full flex flex-col overflow-auto p-6 bg-white rounded-2xl">
           <div className="flex justify-between items-center mb-6">
-            <button className="px-4 py-2 bg-[#e4c99b] text-white rounded-lg hidden sm:block">Shelves</button>
+            <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hidden sm:block">Shelves</button>
             <input
               type="text"
               placeholder="Search in My Library"
-              className="p-2 border w-full border-gray-300 rounded-lg max-w-1/2"
+              className="p-2 border w-full border-gray-300 rounded-lg md:w-1/2"
               value={searchTerm}
               onChange={handleSearchChange}
             />
@@ -507,7 +507,7 @@ function BookPage() {
                 return (
                 <div
                   key={`${book._id || book.id || index}-${index}`}
-                  className={`p-4 bg-white border border-sky-500 shadow-md rounded-lg flex flex-col items-center justify-between h-full ${userCanEdit ? 'ring-2 ring-yellow-400' : ''}`}
+                  className={`p-4 bg-white border  rounded-lg flex flex-col items-center justify-between h-full ${userCanEdit ? 'ring-2 ring-yellow-400' : ''}`}
                 >
                   <div className="mb-2 flex flex-col w-full">
                    
@@ -580,8 +580,8 @@ function BookPage() {
           )}
         </div>
       </div>
-    </TeacherLayout>
+      </AdminLayout>
   );
 }
 
-export default BookPage;
+export default BookAsUser;

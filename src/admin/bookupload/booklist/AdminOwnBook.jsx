@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
-import TeacherLayout from "../TeacherComponent/TeacherLayout";
-import book_img from "../../../public/images/book_img.jpeg";
-import { API_BASE_URL } from "../../utils/api";
-import { getAuthToken } from "../../utils/auth"; // Import the auth utility
+import React, { useEffect, useState, useRef } from "react";
+import book_img from "../../../../public/images/book_img.jpeg";
+import { API_BASE_URL } from "../../../utils/api";
+import { getAuthToken } from "../../../utils/auth"; // Import the auth utility
+import AdminBookLayout from "../AdminBookLayout";
 
-function BookPage() {
+function AdminOwnBookPage() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,10 +12,10 @@ function BookPage() {
   const [searching, setSearching] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
-  // Add state for debug panel position
-  const [debugPosition, setDebugPosition] = useState({ x: 20, y: 80 });
+  // Add states for debug panel position
+  const [debugPosition, setDebugPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const debugPanelRef = useRef(null);
 
   // Get current user ID from API using the token
   useEffect(() => {
@@ -153,7 +153,13 @@ function BookPage() {
   // Fetch books
   useEffect(() => {
     const fetchBooks = async () => {
+      if (!currentUserId) {
+        // Wait until we have the user ID
+        return;
+      }
+
       try {
+        setLoading(true);
         const token = getAuthToken(); // Use the imported auth utility
         if (!token) throw new Error("No authentication token found");
 
@@ -172,7 +178,28 @@ function BookPage() {
         const result = await response.json();
         
         // Check if data.books exists, otherwise try to use data directly
-        const bookData = result.data?.books || result.data || result || [];
+        let bookData = result.data?.books || result.data || result || [];
+        
+        // Filter books to only show those uploaded by the current user
+        if (Array.isArray(bookData)) {
+          bookData = bookData.filter(book => {
+            // Extract the uploader ID from the uploaded_by field
+            let uploaderId;
+            if (typeof book.uploaded_by === 'object' && book.uploaded_by !== null) {
+              uploaderId = book.uploaded_by._id || book.uploaded_by.id;
+            } else {
+              uploaderId = book.uploaded_by;
+            }
+            
+            if (!uploaderId) return false;
+            
+            // Compare with current user ID
+            const currentUserIdStr = String(currentUserId).trim().replace(/['"]/g, '');
+            const uploaderIdStr = String(uploaderId).trim().replace(/['"]/g, '');
+            
+            return currentUserIdStr === uploaderIdStr;
+          });
+        }
         
         setBooks(Array.isArray(bookData) ? bookData : []);
       } catch (error) {
@@ -183,13 +210,19 @@ function BookPage() {
       }
     };
 
-    fetchBooks();
-  }, []);
+    if (currentUserId) {
+      fetchBooks();
+    }
+  }, [currentUserId]); // Re-run when currentUserId changes
 
   // Function to search for books
   const searchBooks = async (term) => {
+    if (!currentUserId) {
+      return;
+    }
+
     if (!term.trim()) {
-      // If search term is empty, fetch all books
+      // If search term is empty, fetch all user's books
       setSearching(false);
       const fetchBooks = async () => {
         try {
@@ -209,7 +242,29 @@ function BookPage() {
           }
   
           const result = await response.json();
-          const bookData = result.data?.books || result.data || result || [];
+          let bookData = result.data?.books || result.data || result || [];
+          
+          // Filter books to only show those uploaded by the current user
+          if (Array.isArray(bookData)) {
+            bookData = bookData.filter(book => {
+              // Extract the uploader ID
+              let uploaderId;
+              if (typeof book.uploaded_by === 'object' && book.uploaded_by !== null) {
+                uploaderId = book.uploaded_by._id || book.uploaded_by.id;
+              } else {
+                uploaderId = book.uploaded_by;
+              }
+              
+              if (!uploaderId) return false;
+              
+              // Compare with current user ID
+              const currentUserIdStr = String(currentUserId).trim().replace(/['"]/g, '');
+              const uploaderIdStr = String(uploaderId).trim().replace(/['"]/g, '');
+              
+              return currentUserIdStr === uploaderIdStr;
+            });
+          }
+          
           setBooks(Array.isArray(bookData) ? bookData : []);
         } catch (error) {
           setError(error.message);
@@ -245,7 +300,29 @@ function BookPage() {
       const result = await response.json();
       
       // Adjust this based on your API response structure
-      const searchResults = result.data || result || [];
+      let searchResults = result.data || result || [];
+      
+      // Filter search results to only show books uploaded by the current user
+      if (Array.isArray(searchResults)) {
+        searchResults = searchResults.filter(book => {
+          // Extract the uploader ID
+          let uploaderId;
+          if (typeof book.uploaded_by === 'object' && book.uploaded_by !== null) {
+            uploaderId = book.uploaded_by._id || book.uploaded_by.id;
+          } else {
+            uploaderId = book.uploaded_by;
+          }
+          
+          if (!uploaderId) return false;
+          
+          // Compare with current user ID
+          const currentUserIdStr = String(currentUserId).trim().replace(/['"]/g, '');
+          const uploaderIdStr = String(uploaderId).trim().replace(/['"]/g, '');
+          
+          return currentUserIdStr === uploaderIdStr;
+        });
+      }
+      
       setBooks(Array.isArray(searchResults) ? searchResults : []);
     } catch (error) {
       setError(error.message);
@@ -317,37 +394,7 @@ function BookPage() {
   // Function to handle book edit (redirect to edit page)
   const handleEditBook = (bookId) => {
     // Navigate to edit page - adjust this based on your routing solution
-    window.location.href = `/teacher/bookpage/edit/${bookId}`;
-  };
-
-  // Function to check if current user is the uploader of the book
-  const isBookUploader = (book) => {
-    if (!currentUserId || !book) {
-      return false;
-    }
-    
-    // Extract the uploader ID from the uploaded_by field
-    // It could be an ID string directly, or an object with an _id field
-    let uploaderId;
-    if (typeof book.uploaded_by === 'object' && book.uploaded_by !== null) {
-      // If uploaded_by is an object, try to get the ID from it
-      uploaderId = book.uploaded_by._id || book.uploaded_by.id;
-    } else {
-      // Otherwise use it directly as an ID
-      uploaderId = book.uploaded_by;
-    }
-    
-    // If we couldn't extract an ID, return false
-    if (!uploaderId) {
-      return false;
-    }
-    
-    // Convert both IDs to strings without any quotes or whitespace
-    const currentUserIdStr = String(currentUserId).trim().replace(/['"]/g, '');
-    const uploaderIdStr = String(uploaderId).trim().replace(/['"]/g, '');
-    
-    // Simple direct comparison of cleaned strings
-    return currentUserIdStr === uploaderIdStr;
+    window.location.href = `/admin/bookupdate/${bookId}`;
   };
 
   // Function to get uploader name from book
@@ -396,36 +443,37 @@ function BookPage() {
     return uploaderId ? `User ${String(uploaderId).substring(0, 6)}` : "Unknown User";
   };
 
-  // Add handlers for draggable debug panel
+  // Add draggable functionality for the debug panel
   const handleMouseDown = (e) => {
-    e.preventDefault(); // Prevent text selection while dragging
+    if (!debugPanelRef.current) return;
+    
     setIsDragging(true);
-    // Calculate the offset between mouse position and panel position
-    const rect = e.currentTarget.getBoundingClientRect();
-    setDragOffset({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    });
+    
+    // Calculate the offset of the mouse from the panel's top-left corner
+    const rect = debugPanelRef.current.getBoundingClientRect();
+    const offsetX = e.clientX - rect.left;
+    const offsetY = e.clientY - rect.top;
+    
+    // Store the offset in the ref so we can use it during mousemove
+    debugPanelRef.current.offsetX = offsetX;
+    debugPanelRef.current.offsetY = offsetY;
   };
-
+  
   const handleMouseMove = (e) => {
-    if (isDragging) {
-      // Ensure position is constrained to visible area of the screen
-      const newX = Math.max(0, Math.min(e.clientX - dragOffset.x, window.innerWidth - 150));
-      const newY = Math.max(0, Math.min(e.clientY - dragOffset.y, window.innerHeight - 100));
-      
-      setDebugPosition({
-        x: newX,
-        y: newY
-      });
-    }
+    if (!isDragging || !debugPanelRef.current) return;
+    
+    // Calculate new position using the stored offsets
+    const newX = e.clientX - debugPanelRef.current.offsetX;
+    const newY = e.clientY - debugPanelRef.current.offsetY;
+    
+    setDebugPosition({ x: newX, y: newY });
   };
-
+  
   const handleMouseUp = () => {
     setIsDragging(false);
   };
-
-  // Add effect to handle mouse events on document
+  
+  // Add and remove event listeners for dragging
   useEffect(() => {
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove);
@@ -434,6 +482,7 @@ function BookPage() {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     }
+    
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
@@ -441,8 +490,8 @@ function BookPage() {
   }, [isDragging]);
 
   return (
-    <TeacherLayout>
-      <div className="rounded-lg h-screen p-6 min-h-screen overflow-hidden flex justify-center">
+    <AdminBookLayout>
+      <div className="border h-screen p-6 min-h-screen overflow-hidden bg-white rounded-lg flex justify-center">
         {/* Success Message Alert */}
         {successMessage && (
           <div className="fixed top-24 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out">
@@ -450,68 +499,59 @@ function BookPage() {
           </div>
         )}
         
-        {/* Debug info panel - keep it minimal for production */}
+        {/* Modified Debug info panel - now draggable with white background */}
         {process.env.NODE_ENV === 'development' && (
           <div 
-            className="fixed z-50 bg-black bg-opacity-70 text-white p-2 rounded text-xs max-w-xs overflow-hidden cursor-move shadow-lg"
+            ref={debugPanelRef}
+            className="fixed text-gray-800 p-2 rounded text-xs z-50 max-w-xs overflow-hidden bg-white border border-gray-200 cursor-move"
             style={{
-              position: 'fixed',
               left: `${debugPosition.x}px`,
               top: `${debugPosition.y}px`,
-              touchAction: 'none' // For better touch device support
+              display: 'block',
+              position: 'fixed'
             }}
             onMouseDown={handleMouseDown}
-            onTouchStart={(e) => {
-              const touch = e.touches[0];
-              handleMouseDown({ preventDefault: () => {}, clientX: touch.clientX, clientY: touch.clientY, currentTarget: e.currentTarget });
-            }}
           >
-            <div className="p-1 bg-gray-800 mb-1 rounded select-none flex justify-between items-center">
-              <p className="font-bold select-none text-xs">Debug Panel</p>
-              <span className="text-gray-400 text-xs select-none">(drag me)</span>
-            </div>
-            <p className="select-none">Books: {books.length}</p>
-            <p className="select-none">Your Books: {books.filter(book => isBookUploader(book)).length}</p>
+            <p className="font-bold border-b pb-1 mb-1">Owner Book</p>
+            <p>Your Books: {books.length}</p>
           </div>
         )}
         
-        <div className="w-full flex flex-col overflow-auto p-6 rounded-2xl">
+        <div className="w-full flex flex-col overflow-auto p-6  rounded-2xl">
           <div className="flex justify-between items-center mb-6">
-            <button className="px-4 py-2 bg-[#e4c99b] text-white rounded-lg hidden sm:block">Shelves</button>
+            <button className="px-4 py-2 bg-[#e4c99b] text-white rounded-lg hidden sm:block">My Books</button>
             <input
               type="text"
-              placeholder="Search in My Library"
-              className="p-2 border w-full border-gray-300 rounded-lg max-w-1/2"
+              placeholder="Search in My Books"
+              className="p-2 border w-full border-gray-300 rounded-lg md:w-1/2"
               value={searchTerm}
               onChange={handleSearchChange}
             />
           </div>
 
           <h3 className="text-lg font-semibold text-gray-700">
-            {searching ? `Search Results for "${searchTerm}"` : "Available Books"}
+            {searching ? `Search Results for "${searchTerm}"` : "My Uploaded Books"}
           </h3>
 
-          {loading ? (
+          {!currentUserId ? (
+            <p className="text-center text-gray-500">Loading user information...</p>
+          ) : loading ? (
             <p className="text-center text-gray-500">
-              {searching ? "Searching books..." : "Loading books..."}
+              {searching ? "Searching books..." : "Loading your books..."}
             </p>
           ) : error ? (
             <p className="text-center text-red-500">Error: {error}</p>
           ) : books.length > 0 ? (
             <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {books.map((book, index) => {
-                // Pre-calculate if user is uploader to avoid multiple calls to isBookUploader
-                const userCanEdit = isBookUploader(book);
                 const uploaderName = getUploaderName(book);
                 
                 return (
                 <div
                   key={`${book._id || book.id || index}-${index}`}
-                  className={`p-4 bg-white border border-sky-500 shadow-md rounded-lg flex flex-col items-center justify-between h-full ${userCanEdit ? 'ring-2 ring-yellow-400' : ''}`}
+                  className="p-4 bg-white shadow-md rounded-lg flex flex-col items-center justify-between h-full ring-2 ring-yellow-400"
                 >
                   <div className="mb-2 flex flex-col w-full">
-                   
-                    
                     <img
                       src={book.cover_image || book_img}
                       alt={`Preview of ${book.title || "Book"}`}
@@ -521,18 +561,6 @@ function BookPage() {
                     <h4 className="text-sm font-bold text-left">{truncateTitle(book.title)}</h4>
                     <p className="text-sm text-gray-600 text-left">ຂຽນໂດຍ:ທ່ານ {book.author || "Unknown"}</p>
                     <p className="text-xs text-gray-500 text-left">Uploaded by: {uploaderName}</p>
-                    
-                    {/* Only show debug info during development */}
-                    {process.env.NODE_ENV === 'development' && (
-                      <div className="text-xs text-gray-500 mt-1 p-1 bg-gray-100 rounded">
-                        {userCanEdit ? (
-                          <p className="text-green-600 font-semibold">✓ You can edit this book</p>
-                        ) : (
-                          <p className="text-gray-500">Uploader: {uploaderName}</p>
-                        )}
-                        {/* Removed the book ID display line */}
-                      </div>
-                    )}
                   </div>
                   
                   <div className="w-full mt-auto flex flex-col gap-2">
@@ -552,36 +580,32 @@ function BookPage() {
                       </span>
                     )}
                     
-                    {/* Show edit and delete buttons only if the current user uploaded this book */}
-                    {userCanEdit && (
-                      <>
-                        <button 
-                          onClick={() => handleEditBook(book._id || book.id)}
-                          className="px-3 py-1 bg-yellow-500 text-white rounded-lg w-full text-center"
-                        >
-                          Edit
-                        </button>
-                        <button 
-                          onClick={() => handleDeleteBook(book._id || book.id)}
-                          className="px-3 py-1 bg-red-500 text-white rounded-lg w-full text-center"
-                        >
-                          Delete
-                        </button>
-                      </>
-                    )}
+                    {/* Always show edit and delete buttons since all books are from the current user */}
+                    <button 
+                      onClick={() => handleEditBook(book._id || book.id)}
+                      className="px-3 py-1 bg-yellow-500 text-white rounded-lg w-full text-center"
+                    >
+                      Edit
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteBook(book._id || book.id)}
+                      className="px-3 py-1 bg-red-500 text-white rounded-lg w-full text-center"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
               )})}
             </div>
           ) : (
             <p className="text-center text-gray-500">
-              {searching ? `No books found for "${searchTerm}"` : "No books available"}
+              {searching ? `No books found for "${searchTerm}"` : "You haven't uploaded any books yet"}
             </p>
           )}
         </div>
       </div>
-    </TeacherLayout>
+      </AdminBookLayout>
   );
 }
 
-export default BookPage;
+export default AdminOwnBookPage;

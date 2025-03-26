@@ -226,14 +226,14 @@ export default function DepartmentPage() {
                 <h1 className="text-2xl font-bold mb-4">Department Page</h1>
                 <p className="mb-6">Welcome to the Department Page.</p>
                 <button 
-                    className="hover:shadow-2xl p-4 border rounded-full bg-gradient-to-tr from-sky-300 to-sky-500 text-white font-bold hover:bg-gradient-to-tl hover:from-sky-300 hover:to-sky-500 cursor-pointer"
+                    className="hover:shadow-2xl p-2 border rounded-full bg-gradient-to-tr md:p-4  from-sky-300 to-sky-500 text-white font-bold hover:bg-gradient-to-tl hover:from-sky-300 hover:to-sky-500 cursor-pointer"
                     onClick={handleAddDepartment}
                 >
                     Add Department
                 </button>
                 <p className="mt-4">Total Departments: {countDepartments()}</p>
-                <div className="overflow-x-auto">
-                    <table className="min-w-full bg-white border mt-6 border-gray-200">
+                <div className="overflow-x-auto p-6 rounded-lg border bg-white shadow-2xl mt-8">
+                    <table className="min-w-full bg-white border-gray-200">
                         <thead>
                             <tr className="bg-gray-100">
                                 <th className="py-2 px-4 border-b text-start">#</th>

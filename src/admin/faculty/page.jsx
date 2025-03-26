@@ -162,7 +162,8 @@ export default function FacultyPage() {
                 >
                     Add Faculty
                 </button>
-                <table className="min-w-full bg-white border mt-6 border-gray-200">
+                <div className="p-6 bg-white border rounded-lg mt-16 shadow-2xl ">
+                <table className="min-w-full bg-white  border-gray-200">
                     <thead>
                         <tr className="bg-gray-100">
                             {/* <th className="py-2 px-4 border-b">ID</th> */}
@@ -197,6 +198,7 @@ export default function FacultyPage() {
                         ))}
                     </tbody>
                 </table>
+                </div>
             </div>
         </AdminLayout>
     );

@@ -270,7 +270,7 @@ export default function BranchPage() {
                 {loading ? (
                     <p>Loading...</p>
                 ) : (
-                    <div className="bg-white p-4 rounded-lg shadow-md overflow-x-auto">
+                    <div className="bg-white p-4 rounded-lg shadow-md overflow-x-auto border ">
                         <table className="w-full">
                             <thead>
                                 <tr className="bg-gray-100">

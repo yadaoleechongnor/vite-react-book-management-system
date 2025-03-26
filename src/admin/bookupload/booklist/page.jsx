@@ -387,68 +387,70 @@ function BookList() {
             <div className="loader"></div>
           </div>
         ) : (
-          <table className="min-w-full bg-white border border-gray-200">
-            <thead>
-              <tr>
-                <th className="py-2 px-4 border-b text-center">#</th>
-                <th className="py-2 px-4 border-b text-center">PDF</th>
-                <th className="py-2 px-4 border-b text-center">Title</th>
-                <th className="py-2 px-4 border-b text-center">Author</th>
-                <th className="py-2 px-4 border-b text-center">Branch</th>
-                <th className="py-2 px-4 border-b text-center">Year</th>
-                <th className="py-2 px-4 border-b text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Array.isArray(books) && books.length > 0 ? (
-                books.map((book, index) => (
-                  <tr key={book._id} className="hover:bg-gray-100 cursor-pointer" onClick={() => showBookDetails(book)}>
-                    <td className="py-2 px-4 border-b text-center">{index + 1}</td>
-                    <td className="py-2 px-4 border-b text-center">
-                      <button 
-                        className="text-blue-500 hover:underline"
-                        onClick={(e) => handleViewPdf(e, book.book_file.public_id)}
-                      >
-                        View PDF
-                      </button>
-                    </td>
-                    <td className="py-2 px-4 border-b text-center" title={book.title}>
-                      {truncateText(book.title, 60)}
-                    </td>
-                    <td className="py-2 px-4 border-b text-center">{book.author}</td>
-                    <td className="py-2 px-4 border-b text-center">
-                      {getBranchName(book.branch_id)}
-                    </td>
-                    <td className="py-2 px-4 border-b text-center">{book.year}</td>
-                    <td className="py-2 px-4 border-b text-center">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          updateBook(book);
-                        }}
-                        className="text-blue-500 hover:border p-2 rounded-sm hover:bg-white"
-                      >
-                        <FaEdit />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteBook(book._id);
-                        }}
-                        className="text-red-500 mr-2 hover:border p-2 rounded-sm hover:bg-white"
-                      >
-                        <FaTrash />
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
+          <div className="overflow-x-auto border bg-white p-6 rounded-lg w-full   ">
+            <table className="min-w-full bg-white   ">
+              <thead>
                 <tr>
-                  <td colSpan="7" className="py-2 px-4 border-b text-center">No books found.</td>
+                  <th className="py-2 px-4 border-b text-center">#</th>
+                  <th className="py-2 px-4 border-b text-center md:table-cell hidden">PDF</th>
+                  <th className="py-2 px-4 border-b text-center">Title</th>
+                  <th className="py-2 px-4 border-b text-center">Author</th>
+                  <th className="py-2 px-4 border-b text-center md:table-cell hidden">Branch</th>
+                  <th className="py-2 px-4 border-b text-center md:table-cell hidden">Year</th>
+                  <th className="py-2 px-4 border-b text-center">Actions</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {Array.isArray(books) && books.length > 0 ? (
+                  books.map((book, index) => (
+                    <tr key={book._id} className="hover:bg-gray-100 cursor-pointer" onClick={() => showBookDetails(book)}>
+                      <td className="py-2 px-4 border-b text-center">{index + 1}</td>
+                      <td className="py-2 px-4 border-b text-center md:table-cell hidden">
+                        <button 
+                          className="text-blue-500 hover:underline"
+                          onClick={(e) => handleViewPdf(e, book.book_file.public_id)}
+                        >
+                          View PDF
+                        </button>
+                      </td>
+                      <td className="py-2 px-4 border-b text-center" title={book.title}>
+                        {truncateText(book.title, 60)}
+                      </td>
+                      <td className="py-2 px-4 border-b text-center">{book.author}</td>
+                      <td className="py-2 px-4 border-b text-center md:table-cell hidden">
+                        {getBranchName(book.branch_id)}
+                      </td>
+                      <td className="py-2 px-4 border-b text-center md:table-cell hidden">{book.year}</td>
+                      <td className="py-2 px-4 border-b text-center">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            updateBook(book);
+                          }}
+                          className="text-blue-500 hover:border p-2 rounded-sm hover:bg-white"
+                        >
+                          <FaEdit />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteBook(book._id);
+                          }}
+                          className="text-red-500 mr-2 hover:border p-2 rounded-sm hover:bg-white"
+                        >
+                          <FaTrash />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="7" className="py-2 px-4 border-b text-center">No books found.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </AdminBookLayout>

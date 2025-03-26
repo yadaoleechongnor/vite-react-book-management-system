@@ -140,7 +140,7 @@ function AdminTable() {
   return (
     <div className="mt-10">
       <h2 className="text-xl font-semibold mb-4">Admin Users</h2>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto border rounded-lg bg-white shadow-2xl p-6">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-blue-600">
             <tr>

@@ -24,11 +24,14 @@ import AdminResetPasswordPage from './resetpassword/AdminResetPassowrd';
 import OTPForgotPassword from './OTP/ResetPassword/ForgotPassword';
 import OTPResetPassword from './OTP/ResetPassword/ResetPassword';
 import OTPVerifyEmail from './OTP/ResetPassword/VerifyEmail';
-import Agriculture from './student/studentBranchbook/Agriculture';
-import AnimalSciense from './student/studentBranchbook/AnimalSciense';
+// import Agriculture from './student/studentBranchbook/Agriculture';
+// import AnimalSciense from './student/studentBranchbook/AnimalSciense';
 import ShowBookWithEachBranch from './student/studentBranchbook/ShowBookWithEachBranch';
 import TeacherBookEditePage from './teacher/TeacherComponent/BookEdite';
 import TeacherOwnBookPage from './teacher/TeacherComponent/TeacherOwnBook';
+import BookAsUser from './admin/bookupload/booklist/BookAsuser';
+import AdminOwnBookPage from './admin/bookupload/booklist/AdminOwnBook';
+import AdminBookUpdate from './admin/AdminComponents/AdminBookEdite';
 
 // Simple NotFound component
 const NotFound = () => (
@@ -153,6 +156,9 @@ function App() {
             <Route path="/admin/bookupload" element={<BookUpload />} />
             <Route path="/admin/addteacheraddmin" element={<AddminTeacherManagement />} />
             <Route path="/admin/bookmanagement" element={<BookList />} />
+            <Route path="/admin/bookasuser" element={<BookAsUser />} />
+            <Route path="/admin/ownbookpage" element={<AdminOwnBookPage />} />
+            <Route path="/admin/bookupdate/:bookId" element={<AdminBookUpdate/>} />
           </Route>
           
  {/*--------------------------------------Admin Routes ------------------------------------------------------------------- */}
@@ -167,6 +173,7 @@ function App() {
             <Route path="/teacher/uploadbook" element={<TeacherUploadPage />} />
             <Route path="/teacher/bookpage/edit/:bookId" element={<TeacherBookEditePage />} />
             <Route path="/teacher/teacherownerbook" element={<TeacherOwnBookPage />} />
+           
           </Route>
           
  {/*--------------------------------------Teacher Routes------------------------------------------------------------------- */}
@@ -180,8 +187,8 @@ function App() {
             <Route path="/student/bookpage" element={<StudentBookPage />} />
             {/* Fix: Changed "${branchId}" to ":branchId" for proper route parameter */}
             <Route path="/student/getbookwithbranch/:branchId" element={<ShowBookWithEachBranch />} />
-            <Route path="/student/agriculture" element={<Agriculture />} />
-            <Route path="/student/animalsciense" element={<AnimalSciense />} />
+            {/* <Route path="/student/agriculture" element={<Agriculture />} />
+            <Route path="/student/animalsciense" element={<AnimalSciense />} /> */}
           </Route>
          
           
