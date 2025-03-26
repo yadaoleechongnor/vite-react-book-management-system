@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import StudentLayout from '../studentComponent/StudentLayout';
 import book_img from "../../../public/images/book_img.jpeg";
+import { API_BASE_URL } from '../../utils/api';
 
 function ShowBookWithEachBranch() {
   const [books, setBooks] = useState([]);
@@ -42,7 +43,7 @@ function ShowBookWithEachBranch() {
     setLoading(true);
     
     // Using the same API endpoint that works for the branch listing component
-    fetch("http://localhost:5000/v1/books/getbookwithbranch", requestOptions)
+    fetch(`${API_BASE_URL}/v1/books/getbookwithbranch`, requestOptions)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -126,7 +127,7 @@ function ShowBookWithEachBranch() {
       redirect: "follow"
     };
 
-    fetch(`http://localhost:5000/v1/books/searchbook?title=${encodeURIComponent(searchQuery)}`, requestOptions)
+    fetch(`${API_BASE_URL}/v1/books/searchbook?title=${encodeURIComponent(searchQuery)}`, requestOptions)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -174,7 +175,7 @@ function ShowBookWithEachBranch() {
       console.log(`Recording download for book ID: ${bookId}`);
       
       // First, record the download
-      const recordResponse = await fetch(`http://localhost:5000/downloads/books/${bookId}/record`, {
+      const recordResponse = await fetch(`${API_BASE_URL}/downloads/books/${bookId}/record`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -212,7 +213,7 @@ function ShowBookWithEachBranch() {
         }, 3000);
       } else {
         // If direct URL not available, try the download endpoint
-        window.open(`http://localhost:5000/downloads/books/${bookId}/download`, '_blank');
+        window.open(`${API_BASE_URL}/downloads/books/${bookId}/download`, '_blank');
         setDownloadStatus(prev => ({...prev, [bookId]: 'success'}));
         
         // Reset status after 3 seconds
