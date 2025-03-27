@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import TeacherProfile from "./TeacherProfile";
 import { FiMenu, FiX } from "react-icons/fi";
+import { IoMdLogOut } from "react-icons/io";
+import Swal from "sweetalert2";
 
 const NavbarForTeacher = ({ toggleMobileSidebar, isMobileSidebarOpen }) => {
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
@@ -18,6 +20,23 @@ const NavbarForTeacher = ({ toggleMobileSidebar, isMobileSidebarOpen }) => {
       setIsNavMenuOpen(false);
     }
     toggleMobileSidebar();
+  };
+
+  const handleLogout = () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You will be logged out of your account",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, logout'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      }
+    });
   };
 
   return (
@@ -78,10 +97,7 @@ const NavbarForTeacher = ({ toggleMobileSidebar, isMobileSidebarOpen }) => {
             </li>
             <li>
               <button
-                onClick={() => {
-                  localStorage.removeItem("token");
-                  window.location.href = "/login";
-                }}
+                onClick={handleLogout}
                 className="text-gray-700 font-semibold hover:text-red-500 transition-all flex items-center"
               >
                 <svg
@@ -141,27 +157,10 @@ const NavbarForTeacher = ({ toggleMobileSidebar, isMobileSidebarOpen }) => {
             </li>
             <li>
               <button
-                onClick={() => {
-                  localStorage.removeItem("token");
-                  window.location.href = "/login";
-                }}
-                className="text-gray-700 font-semibold hover:text-red-500 transition-all flex items-center"
+                onClick={handleLogout}
+                className="text-sky-500 font-semibold hover:text-red-500 transition-all flex items-center"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 mr-1"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10V5m0 14a9 9 0 100-18 9 9 0 000 18z"
-                  />
-                </svg>
-                Logout
+                <IoMdLogOut className="w-8 h-8" />
               </button>
             </li>
           </ul>

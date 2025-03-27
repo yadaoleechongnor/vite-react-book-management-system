@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { FaUser, FaSignOutAlt, FaBars, FaTimes } from 'react-icons/fa';
+import { API_BASE_URL } from '../../utils/api';
+import Swal from 'sweetalert2';
 
 export default function StudentNavbar({ toggleSidebar, sidebarOpen }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -31,7 +33,7 @@ export default function StudentNavbar({ toggleSidebar, sidebarOpen }) {
         redirect: "follow"
       };
 
-      const response = await fetch("http://localhost:5000/users/me", requestOptions);
+      const response = await fetch(`${API_BASE_URL}/users/me`, requestOptions);
       if (!response.ok) {
         throw new Error('Failed to fetch user data');
       }
@@ -63,7 +65,7 @@ export default function StudentNavbar({ toggleSidebar, sidebarOpen }) {
         redirect: "follow"
       };
       
-      const response = await fetch(`http://localhost:5000/branches/${branchId}`, requestOptions);
+      const response = await fetch(`${API_BASE_URL}/branches/${branchId}`, requestOptions);
       if (!response.ok) {
         throw new Error('Failed to fetch branch details');
       }
@@ -101,35 +103,35 @@ export default function StudentNavbar({ toggleSidebar, sidebarOpen }) {
 
   return (
     <header className="bg-blue-600 text-white shadow-md">
-        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+        <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-3 flex justify-between items-center">
           <div className="flex items-center">
             <button 
-              className="md:hidden mr-4 text-xl"
+              className="md:hidden mr-2 sm:mr-4 text-xl"
               onClick={toggleSidebar}
               aria-label="Toggle sidebar"
             >
               {sidebarOpen ? <FaTimes /> : <FaBars />}
             </button>
-            <h1 className="text-xl font-bold">Student Portal</h1>
+            <h1 className="text-lg sm:text-xl font-bold truncate">Student Portal</h1>
           </div>
-          <div className='flex gap-2'>
-            <div className="flex items-center space-x-4 relative" ref={dropdownRef}>
+          <div className='flex gap-1 sm:gap-2'>
+            <div className="flex items-center space-x-2 sm:space-x-4 relative" ref={dropdownRef}>
               <div 
-                className="w-8 h-8 rounded-full bg-blue-400 flex items-center justify-center cursor-pointer hover:bg-blue-500"
+                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-blue-400 flex items-center justify-center cursor-pointer hover:bg-blue-500"
                 onClick={toggleDropdown}
               >
-                <FaUser />
+                <FaUser className="text-sm sm:text-base" />
               </div>
               {isDropdownOpen && (
-                <div className="absolute right-0 top-10 mt-2 w-80 bg-white rounded-md shadow-lg z-10 text-gray-800">
-                  <div className="p-4 border-b">
-                    <h3 className="font-medium text-gray-800">User Profile</h3>
+                <div className="absolute right-0 top-10 mt-1 sm:mt-2 w-64 sm:w-80 max-w-[90vw] bg-white rounded-md shadow-lg z-10 text-gray-800">
+                  <div className="p-3 sm:p-4 border-b">
+                    <h3 className="font-medium text-gray-800 text-sm sm:text-base">User Profile</h3>
                   </div>
-                  <div className="p-4">
-                    {isLoading && <p className="text-gray-600">Loading user data...</p>}
-                    {error && <p className="text-red-500">{error}</p>}
+                  <div className="p-3 sm:p-4">
+                    {isLoading && <p className="text-gray-600 text-sm sm:text-base">Loading user data...</p>}
+                    {error && <p className="text-red-500 text-sm sm:text-base">{error}</p>}
                     {userData && (
-                      <div className="space-y-2">
+                      <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm">
                         <p><span className="font-semibold">Name:</span> {userData.name || 'N/A'}</p>
                         <p><span className="font-semibold">Email:</span> {userData.email || 'N/A'}</p>
                         <p><span className="font-semibold">Role:</span> {userData.role || 'N/A'}</p>
@@ -147,14 +149,26 @@ export default function StudentNavbar({ toggleSidebar, sidebarOpen }) {
               )}
             </div> 
           <button 
-            className="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded"
+            className="flex items-center space-x-1 bg-red-500 hover:bg-red-600 text-white px-2 sm:px-3 py-1 sm:py-2 rounded text-sm sm:text-base"
             onClick={() => {
-              localStorage.clear(); // Clear all tokens or user data
-              window.location.href = '/'; // Redirect to the login or home page
+              Swal.fire({
+                title: 'Are you sure?',
+                text: "You will be logged out of your account!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, logout!'
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  localStorage.clear(); // Clear all tokens or user data
+                  window.location.href = '/'; // Redirect to the login or home page
+                }
+              });
             }}
           >
-            <FaSignOutAlt />
-            <span>Logout</span>
+            <FaSignOutAlt className="text-sm sm:text-base" />
+            {/* <span>Logout</span> */}
           </button>
           </div>
         </div>

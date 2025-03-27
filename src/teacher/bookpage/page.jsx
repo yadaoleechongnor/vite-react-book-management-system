@@ -12,6 +12,8 @@ function BookPage() {
   const [searching, setSearching] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
+  // Add state for download status
+  const [downloadStatus, setDownloadStatus] = useState({});
   // Add state for debug panel position
   const [debugPosition, setDebugPosition] = useState({ x: 20, y: 80 });
   const [isDragging, setIsDragging] = useState(false);
@@ -440,6 +442,110 @@ function BookPage() {
     };
   }, [isDragging]);
 
+  // Function to handle book download
+  const handleDownload = async (bookId) => {
+    try {
+      // Set download status to "loading" for this book
+      setDownloadStatus(prev => ({...prev, [bookId]: 'loading'}));
+      
+      const token = getAuthToken();
+      if (!token) throw new Error("No authentication token found");
+      
+      // First, record the download if API endpoint exists
+      try {
+        const recordResponse = await fetch(`${API_BASE_URL}/downloads/books/${bookId}/record`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        
+        if (recordResponse.ok) {
+          console.log("Download recorded successfully");
+        }
+      } catch (recordError) {
+        // Continue with download even if recording fails
+        console.warn("Failed to record download:", recordError);
+      }
+      
+      // Find the book to get its file URL and title
+      const book = books.find(b => (b.id || b._id) === bookId);
+      if (!book) throw new Error("Book not found");
+      
+      // Get the file URL from the book object
+      let fileUrl = book.book_file?.url || book.fileUrl || book.pdf || book.download_url;
+      if (!fileUrl) throw new Error("No downloadable file available");
+      
+      // Make sure it's an absolute URL
+      if (!fileUrl.startsWith('http://') && !fileUrl.startsWith('https://')) {
+        fileUrl = `${API_BASE_URL}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
+      }
+      
+      // Fetch the file with authorization header
+      const fileResponse = await fetch(fileUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      if (!fileResponse.ok) {
+        throw new Error(`Failed to download file: ${fileResponse.status}`);
+      }
+      
+      // Get content disposition to extract filename if available
+      const contentDisposition = fileResponse.headers.get('content-disposition');
+      let filename = book.title ? `${book.title}.pdf` : 'document.pdf';
+      
+      if (contentDisposition) {
+        const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(contentDisposition);
+        if (matches && matches[1]) {
+          filename = matches[1].replace(/['"]/g, '');
+        }
+      }
+      
+      // Get the file as a blob
+      const blob = await fileResponse.blob();
+      
+      // Create a blob URL and trigger download
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      
+      // Clean up
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+      
+      setDownloadStatus(prev => ({...prev, [bookId]: 'success'}));
+      
+      // Reset status after 3 seconds
+      setTimeout(() => {
+        setDownloadStatus(prev => {
+          const newStatus = {...prev};
+          delete newStatus[bookId];
+          return newStatus;
+        });
+      }, 3000);
+      
+    } catch (error) {
+      console.error("Error downloading book:", error);
+      setDownloadStatus(prev => ({...prev, [bookId]: 'error'}));
+      
+      // Reset error status after 5 seconds
+      setTimeout(() => {
+        setDownloadStatus(prev => {
+          const newStatus = {...prev};
+          delete newStatus[bookId];
+          return newStatus;
+        });
+      }, 5000);
+    }
+  };
+
   return (
     <TeacherLayout>
       <div className="rounded-lg h-screen p-6 min-h-screen overflow-hidden flex justify-center">
@@ -550,6 +656,44 @@ function BookPage() {
                       <span className="px-3 py-1 bg-gray-300 text-gray-600 rounded-lg w-full text-center">
                         No file available
                       </span>
+                    )}
+                    
+                    {/* Download button */}
+                    {(book.book_file?.url || book.fileUrl || book.pdf || book.download_url) && (
+                      <button
+                        onClick={() => handleDownload(book._id || book.id)}
+                        disabled={downloadStatus[book._id || book.id] === 'loading'}
+                        className={`px-3 py-1 rounded-lg w-full text-center flex items-center justify-center ${
+                          downloadStatus[book._id || book.id] === 'loading'
+                            ? 'bg-green-300 cursor-wait' 
+                            : downloadStatus[book._id || book.id] === 'error'
+                            ? 'bg-red-500 hover:bg-red-600 text-white'
+                            : downloadStatus[book._id || book.id] === 'success'
+                            ? 'bg-green-500 text-white'
+                            : 'bg-green-500 hover:bg-green-600 text-white'
+                        }`}
+                      >
+                        {downloadStatus[book._id || book.id] === 'loading' ? (
+                          <>
+                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Downloading...
+                          </>
+                        ) : downloadStatus[book._id || book.id] === 'error' ? (
+                          'Download Failed'
+                        ) : downloadStatus[book._id || book.id] === 'success' ? (
+                          'Downloaded!'
+                        ) : (
+                          <>
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                            </svg>
+                            Download
+                          </>
+                        )}
+                      </button>
                     )}
                     
                     {/* Show edit and delete buttons only if the current user uploaded this book */}

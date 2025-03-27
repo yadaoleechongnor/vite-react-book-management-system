@@ -64,6 +64,8 @@ const StudentViewBookPage = () => {
           setBranchName(bookData.branch_id.branch_name || "Unknown Branch");
         } else if (bookData.branch && typeof bookData.branch === 'object') {
           setBranchName(bookData.branch.branch_name || "Unknown Branch");
+        } else if (bookData.branch_name) {
+          setBranchName(bookData.branch_name);
         } else {
           setBranchName("Unknown Branch");
         }
@@ -83,10 +85,17 @@ const StudentViewBookPage = () => {
         
         // Set uploaded by name if available
         if (bookData.uploaded_by && typeof bookData.uploaded_by === 'object') {
-          setUploadedByName(bookData.uploaded_by.user_name || "Unknown User");
+          setUploadedByName(bookData.uploaded_by.user_name || bookData.uploaded_by.name || "Unknown User");
         } else if (bookData.uploaded_by_name) {
           setUploadedByName(bookData.uploaded_by_name);
+        } else if (bookData.uploaded_by) {
+          setUploadedByName(String(bookData.uploaded_by));
+        } else {
+          setUploadedByName("Unknown User");
         }
+        
+        console.log("Branch name set to:", branchName);
+        console.log("Uploaded by name set to:", uploadedByName);
       } catch (error) {
         console.error("Error fetching book:", error);
         setError(error.message);
@@ -120,8 +129,8 @@ const StudentViewBookPage = () => {
       const token = getAuthToken();
       if (!token) throw new Error("No authentication token found");
       
-      // Record the download
-      const recordResponse = await fetch(`${API_BASE_URL}/v1/downloads/books/${bookId}/record`, {
+      // Record the download - this part works correctly
+      const recordResponse = await fetch(`${API_BASE_URL}/downloads/books/${bookId}/record`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -130,17 +139,59 @@ const StudentViewBookPage = () => {
       });
       
       if (!recordResponse.ok) {
-        throw new Error(`Failed to record download: ${recordResponse.status}`);
+        console.error(`Failed to record download: ${recordResponse.status}`);
+        // Continue with download even if recording fails
+      } else {
+        console.log("Download recorded successfully");
       }
       
-      // Trigger the download
+      // Use the file URL directly instead of the download endpoint
+      // Make sure it's an absolute URL
+      let downloadUrl = fileUrl;
+      if (!downloadUrl.startsWith('http://') && !downloadUrl.startsWith('https://')) {
+        // If the URL is relative, convert it to absolute using API_BASE_URL
+        downloadUrl = `${API_BASE_URL}${downloadUrl.startsWith('/') ? '' : '/'}${downloadUrl}`;
+      }
+      
+      console.log("Using direct file URL for download:", downloadUrl);
+      
+      // Fetch the file with authorization header
+      const fileResponse = await fetch(downloadUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      if (!fileResponse.ok) {
+        throw new Error(`Failed to download file: ${fileResponse.status}`);
+      }
+      
+      // Get content disposition to extract filename if available
+      const contentDisposition = fileResponse.headers.get('content-disposition');
+      let filename = title ? `${title}.pdf` : 'document.pdf';
+      
+      if (contentDisposition) {
+        const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(contentDisposition);
+        if (matches && matches[1]) {
+          filename = matches[1].replace(/['"]/g, '');
+        }
+      }
+      
+      // Get the file as a blob
+      const blob = await fileResponse.blob();
+      
+      // Create a blob URL and trigger download
+      const blobUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.href = fileUrl;
-      link.setAttribute('download', '');
-      link.setAttribute('target', '_blank');
+      link.href = blobUrl;
+      link.setAttribute('download', filename);
       document.body.appendChild(link);
       link.click();
+      
+      // Clean up
       document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
       
       setDownloadStatus("success");
       
@@ -168,6 +219,12 @@ const StudentViewBookPage = () => {
   const handleGoBack = () => {
     navigate("/student/bookpage");
   };
+
+  // Debug log for branch and uploaded by
+  useEffect(() => {
+    console.log("Current branch name:", branchName);
+    console.log("Current uploaded by:", uploadedByName);
+  }, [branchName, uploadedByName]);
 
   return (
     <StudentLayout>
@@ -284,12 +341,10 @@ const StudentViewBookPage = () => {
                     <p className="text-base text-gray-800">{year || "Not specified"}</p>
                   </div>
                   
-                  {uploadedByName && (
-                    <div>
-                      <p className="text-sm font-medium text-gray-500">Uploaded By</p>
-                      <p className="text-base text-gray-800">{uploadedByName}</p>
-                    </div>
-                  )}
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">Uploaded By</p>
+                    <p className="text-base text-gray-800">{uploadedByName}</p>
+                  </div>
                 </div>
               </div>
               
