@@ -158,7 +158,13 @@ export default function StudentNavbar({ toggleSidebar, sidebarOpen }) {
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, logout!'
+                confirmButtonText: 'Yes, logout!',
+                reverseButtons: true, // This will put the confirm button on the right and cancel on the left
+                buttonsStyling: true,
+                customClass: {
+                  confirmButton: 'swal2-confirm swal2-styled',
+                  cancelButton: 'swal2-cancel swal2-styled'
+                }
               }).then((result) => {
                 if (result.isConfirmed) {
                   localStorage.clear(); // Clear all tokens or user data
