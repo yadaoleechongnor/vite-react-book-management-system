@@ -99,10 +99,34 @@ const RegisterPage = () => {
     if (!email.trim()) errors.email = "Email is required";
     if (!password.trim()) errors.password = "Password is required";
     if (password.length < 8) errors.password = "Password must be at least 8 characters";
-    if (!phone_number.trim()) errors.phone_number = "Phone number is required";
+    
+    // Phone number validation
+    if (!phone_number.trim()) {
+      errors.phone_number = "Phone number is required";
+    } else if (!/^\d{10}$/.test(phone_number)) {
+      errors.phone_number = "Phone number must be exactly 10 digits";
+    } else if (!/^(205|209|207|202)\d{7}$/.test(phone_number)) {
+      errors.phone_number = "Phone number must start with 205, 209, 207, or 202";
+    }
+    
     if (!branch_id) errors.branch_id = "Branch is required";
-    if (!year.trim()) errors.year = "Year is required";
-    if (!student_code.trim()) errors.student_code = "Student code is required";
+    
+    // Year validation
+    if (!year.trim()) {
+      errors.year = "Year is required";
+    } else {
+      const yearNum = parseInt(year);
+      if (isNaN(yearNum) || yearNum < 1 || yearNum > 5) {
+        errors.year = "Year must be a number between 1 and 5";
+      }
+    }
+    
+    // Student code validation
+    if (!student_code.trim()) {
+      errors.student_code = "Student code is required";
+    } else if (!/^\d{10}$/.test(student_code)) {
+      errors.student_code = "Student code must be exactly 10 digits";
+    }
     
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -272,8 +296,13 @@ const RegisterPage = () => {
                 id="phone_number"
                 name="phone_number"
                 required
+                pattern="^(205|209|207|202)\d{7}$"
+                maxLength="10"
                 className={`w-full px-3 py-2 border ${formErrors.phone_number ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500`}
-                placeholder="Enter your phone number"
+                placeholder=" 207,209,205,202 (10 digits)"
+                onInput={(e) => {
+                  e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 10);
+                }}
               />
               {formErrors.phone_number && (
                 <p className="text-red-500 text-xs mt-1">{formErrors.phone_number}</p>
@@ -316,8 +345,15 @@ const RegisterPage = () => {
                 id="year"
                 name="year"
                 required
+                min="1"
+                max="5"
                 className={`w-full px-3 py-2 border ${formErrors.year ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500`}
-                placeholder="Enter your year"
+                placeholder="1-5"
+                onInput={(e) => {
+                  const val = parseInt(e.target.value);
+                  if (val > 5) e.target.value = "5";
+                  if (val < 1 && e.target.value !== "") e.target.value = "1";
+                }}
               />
               {formErrors.year && (
                 <p className="text-red-500 text-xs mt-1">{formErrors.year}</p>
@@ -332,8 +368,13 @@ const RegisterPage = () => {
                 id="student_code"
                 name="student_code"
                 required
+                pattern="\d{10}"
+                maxLength="10"
                 className={`w-full px-3 py-2 border ${formErrors.student_code ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500`}
-                placeholder="Enter your student code"
+                placeholder="Enter 10-digit code"
+                onInput={(e) => {
+                  e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 10);
+                }}
               />
               {formErrors.student_code && (
                 <p className="text-red-500 text-xs mt-1">{formErrors.student_code}</p>
