@@ -35,6 +35,7 @@ import AdminBookUpdate from './admin/AdminComponents/AdminBookEdite';
 import StudentViewBookPage from './student/studentComponent/ViewBook';
 import PopularBook from './student/studentComponent/PopularBook';
 import DashboardLatestBookPage from './student/studentComponent/DashboardLatestBook';
+import DownlaodedBookHistoryDetail from './student/downloadedbookhistorydetail/DownlaodedBookHistoryDetail';
 
 // Simple NotFound component
 const NotFound = () => (
@@ -190,6 +191,7 @@ function App() {
             <Route path="/student/bookpage" element={<StudentBookPage />} />
             <Route path="/student/viewbookpage/:bookId" element={<StudentViewBookPage />} />
             <Route path="/student/popularbook" element={<PopularBook />} />
+            <Route path="/student/downloadeddetail" element={<DownlaodedBookHistoryDetail />} />
             <Route path="/student/latestbook" element={< DashboardLatestBookPage />} />
             <Route path="/student/getbookwithbranch/:branchId" element={<ShowBookWithEachBranch />} />
            

@@ -184,47 +184,76 @@ function ShowBookWithEachBranch() {
       });
       
       if (!recordResponse.ok) {
-        throw new Error(`Failed to record download: ${recordResponse.status} ${recordResponse.statusText}`);
-      }
-      
-      const recordResult = await recordResponse.json();
-      console.log("Download recorded:", recordResult);
-      
-      // Check if we got a direct download URL
-      if (recordResult.success && recordResult.data && recordResult.data.bookUrl) {
-        // Initiate file download using the URL
-        const link = document.createElement('a');
-        link.href = recordResult.data.bookUrl;
-        link.setAttribute('download', ''); // This will preserve the original filename
-        link.setAttribute('target', '_blank');
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        setDownloadStatus(prev => ({...prev, [bookId]: 'success'}));
-        
-        // Reset status after 3 seconds
-        setTimeout(() => {
-          setDownloadStatus(prev => {
-            const newStatus = {...prev};
-            delete newStatus[bookId];
-            return newStatus;
-          });
-        }, 3000);
+        console.error(`Failed to record download: ${recordResponse.status}`);
+        // Continue with download even if recording fails
       } else {
-        // If direct URL not available, try the download endpoint
-        window.open(`${API_BASE_URL}/downloads/books/${bookId}/download`, '_blank');
-        setDownloadStatus(prev => ({...prev, [bookId]: 'success'}));
-        
-        // Reset status after 3 seconds
-        setTimeout(() => {
-          setDownloadStatus(prev => {
-            const newStatus = {...prev};
-            delete newStatus[bookId];
-            return newStatus;
-          });
-        }, 3000);
+        console.log("Download recorded successfully");
       }
+      
+      // Find the book to get its file URL and title
+      const book = books.find(b => (b.id || b._id) === bookId);
+      if (!book) throw new Error("Book not found");
+      
+      // Get the file URL from the book object
+      let fileUrl = book.book_file?.url || book.fileUrl || book.pdf || book.download_url;
+      if (!fileUrl) throw new Error("No downloadable file available");
+      
+      // Make sure it's an absolute URL
+      if (!fileUrl.startsWith('http://') && !fileUrl.startsWith('https://')) {
+        fileUrl = `${API_BASE_URL}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
+      }
+      
+      console.log("Using direct file URL for download:", fileUrl);
+      
+      // Fetch the file with authorization header
+      const fileResponse = await fetch(fileUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      if (!fileResponse.ok) {
+        throw new Error(`Failed to download file: ${fileResponse.status}`);
+      }
+      
+      // Get content disposition to extract filename if available
+      const contentDisposition = fileResponse.headers.get('content-disposition');
+      let filename = book.title ? `${book.title}.pdf` : 'document.pdf';
+      
+      if (contentDisposition) {
+        const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(contentDisposition);
+        if (matches && matches[1]) {
+          filename = matches[1].replace(/['"]/g, '');
+        }
+      }
+      
+      // Get the file as a blob
+      const blob = await fileResponse.blob();
+      
+      // Create a blob URL and trigger download
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      
+      // Clean up
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+      
+      setDownloadStatus(prev => ({...prev, [bookId]: 'success'}));
+      
+      // Reset status after 3 seconds
+      setTimeout(() => {
+        setDownloadStatus(prev => {
+          const newStatus = {...prev};
+          delete newStatus[bookId];
+          return newStatus;
+        });
+      }, 3000);
+      
     } catch (error) {
       console.error("Error downloading book:", error);
       setDownloadStatus(prev => ({...prev, [bookId]: 'error'}));
@@ -240,7 +269,7 @@ function ShowBookWithEachBranch() {
     }
   };
 
-  // Updated renderBookCard function with download button
+  // Updated renderBookCard function with view and download buttons
   const renderBookCard = (book, index) => {
     try {
       // Debug the individual book object
@@ -267,12 +296,10 @@ function ShowBookWithEachBranch() {
           <div className="w-full flex flex-col gap-2">
             {(book.book_file?.url || book.fileUrl || book.pdf || book.download_url) ? (
               <a
-                href={book.book_file?.url || book.fileUrl || book.pdf || book.download_url}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={`/student/viewbookpage/${book._id || book.id}`}
                 className="mt-auto px-2 sm:px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-lg w-full text-center text-xs sm:text-sm"
               >
-                View
+                View Details
               </a>
             ) : (
               <span className="mt-auto px-2 sm:px-3 py-1 bg-gray-300 text-gray-600 rounded-lg w-full text-center text-xs sm:text-sm">
@@ -283,19 +310,19 @@ function ShowBookWithEachBranch() {
             {/* Download button */}
             {(book.book_file?.url || book.fileUrl || book.pdf || book.download_url) && (
               <button
-                onClick={() => handleDownload(book._id)}
-                disabled={downloadStatus[book._id] === 'loading'}
+                onClick={() => handleDownload(book._id || book.id)}
+                disabled={downloadStatus[book._id || book.id] === 'loading'}
                 className={`px-2 sm:px-3 py-1 rounded-lg w-full text-center flex items-center justify-center text-xs sm:text-sm ${
-                  downloadStatus[book._id] === 'loading'
+                  downloadStatus[book._id || book.id] === 'loading'
                     ? 'bg-green-300 cursor-wait' 
-                    : downloadStatus[book._id] === 'error'
+                    : downloadStatus[book._id || book.id] === 'error'
                     ? 'bg-red-500 hover:bg-red-600 text-white'
-                    : downloadStatus[book._id] === 'success'
+                    : downloadStatus[book._id || book.id] === 'success'
                     ? 'bg-green-500 text-white'
                     : 'bg-green-500 hover:bg-green-600 text-white'
                 }`}
               >
-                {downloadStatus[book._id] === 'loading' ? (
+                {downloadStatus[book._id || book.id] === 'loading' ? (
                   <>
                     <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -303,9 +330,9 @@ function ShowBookWithEachBranch() {
                     </svg>
                     Downloading...
                   </>
-                ) : downloadStatus[book._id] === 'error' ? (
+                ) : downloadStatus[book._id || book.id] === 'error' ? (
                   'Download Failed'
-                ) : downloadStatus[book._id] === 'success' ? (
+                ) : downloadStatus[book._id || book.id] === 'success' ? (
                   'Downloaded!'
                 ) : (
                   <>
@@ -372,9 +399,9 @@ function ShowBookWithEachBranch() {
             </form>
           </div>
 
-          <h3 className="text-base sm:text-lg font-semibold text-gray-700">
+          {/* <h3 className="text-base sm:text-lg font-semibold text-gray-700">
             {isSearching ? `Search Results for "${searchQuery}"` : `Available Books${branchName ? ` - ${branchName}` : ''}`}
-          </h3>
+          </h3> */}
 
           {loading ? (
             <div className="flex justify-center items-center h-40">

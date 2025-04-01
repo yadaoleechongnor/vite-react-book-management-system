@@ -91,7 +91,7 @@ const GetbookBybranch = () => {
 
     return (
         <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-6">ສາຂາທີ່ມີປື້ມໃນລະບົບ</h1>
+            <h1 className="text-2xl text-black font-bold mb-6">ສາຂາທີ່ມີປື້ມໃນລະບົບ</h1>
             
             {loading && <p className="text-gray-600">Loading branches...</p>}
             {error && <p className="text-red-500">{error}</p>}

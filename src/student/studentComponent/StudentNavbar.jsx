@@ -102,7 +102,7 @@ export default function StudentNavbar({ toggleSidebar, sidebarOpen }) {
   }, []);
 
   return (
-    <header className="bg-blue-600 text-white shadow-md">
+    <header className="bg-gradient-to-b from-sky-300 to-sky-500 text-white shadow-md">
         <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-3 flex justify-between items-center">
           <div className="flex items-center">
             <button 

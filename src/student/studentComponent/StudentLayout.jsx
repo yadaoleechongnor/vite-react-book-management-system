@@ -60,7 +60,7 @@ const StudentLayout = ({ children }) => {
       <div className="flex flex-1">
         {/* Sidebar */}
         <aside 
-          className={`bg-gray-800 text-white w-64 fixed inset-y-0 left-0 transform ${
+          className={`bg-white  w-64 fixed inset-y-0 left-0 transform ${
             sidebarOpen ? 'translate-x-0' : '-translate-x-full'
           } md:translate-x-0 transition-transform duration-300 ease-in-out z-50 pt-16 shadow-lg md:shadow-none md:z-10`}
           onClick={handleSidebarClick}
@@ -70,8 +70,8 @@ const StudentLayout = ({ children }) => {
               <li>
                 <Link 
                   to="/student/dashboard" 
-                  className={`flex items-center p-2 rounded hover:bg-gray-700 ${
-                    activeMenu === '/student/dashboard' ? 'bg-gray-700' : ''
+                  className={`flex items-center p-2 rounded hover:bg-sky-500 ${
+                    activeMenu === '/student/dashboard' ? 'bg-sky-500 text-white ' : ''
                   }`}
                   onClick={handleMenuClick}
                 >
@@ -82,8 +82,8 @@ const StudentLayout = ({ children }) => {
               <li>
                 <Link 
                   to="/student/bookpage" 
-                  className={`flex items-center p-2 rounded hover:bg-gray-700 ${
-                    activeMenu === '/student/bookpage' ? 'bg-gray-700' : ''
+                  className={`flex items-center p-2 rounded hover:bg-sky-500 ${
+                    activeMenu === '/student/bookpage' ? 'bg-sky-500 text-white ' : ''
                   }`}
                   onClick={handleMenuClick}
                 >

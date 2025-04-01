@@ -8,6 +8,7 @@ import { getAuthToken } from "../../utils/auth";
 
 function ClassSection() {
   const [mostDownloadedBook, setMostDownloadedBook] = useState("Loading...");
+  const [latestBook, setLatestBook] = useState("Loading...");
 
   useEffect(() => {
     const fetchMostPopularBook = async () => {
@@ -81,7 +82,73 @@ function ClassSection() {
       }
     };
 
+    const fetchLatestBook = async () => {
+      try {
+        const token = getAuthToken();
+        if (!token) {
+          console.error("No authentication token found");
+          setLatestBook("Login required");
+          return;
+        }
+
+        const response = await fetch(`${API_BASE_URL}/v1/books`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch books: ${response.status}`);
+        }
+
+        const result = await response.json();
+        
+        // Extract books data from response
+        let booksData = [];
+        
+        if (Array.isArray(result)) {
+          booksData = result;
+        } else if (result.data && Array.isArray(result.data.books)) {
+          booksData = result.data.books;
+        } else if (result.data && Array.isArray(result.data)) {
+          booksData = result.data;
+        } else if (result.books && Array.isArray(result.books)) {
+          booksData = result.books;
+        } else if (result && typeof result === 'object' && (result.title || result.id)) {
+          booksData = [result];
+        } else if (result.data && typeof result.data === 'object' && (result.data.title || result.data.id)) {
+          booksData = [result.data];
+        }
+        
+        if (booksData.length > 0) {
+          // Sort books by created_at or createdAt date (newest first)
+          booksData.sort((a, b) => {
+            const dateA = new Date(a.created_at || a.createdAt || a.uploadDate || 0);
+            const dateB = new Date(b.created_at || b.createdAt || b.uploadDate || 0);
+            return dateB - dateA;
+          });
+          
+          // Get the latest book title
+          const latestBookItem = booksData[0];
+          const title = latestBookItem.title || "Untitled";
+          
+          // Truncate title if it's too long
+          const truncatedTitle = title.length > 30 ? `${title.substring(0, 27)}...` : title;
+          
+          setLatestBook(truncatedTitle);
+        } else {
+          setLatestBook("No books available");
+        }
+      } catch (error) {
+        console.error("Error fetching latest book:", error);
+        setLatestBook("Unable to load");
+      }
+    };
+
     fetchMostPopularBook();
+    fetchLatestBook();
   }, []);
 
   return (
@@ -102,7 +169,7 @@ function ClassSection() {
                   <h4 className="text-sm sm:text-base font-semibold mb-1 sm:mb-2">Latest Book</h4>
                   <p className="text-gray-500 text-xs sm:text-sm mb-1 sm:mb-2"><SiBookstack /></p>
                   <div className="flex items-center text-gray-500 text-xs sm:text-sm">
-                    <FaUsers className="mr-1" /> 12
+                   <p>Latest Book: {latestBook}</p>
                   </div>
                 </div>
               </Link>
@@ -116,9 +183,6 @@ function ClassSection() {
                 </div>
               </Link>
             </div>
-            <Link to="/all-books" className="block text-center sm:text-right text-blue-500 text-xs sm:text-sm">
-              View All
-            </Link>
           </div>
   )
 }

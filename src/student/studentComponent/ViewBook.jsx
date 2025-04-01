@@ -318,10 +318,6 @@ const StudentViewBookPage = () => {
                   </div>
                 </div>
               )}
-            </div>
-            
-            {/* Right column - Book details */}
-            <div className="space-y-6">
               <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
                 <h3 className="text-xl font-semibold text-gray-800 mb-6">{title}</h3>
                 
@@ -347,12 +343,19 @@ const StudentViewBookPage = () => {
                   </div>
                 </div>
               </div>
+            </div>
+            
+            {/* Right column - Book details */}
+            <div className="space-y-6  ">
+              
               
               {abstract && (
                 <div className="mt-6">
                   <p className="text-sm font-medium text-gray-700 mb-2">Abstract:</p>
-                  <div className="p-4 bg-gray-50 rounded-md border border-gray-200">
-                    <p className="text-gray-700 whitespace-pre-wrap">{abstract}</p>
+                  <div className="p-4 bg-gray-50 rounded-md border border-gray-200 flex h-screen overflow-hidden ">
+                   <div className="overflow-y-auto ">
+                   <p className="text-gray-700 whitespace-pre-wrap">{abstract}</p>
+                   </div>
                   </div>
                 </div>
               )}
