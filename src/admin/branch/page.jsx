@@ -51,13 +51,6 @@ export default function BranchPage() {
             })
             .catch((error) => console.error(error));
 
-        // fetch(`${API_BASE_URL}/faculties/`, requestOptions)
-        //     .then((response) => response.json())
-        //     .then((result) => {
-        //         console.log("Faculties fetched:", result.data.faculties);
-        //         setFaculties(result.data.faculties);
-        //     })
-        //     .catch((error) => console.error(error));
     }, []);
 
     const countBranches = () => {

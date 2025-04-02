@@ -311,8 +311,7 @@ function BookList() {
   };
 
   const showBookDetails = (book) => {
-    const baseUrl = "http://localhost:5000";
-    const pdfUrl = `${baseUrl}/uploads/${book.book_file.public_id}`;
+    const pdfUrl = `${API_BASE_URL}/uploads/${book.book_file.public_id}`;
     const downloadUrl = pdfUrl;
     Swal.fire({
       title: book.title,
@@ -334,8 +333,7 @@ function BookList() {
 
   const handleViewPdf = (e, publicId) => {
     e.stopPropagation();
-    const baseUrl = "http://localhost:5000";
-    window.open(`${baseUrl}/uploads/${publicId}`, '_blank');
+    window.open(`${API_BASE_URL}/uploads/${publicId}`, '_blank');
   };
 
   const truncateText = (text, maxLength) => {
