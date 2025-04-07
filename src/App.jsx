@@ -36,6 +36,8 @@ import StudentViewBookPage from './student/studentComponent/ViewBook';
 import PopularBook from './student/studentComponent/PopularBook';
 import DashboardLatestBookPage from './student/studentComponent/DashboardLatestBook';
 import DownlaodedBookHistoryDetail from './student/downloadedbookhistorydetail/DownlaodedBookHistoryDetail';
+import AllDownLoadedDetail from './admin/alldownloaddetail/AllDownLoadedDetail';
+import ViewDownLoadDetail from './admin/AdminComponents/ViewDownLoadDetail';
 
 // Simple NotFound component
 const NotFound = () => (
@@ -156,6 +158,7 @@ function App() {
             <Route path="/admin/usermanagement" element={<UserMagementPage />} />
             <Route path="/admin/faculty" element={<FacultyPage />} />
             <Route path="/admin/department" element={<DepartmentPage />} />
+            <Route path="/admin/alldownloadeddetail" element={<AllDownLoadedDetail/>} />
             <Route path="/admin/branch" element={<BranchPage />} />
             <Route path="/admin/bookupload" element={<BookUpload />} />
             <Route path="/admin/addteacheraddmin" element={<AddminTeacherManagement />} />
@@ -163,6 +166,7 @@ function App() {
             <Route path="/admin/bookasuser" element={<BookAsUser />} />
             <Route path="/admin/ownbookpage" element={<AdminOwnBookPage />} />
             <Route path="/admin/bookupdate/:bookId" element={<AdminBookUpdate/>} />
+            <Route path="/admin/viewdownloadeddetail/:downloadId" element={<ViewDownLoadDetail/>} />
           </Route>
           
  {/*--------------------------------------Admin Routes ------------------------------------------------------------------- */}

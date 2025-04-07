@@ -2,9 +2,40 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom"; // Changed from Next.js Link to React Router Link
 import Sidebar from "./sidebar"; // Import Sidebar
 import { FaBars } from "react-icons/fa"; // Import the menu icon directly
+import Swal from "sweetalert2"; // Import SweetAlert2
+import { IoMdLogOut } from "react-icons/io";
 
 const AdminLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  
+  // Handle logout with confirmation
+  const handleLogout = () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You will be logged out of the system!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, logout!',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true // This makes the confirm button appear on the right
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.removeItem("token"); // Clear the token from localStorage
+        Swal.fire({
+          title: 'Logged Out!',
+          text: 'You have been successfully logged out.',
+          icon: 'success',
+          timer: 1000,
+          timerProgressBar: true,
+          showConfirmButton: false
+        }).then(() => {
+          window.location.href = "/"; // Redirect to login page
+        });
+      }
+    });
+  };
 
   return (
     <div className="admin-layout">
@@ -22,27 +53,10 @@ const AdminLayout = ({ children }) => {
         </div>
         <div className="flex items-center">
           <button
-            onClick={() => {
-              localStorage.removeItem("token"); // Clear the token from localStorage
-              window.location.href = "/"; // Redirect to login page
-            }}
+            onClick={handleLogout}
             className="flex items-center text-red-500 hover:text-red-700"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6 mr-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10V5m0 14a9 9 0 100-18 9 9 0 000 18z"
-              />
-            </svg>
-            Logout
+           <IoMdLogOut /> out
           </button>
         </div>
       </header>

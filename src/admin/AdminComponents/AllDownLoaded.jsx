@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { API_BASE_URL } from "../../utils/api";
+import { useNavigate } from 'react-router-dom';
 
 function AllDownLoaded() {
   const [downloadCount, setDownloadCount] = useState("--");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDownloads = async () => {
@@ -72,8 +74,15 @@ function AllDownLoaded() {
     fetchDownloads();
   }, []);
 
+  const handleClick = () => {
+    navigate('/admin/alldownloadeddetail');
+  };
+
   return (
-    <div className="bg-blue-500 p-4 rounded-lg text-white">
+    <div 
+      className="bg-blue-500 p-4 rounded-lg text-white cursor-pointer hover:bg-blue-600 transition-colors"
+      onClick={handleClick}
+    >
       <h2 className="text-2xl font-semibold text-center">
         {loading ? (
           <span className="inline-block animate-pulse">Loading...</span>
