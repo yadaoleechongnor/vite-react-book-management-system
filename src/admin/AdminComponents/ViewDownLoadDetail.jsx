@@ -8,6 +8,7 @@ function ViewDownLoadDetail() {
   const [downloadDetail, setDownloadDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [authError, setAuthError] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,12 +19,21 @@ function ViewDownLoadDetail() {
         return;
       }
 
+      // Get auth token from localStorage
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        setAuthError(true);
+        setError("Authentication required. Please log in.");
+        setLoading(false);
+        return;
+      }
+
       const requestOptions = {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          // Add authorization if your API requires it
-          // "Authorization": `Bearer ${localStorage.getItem('token')}`
+          "Authorization": `Bearer ${token}`
         },
         redirect: "follow"
       };
@@ -33,10 +43,19 @@ function ViewDownLoadDetail() {
         const response = await fetch(`${API_BASE_URL}/downloads/${downloadId}`, requestOptions);
         
         if (!response.ok) {
+          if (response.status === 401) {
+            setAuthError(true);
+            throw new Error("Authentication failed. Please log in again.");
+          }
+          
           // If specific endpoint fails, try getting all downloads and filtering
           const allDownloadsResponse = await fetch(`${API_BASE_URL}/downloads/`, requestOptions);
           
           if (!allDownloadsResponse.ok) {
+            if (allDownloadsResponse.status === 401) {
+              setAuthError(true);
+              throw new Error("Authentication failed. Please log in again.");
+            }
             throw new Error(`Error: ${allDownloadsResponse.status}`);
           }
           
@@ -49,10 +68,8 @@ function ViewDownLoadDetail() {
             throw new Error("Invalid JSON response");
           }
           
-          // Extract download data from various possible response formats
           let downloadData = extractDownloadData(allDownloads);
           
-          // Find the specific download by ID
           const foundDownload = downloadData.find(item => 
             item.id === downloadId || 
             item._id === downloadId
@@ -64,7 +81,6 @@ function ViewDownLoadDetail() {
           
           setDownloadDetail(processDownloadItem(foundDownload));
         } else {
-          // If specific endpoint succeeds
           const text = await response.text();
           let result;
           
@@ -74,7 +90,6 @@ function ViewDownLoadDetail() {
             throw new Error("Invalid JSON response");
           }
           
-          // Process result based on API structure
           let downloadData;
           
           if (result.data) {
@@ -98,7 +113,6 @@ function ViewDownLoadDetail() {
     fetchDownloadDetail();
   }, [downloadId]);
 
-  // Helper function to extract download data from various response formats
   const extractDownloadData = (result) => {
     if (Array.isArray(result)) {
       return result;
@@ -109,15 +123,12 @@ function ViewDownLoadDetail() {
     } else if (result && result.data && Array.isArray(result.data.downloads)) {
       return result.data.downloads;
     } else if (result && typeof result === 'object') {
-      // Try all possible formats
       return extractNestedDownloadData(result);
     }
     return [];
   };
   
-  // Extract nested download data
   const extractNestedDownloadData = (result) => {
-    // Special case for result structure with book_id keys
     if (Object.keys(result).some(key => key.includes('book') || /^\d+$/.test(key))) {
       return Object.entries(result).map(([key, value]) => {
         if (typeof value === 'object') {
@@ -136,7 +147,6 @@ function ViewDownLoadDetail() {
       });
     }
     
-    // Standard object processing
     const potentialDownloads = Object.values(result).filter(item => 
       item && typeof item === 'object' && (
         item.bookName || 
@@ -152,7 +162,6 @@ function ViewDownLoadDetail() {
       return potentialDownloads;
     }
     
-    // Try to extract nested book and user data if available
     const allItems = Object.values(result).filter(item => 
       item && typeof item === 'object'
     );
@@ -164,16 +173,12 @@ function ViewDownLoadDetail() {
     return [];
   };
   
-  // Process each download item to ensure consistent format
   const processDownloadItem = (item) => {
-    // Handle the case where data is nested inside a download property
     const downloadData = item.download || item;
     
-    // Handle the specific data structure where user and book are nested objects
     const userInfo = downloadData.user_id || downloadData.user || downloadData.userInfo || downloadData.user_details || {};
     const bookInfo = downloadData.book_id || downloadData.book || downloadData.bookInfo || downloadData.book_details || {};
     
-    // Debug logging to help troubleshoot
     console.log("Processing download item:", downloadData);
     console.log("User info:", userInfo);
     console.log("Book info:", bookInfo);
@@ -200,31 +205,23 @@ function ViewDownLoadDetail() {
     };
   };
   
-  // More thorough extraction of book title
   const extractBookTitle = (item) => {
-    // Check for book_id object structure (from the provided example)
     if (item.book_id && item.book_id.title) return item.book_id.title;
     
-    // Direct properties
     if (item.title && typeof item.title === 'string') return item.title;
     
-    // Book object properties
     const bookObj = item.book_id || item.book || item.bookInfo || item.book_details || {};
     if (bookObj.title && typeof bookObj.title === 'string') return bookObj.title;
     if (bookObj.name && typeof bookObj.name === 'string') return bookObj.name;
     
-    // BookData object
     if (item.bookData?.title) return item.bookData.title;
     
-    // Search for nested title property
     let nestedTitle = findNestedProperty(item, 'title');
     if (nestedTitle) return nestedTitle;
     
-    // Additional search for book name if title not found
     nestedTitle = findNestedProperty(item, 'book_name') || findNestedProperty(item, 'bookName');
     if (nestedTitle) return nestedTitle;
     
-    // If we have a book ID, use that as fallback
     const bookId = item.bookId || bookObj._id || bookObj.id;
     if (bookId && typeof bookId === 'string') {
       return "Book " + bookId.replace(/_/g, ' ').replace(/-/g, ' ');
@@ -233,29 +230,23 @@ function ViewDownLoadDetail() {
     return "Unknown Book";
   };
   
-  // More thorough extraction of user information
   const extractUserInfo = (item) => {
-    // Check for user_id object structure (from the provided example)
     if (item.user_id && item.user_id.name) return item.user_id.name;
     
-    // Direct user properties
     if (item.userName && typeof item.userName === 'string') return item.userName;
     if (item.user_name && typeof item.user_name === 'string') return item.user_name;
     
-    // User object properties 
     const userObj = item.user_id || item.user || item.userInfo || item.user_details || {};
     if (userObj.name) return userObj.name;
     if (userObj.username) return userObj.username;
     if (userObj.email) return userObj.email;
     
-    // Look for nested name or email
     const nestedName = findNestedProperty(item, 'name');
     if (nestedName) return nestedName;
     
     const nestedEmail = findNestedProperty(item, 'email');
     if (nestedEmail) return nestedEmail;
     
-    // If we found both name and email elsewhere in the object, combine them
     const anyName = findPropertyAnywhere(item, ['name', 'username']);
     const anyEmail = findPropertyAnywhere(item, ['email']);
     
@@ -267,31 +258,25 @@ function ViewDownLoadDetail() {
       return anyEmail;
     }
     
-    // If we have a user ID, use that as fallback
     const userId = item.userId || item.user_id || userObj.id || userObj._id;
     if (userId) return "User " + userId;
     
     return "Anonymous";
   };
   
-  // Helper function to find nested properties in an object
   const findNestedProperty = (obj, propName) => {
     if (!obj || typeof obj !== 'object') return null;
     
-    // Direct property check
     if (obj[propName] && typeof obj[propName] === 'string') {
       return obj[propName];
     }
     
-    // Check for data structures that contain the property
     for (const key in obj) {
       if (typeof obj[key] === 'object' && obj[key] !== null) {
-        // Check nested object directly for the property
         if (obj[key][propName] && typeof obj[key][propName] === 'string') {
           return obj[key][propName];
         }
         
-        // Recursively search deeper
         const found = findNestedProperty(obj[key], propName);
         if (found) return found;
       }
@@ -300,11 +285,9 @@ function ViewDownLoadDetail() {
     return null;
   };
   
-  // Helper to find any of several properties anywhere in the object
   const findPropertyAnywhere = (obj, propNames) => {
     if (!obj || typeof obj !== 'object') return null;
     
-    // Try each property name
     for (const propName of propNames) {
       const found = findNestedProperty(obj, propName);
       if (found) return found;
@@ -312,14 +295,28 @@ function ViewDownLoadDetail() {
     
     return null;
   };
+
+  // Function to get user display name based on available data from the download object
+  const getUserDisplayName = (userId) => {
+    // Don't add an ID suffix if we're already showing a name
+    if (downloadDetail && downloadDetail.userName && downloadDetail.userName.trim() !== '') {
+      return downloadDetail.userName;
+    }
+    
+    // If we have user email but no name
+    if (downloadDetail && downloadDetail.userEmail && (!downloadDetail.userName || downloadDetail.userName.trim() === '')) {
+      return downloadDetail.userEmail;
+    }
+
+    // If all else fails, just return the userId
+    return userId || "Unknown User";
+  };
   
   const formatDate = (dateString) => {
     try {
-      // Handle ISO format like "2025-03-26T06:40:05.389Z"
       const date = new Date(dateString);
       if (isNaN(date)) return 'Invalid date';
       
-      // Format options - display exactly as requested
       const options = { 
         year: 'numeric', 
         month: 'long', 
@@ -327,10 +324,9 @@ function ViewDownLoadDetail() {
         hour: '2-digit', 
         minute: '2-digit',
         second: '2-digit',
-        hour12: true // Ensure 12-hour format (AM/PM)
+        hour12: true
       };
       
-      // This ensures "2025-03-26T06:40:05.389Z" displays as "March 26, 2025 at 06:40:05 AM"
       return date.toLocaleString('en-US', options);
     } catch (e) {
       return 'Invalid date';
@@ -358,6 +354,16 @@ function ViewDownLoadDetail() {
             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500 mx-auto"></div>
             <p className="mt-2">Loading download details...</p>
           </div>
+        ) : authError ? (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <p>Authentication error: {error}</p>
+            <button 
+              onClick={() => navigate('/login')} 
+              className="mt-3 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded"
+            >
+              Go to Login
+            </button>
+          </div>
         ) : error ? (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             <p>Error loading download details: {error}</p>
@@ -367,7 +373,6 @@ function ViewDownLoadDetail() {
           <div className="bg-white shadow-md rounded-lg p-6">
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Book Information */}
               <div className="bg-blue-50 p-5 rounded-lg">
                 <h2 className="text-xl font-semibold mb-4 text-blue-700">Book Information</h2>
                 <div className="space-y-3">
@@ -376,13 +381,11 @@ function ViewDownLoadDetail() {
                     <p className="mt-1">{downloadDetail.title || "Unknown"}</p>
                   </div>
                   
-                  {/* Always show the Book ID */}
                   <div>
                     <span className="font-medium">Book ID:</span>
                     <p className="mt-1 break-words">{downloadDetail.bookId || "Not available"}</p>
                   </div>
                   
-                  {/* Always show the Author */}
                   <div>
                     <span className="font-medium">Author:</span>
                     <p className="mt-1">{downloadDetail.author || "Unknown author"}</p>
@@ -411,16 +414,14 @@ function ViewDownLoadDetail() {
                 </div>
               </div>
               
-              {/* User and Download Information */}
               <div className="bg-green-50 p-5 rounded-lg">
                 <h2 className="text-xl font-semibold mb-4 text-green-700">Download Information</h2>
                 <div className="space-y-3">
                   <div>
                     <span className="font-medium">Downloaded By:</span>
-                    <p className="mt-1">{downloadDetail.userName || "Anonymous"}</p>
+                    <p className="mt-1">{getUserDisplayName(downloadDetail.userId)}</p>
                   </div>
                   
-                  {/* Display user email with proper fallback */}
                   <div>
                     <span className="font-medium">User Email:</span>
                     <p className="mt-1">
@@ -430,7 +431,6 @@ function ViewDownLoadDetail() {
                     </p>
                   </div>
                   
-                  {/* Display user role with proper fallback */}
                   <div>
                     <span className="font-medium">User Role:</span>
                     <p className="mt-1">
@@ -440,12 +440,12 @@ function ViewDownLoadDetail() {
                     </p>
                   </div>
                   
-                  {/* {downloadDetail.userId && (
+                  {downloadDetail.userId && (
                     <div>
-                      <span className="font-medium">User ID:</span>
-                      <p className="mt-1">{downloadDetail.userId}</p>
+                      <span className="font-medium">User Name:</span>
+                      <p className="mt-1 break-words">{downloadDetail.userName}</p>
                     </div>
-                  )} */}
+                  )}
                   
                   <div>
                     <span className="font-medium">Download Date:</span>

@@ -10,8 +10,16 @@ function AllDownLoaded() {
 
   useEffect(() => {
     const fetchDownloads = async () => {
+      // Get token from localStorage
+      const token = localStorage.getItem('token');
+      
       const requestOptions = {
         method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        credentials: 'include',
         redirect: "follow"
       };
       
@@ -19,6 +27,9 @@ function AllDownLoaded() {
         const response = await fetch(`${API_BASE_URL}/downloads/`, requestOptions);
         
         if (!response.ok) {
+          if (response.status === 401) {
+            throw new Error('Authentication failed. Please login again.');
+          }
           throw new Error(`Error: ${response.status}`);
         }
         
@@ -36,7 +47,11 @@ function AllDownLoaded() {
         // Handle different possible response structures
         let count = 0;
         
-        if (result && typeof result.total === 'number') {
+        if (result && result.success === true && typeof result.results === 'number') {
+          // Handle the format shown in logs: {success: true, results: 3, data: {...}}
+          count = result.results;
+          console.log("Using 'results' value as download count:", count);
+        } else if (result && typeof result.total === 'number') {
           count = result.total;
         } else if (result && typeof result.count === 'number') {
           count = result.count;

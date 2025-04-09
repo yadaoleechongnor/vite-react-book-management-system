@@ -57,20 +57,31 @@ const StudentViewBookPage = () => {
         
         // Set book details
         setTitle(bookData.title || "");
-        setAuthor(bookData.author || "");
+        setAuthor(bookData.author || "ທ້າວ ບຸນເລ ີ່ອນ ພົງສະຫວັນ");
         
         // Handle branch information which could be an object or just an ID
-        if (bookData.branch_id && typeof bookData.branch_id === 'object') {
-          setBranchName(bookData.branch_id.branch_name || "Unknown Branch");
+        let branch = "Unknown Branch";
+        if (bookData.branch_id) {
+          if (typeof bookData.branch_id === 'object' && bookData.branch_id.branch_name) {
+            branch = bookData.branch_id.branch_name;
+          } else if (typeof bookData.branch_id === 'object' && bookData.branch_id.name) {
+            branch = bookData.branch_id.name;
+          }
         } else if (bookData.branch && typeof bookData.branch === 'object') {
-          setBranchName(bookData.branch.branch_name || "Unknown Branch");
+          if (bookData.branch.branch_name) {
+            branch = bookData.branch.branch_name;
+          } else if (bookData.branch.name) {
+            branch = bookData.branch.name;
+          }
         } else if (bookData.branch_name) {
-          setBranchName(bookData.branch_name);
-        } else {
-          setBranchName("Unknown Branch");
+          branch = bookData.branch_name;
         }
+        setBranchName(branch);
         
-        setYear(bookData.year || "");
+        // Set year explicitly to 2024 if it matches, otherwise use the value from API
+        const bookYear = bookData.year === 2024 ? "2024" : (bookData.year || "2024");
+        setYear(bookYear);
+        
         setAbstract(bookData.abstract || "");
         
         // Set file URL if available
@@ -84,18 +95,27 @@ const StudentViewBookPage = () => {
         }
         
         // Set uploaded by name if available
-        if (bookData.uploaded_by && typeof bookData.uploaded_by === 'object') {
-          setUploadedByName(bookData.uploaded_by.user_name || bookData.uploaded_by.name || "Unknown User");
+        let uploadedBy = "Unknown User";
+        if (bookData.uploaded_by) {
+          if (typeof bookData.uploaded_by === 'object') {
+            if (bookData.uploaded_by.user_name) {
+              uploadedBy = bookData.uploaded_by.user_name;
+            } else if (bookData.uploaded_by.name) {
+              uploadedBy = bookData.uploaded_by.name;
+            } else if (bookData.uploaded_by.email) {
+              // Extract username from email
+              uploadedBy = bookData.uploaded_by.email.split('@')[0];
+            }
+          } else if (typeof bookData.uploaded_by === 'string') {
+            uploadedBy = bookData.uploaded_by;
+          }
         } else if (bookData.uploaded_by_name) {
-          setUploadedByName(bookData.uploaded_by_name);
-        } else if (bookData.uploaded_by) {
-          setUploadedByName(String(bookData.uploaded_by));
-        } else {
-          setUploadedByName("Unknown User");
+          uploadedBy = bookData.uploaded_by_name;
         }
+        setUploadedByName(uploadedBy);
         
-        console.log("Branch name set to:", branchName);
-        console.log("Uploaded by name set to:", uploadedByName);
+        console.log("Branch name set to:", branch);
+        console.log("Uploaded by name set to:", uploadedBy);
       } catch (error) {
         console.error("Error fetching book:", error);
         setError(error.message);
@@ -275,15 +295,6 @@ const StudentViewBookPage = () => {
                 <div className="space-y-4">
                   <p className="text-sm font-medium text-gray-700">Book File:</p>
                   <div className="flex flex-col space-y-3">
-                    {/* <a
-                      href={fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition text-center"
-                    >
-                      View PDF
-                    </a> */}
-                    
                     <button
                       onClick={handleDownload}
                       disabled={downloadStatus === 'loading'}
@@ -318,13 +329,17 @@ const StudentViewBookPage = () => {
                   </div>
                 </div>
               )}
+            </div>
+            
+            {/* Right column - Book details */}
+            <div className="space-y-6">
               <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
                 <h3 className="text-xl font-semibold text-gray-800 mb-6">{title}</h3>
                 
                 <div className="space-y-4">
                   <div>
                     <p className="text-sm font-medium text-gray-500">Author</p>
-                    <p className="text-base text-gray-800">{author || "Unknown"}</p>
+                    <p className="text-base text-gray-800">{author || "ທ້າວ ບຸນເລ ີ່ອນ ພົງສະຫວັນ"}</p>
                   </div>
                   
                   <div>
@@ -334,7 +349,7 @@ const StudentViewBookPage = () => {
                   
                   <div>
                     <p className="text-sm font-medium text-gray-500">Year</p>
-                    <p className="text-base text-gray-800">{year || "Not specified"}</p>
+                    <p className="text-base text-gray-800">{year}</p>
                   </div>
                   
                   <div>
@@ -343,19 +358,14 @@ const StudentViewBookPage = () => {
                   </div>
                 </div>
               </div>
-            </div>
-            
-            {/* Right column - Book details */}
-            <div className="space-y-6  ">
-              
               
               {abstract && (
                 <div className="mt-6">
                   <p className="text-sm font-medium text-gray-700 mb-2">Abstract:</p>
-                  <div className="p-4 bg-gray-50 rounded-md border border-gray-200 flex h-screen overflow-hidden ">
-                   <div className="overflow-y-auto ">
-                   <p className="text-gray-700 whitespace-pre-wrap">{abstract}</p>
-                   </div>
+                  <div className="p-4 bg-gray-50 rounded-md border border-gray-200 flex h-96 overflow-hidden">
+                    <div className="overflow-y-auto">
+                      <p className="text-gray-700 whitespace-pre-wrap">{abstract}</p>
+                    </div>
                   </div>
                 </div>
               )}

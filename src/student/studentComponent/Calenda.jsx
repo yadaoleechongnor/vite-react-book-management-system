@@ -45,8 +45,8 @@ function Calenda() {
   };
   
   return (
-    <div className="w-full lg:w-1/3 flex flex-col gap-4 sm:gap-6">
-      <div className="bg-white p-3 sm:p-6 rounded-xl shadow-sm w-full">
+    <div className="w-full  lg:w-1/3 flex flex-col gap-4 sm:gap-6">
+      <div className="bg-white border border-sky-500  p-3 sm:p-6 rounded-xl shadow-sm w-full">
         <div className="flex justify-between items-center mb-2 sm:mb-3">
           <button onClick={prevMonth} className="text-gray-600 hover:text-gray-900">
             <FaChevronLeft />

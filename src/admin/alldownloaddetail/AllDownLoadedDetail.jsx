@@ -13,18 +13,30 @@ function AllDownLoadedDetail() {
 
   useEffect(() => {
     const fetchDownloadDetails = async () => {
+      // Get token from localStorage
+      const token = localStorage.getItem('token');
+      
       const requestOptions = {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          // Add authorization if your API requires it
-          // "Authorization": `Bearer ${localStorage.getItem('token')}`
+          // Add authorization header with the token
+          "Authorization": token ? `Bearer ${token}` : ''
         },
         redirect: "follow"
       };
       
       try {
         const response = await fetch(`${API_BASE_URL}/downloads/`, requestOptions);
+        
+        if (response.status === 401) {
+          // Handle unauthorized error specifically
+          setError("Unauthorized access. Please log in again.");
+          // Optional: Redirect to login page
+          // navigate('/login');
+          setLoading(false);
+          return;
+        }
         
         if (!response.ok) {
           throw new Error(`Error: ${response.status}`);
@@ -68,7 +80,7 @@ function AllDownLoadedDetail() {
     };
     
     fetchDownloadDetails();
-  }, []);
+  }, [navigate]);
 
   // Helper function to extract download data from various response formats
   const extractDownloadData = (result) => {
@@ -312,7 +324,19 @@ function AllDownLoadedDetail() {
         ) : error ? (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             <p>Error loading download details: {error}</p>
-            <p className="mt-2">Please check your API configuration or try again later.</p>
+            {error.includes("Unauthorized") ? (
+              <div>
+                <p className="mt-2">Your session may have expired. Please log in again.</p>
+                <button 
+                  onClick={() => navigate('/login')} 
+                  className="mt-3 bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded"
+                >
+                  Go to Login
+                </button>
+              </div>
+            ) : (
+              <p className="mt-2">Please check your API configuration or try again later.</p>
+            )}
           </div>
         ) : null}
         

@@ -3,7 +3,7 @@ import { FaBook } from 'react-icons/fa'
 
 function WelcomSection() {
   return (
-    <div className="flex flex-col sm:flex-row justify-between bg-white p-4 sm:p-6 rounded-xl shadow-sm mb-6">
+    <div className="fle border border-sky-500 x flex-col sm:flex-row justify-between bg-white p-4 sm:p-6 rounded-xl shadow-sm mb-6">
       <div className="mb-4 sm:mb-0">
         <h2 className="text-xl sm:text-2xl font-semibold mb-2">Welcome back to US Master-library!</h2>
        

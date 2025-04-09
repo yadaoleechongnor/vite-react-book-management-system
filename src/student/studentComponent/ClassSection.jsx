@@ -152,11 +152,11 @@ function ClassSection() {
   }, []);
 
   return (
-   <div className="mb-4 sm:mb-6">
+   <div className="mb-4 sm:mb-6 ">
             <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-center sm:text-left">Popular</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-2 sm:mb-3">
               <Link to="/student/popularbook" className="block">
-                <div className="bg-white p-3 sm:p-4 rounded-xl shadow-sm w-full hover:shadow-md transition-shadow">
+                <div className="bg-white p-3  border border-sky-500  sm:p-4 rounded-xl shadow-sm w-full hover:shadow-md transition-shadow">
                   <h4 className="text-sm sm:text-base font-semibold mb-1 sm:mb-2">Popular Book</h4>
                   <p className="text-gray-500 text-xs sm:text-sm mb-1 sm:mb-2"><ImBooks /></p>
                   <div className="flex items-center text-gray-500 text-xs sm:text-sm">
@@ -165,7 +165,7 @@ function ClassSection() {
                 </div>
               </Link>
               <Link to="/student/latestbook" className="block">
-                <div className="bg-white p-3 sm:p-4 rounded-xl shadow-sm w-full hover:shadow-md transition-shadow">
+                <div className="bg-white border border-sky-500  p-3 sm:p-4 rounded-xl shadow-sm w-full hover:shadow-md transition-shadow">
                   <h4 className="text-sm sm:text-base font-semibold mb-1 sm:mb-2">Latest Book</h4>
                   <p className="text-gray-500 text-xs sm:text-sm mb-1 sm:mb-2"><SiBookstack /></p>
                   <div className="flex items-center text-gray-500 text-xs sm:text-sm">
@@ -174,7 +174,7 @@ function ClassSection() {
                 </div>
               </Link>
               <Link to="/unit-one" className="block">
-                <div className="bg-white p-3 sm:p-4 rounded-xl shadow-sm w-full hover:shadow-md transition-shadow">
+                <div className="bg-white  border border-sky-500  p-3 sm:p-4 rounded-xl shadow-sm w-full hover:shadow-md transition-shadow">
                   <h4 className="text-sm sm:text-base font-semibold mb-1 sm:mb-2">UNIT I</h4>
                   <p className="text-gray-500 text-xs sm:text-sm mb-1 sm:mb-2">Teacher: Cole Chandler</p>
                   <div className="flex items-center text-gray-500 text-xs sm:text-sm">

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { FaUser, FaSignOutAlt, FaBars, FaTimes } from 'react-icons/fa';
 import { API_BASE_URL } from '../../utils/api';
 import Swal from 'sweetalert2';
+import { IoMdLogOut } from 'react-icons/io';
 
 export default function StudentNavbar({ toggleSidebar, sidebarOpen }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -149,7 +150,7 @@ export default function StudentNavbar({ toggleSidebar, sidebarOpen }) {
               )}
             </div> 
           <button 
-            className="flex items-center space-x-1 bg-red-500 hover:bg-red-600 text-white px-2 sm:px-3 py-1 sm:py-2 rounded text-sm sm:text-base"
+            className="flex items-center space-x-1 bg-red-500 hover:bg-red-600 text-white px-1 sm:px-3 py-1 sm:py-2 rounded text-sm sm:text-base"
             onClick={() => {
               Swal.fire({
                 title: 'Are you sure?',
@@ -173,7 +174,7 @@ export default function StudentNavbar({ toggleSidebar, sidebarOpen }) {
               });
             }}
           >
-            <FaSignOutAlt className="text-sm sm:text-base" />
+           <IoMdLogOut />
             {/* <span>Logout</span> */}
           </button>
           </div>

@@ -187,7 +187,7 @@ function DashBoardTable() {
   }
 
   return (
-    <div className="w-full lg:w-2/3 bg-white p-3 sm:p-6 rounded-xl shadow-sm overflow-x-auto">
+    <div className="w-full lg:w-2/3 border border-sky-500 bg-white p-3 sm:p-6 rounded-xl shadow-sm overflow-x-auto">
       <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-center sm:text-left">Downloaded Books</h3>
       {error && (
         <div className="bg-red-50 text-red-600 p-2 rounded-md text-xs mb-3">
