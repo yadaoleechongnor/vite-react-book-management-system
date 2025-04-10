@@ -38,6 +38,9 @@ import DashboardLatestBookPage from './student/studentComponent/DashboardLatestB
 import DownlaodedBookHistoryDetail from './student/downloadedbookhistorydetail/DownlaodedBookHistoryDetail';
 import AllDownLoadedDetail from './admin/alldownloaddetail/AllDownLoadedDetail';
 import ViewDownLoadDetail from './admin/AdminComponents/ViewDownLoadDetail';
+import HomPage from './homepage/HomPage';
+import HomePageLayout from './homepage/HomePageLayout';
+import About from './homepage/About';
 
 // Simple NotFound component
 const NotFound = () => (
@@ -78,7 +81,17 @@ function App() {
           {/* Public routes - redirect to dashboard if already logged in */}
           <Route path="/" element={
             <PublicRoute>
-              <LoginPage />
+              <HomePageLayout />
+            </PublicRoute>
+          } />
+          <Route path="/homepage" element={
+            <PublicRoute>
+              < HomPage/>
+            </PublicRoute>
+          } />
+          <Route path="/about" element={
+            <PublicRoute>
+              < About/>
             </PublicRoute>
           } />
           <Route path="/login" element={

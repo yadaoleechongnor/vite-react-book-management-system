@@ -390,7 +390,10 @@ const RegisterPage = () => {
               Sign Up
             </button>
           </form>
-          <div className="mt-4 text-center">
+          <div className="mt-4 text-center flex justify-between">
+            <a href="/" className="text-teal-500 hover:underline">
+              Back to Home
+            </a>
             <a href="/login" className="text-teal-500 hover:underline">
               Back to login
             </a>

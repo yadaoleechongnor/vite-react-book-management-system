@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Swal from 'sweetalert2';
 import { login as authLogin, getAuthToken } from '../utils/auth'; // Fix import to use getAuthToken instead of getToken
+import { IoIosArrowRoundBack } from 'react-icons/io';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
@@ -164,7 +165,8 @@ function LoginPage() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
       <div className="w-full max-w-md">
-        <form onSubmit={handleSubmit} className="bg-white shadow-xl rounded-lg px-8 pt-6 pb-8 mb-4 border border-gray-200">
+
+        <form onSubmit={handleSubmit} className="bg-white shadow-xl rounded-lg px-8 pt-6 pb-8 mb-4 border border-sky-500">
           <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Login to Your Account</h2>
           
           <div className="mb-6">
@@ -177,7 +179,7 @@ function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="appearance-none border border-gray-300 rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 transition-colors"
+              className="appearance-none border border-sky-500 rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 transition-colors"
               placeholder="Enter your email"
             />
           </div>
@@ -192,9 +194,17 @@ function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="appearance-none border border-gray-300 rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 transition-colors"
+              className="appearance-none border border-sky-500 rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500 transition-colors"
               placeholder="Enter your password"
             />
+          </div>
+          <div className='mb-6  items-center'>
+          <a 
+                href="/requestotp" 
+                className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
+              >
+                Forgot password?
+              </a>
           </div>
           
           <div className="mb-6">
@@ -210,20 +220,21 @@ function LoginPage() {
           {error && <div className="mb-6 text-red-500 text-sm">{error}</div>}
           
           <div className="text-center mb-4">
-            <p className="text-gray-600 mb-2">Having trouble logging in?</p>
+        
             <div className="flex flex-col sm:flex-row items-center justify-between text-sm">
+              <a 
+                href="/" 
+                className="text-blue-600 flex items-center gap-1 hover:text-blue-800 font-medium mb-2 sm:mb-0 transition-colors"
+              >
+                <IoIosArrowRoundBack /> Back to Home
+              </a>
               <a 
                 href="/register" 
                 className="text-blue-600 hover:text-blue-800 font-medium mb-2 sm:mb-0 transition-colors"
               >
-                Sign up for an account
+               Sign up for an account
               </a>
-              <a 
-                href="/requestotp" 
-                className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
-              >
-                Forgot password?
-              </a>
+             
             </div>
           </div>
         </form>
