@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import StudentLayout from './StudentLayout';
-import book_img from "../../../public/images/book_img.jpeg";
+import book_img from "../../../public/images/book_img.png";
 import { API_BASE_URL } from "../../utils/api";
 import { getAuthToken } from "../../utils/auth";
 

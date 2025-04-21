@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import book_img from "../../../../public/images/book_img.jpeg";
+import book_img from "../../../../public/images/book_img.png";
 import { API_BASE_URL } from "../../../utils/api";
 import { getAuthToken } from "../../../utils/auth"; // Import the auth utility
 import AdminBookLayout from "../AdminBookLayout";

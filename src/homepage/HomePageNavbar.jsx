@@ -1,8 +1,9 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 
 function HomePageNavbar() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogin = () => {
     navigate('/login');
@@ -12,6 +13,10 @@ function HomePageNavbar() {
     navigate('/register');
   };
 
+  const isActive = (path) => {
+    return location.pathname === path ? 'text-blue-600' : 'text-gray-700';
+  };
+
   return (
     <nav className="flex items-center justify-between px-8 py-4 bg-white shadow-md">
       <div className="flex items-center">
@@ -19,9 +24,30 @@ function HomePageNavbar() {
       </div>
       <div className="flex-1 px-10">
         <ul className="flex space-x-8 justify-center">
-          <li><a href="/homepage" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Home</a></li>
-          {/* <li><a href="/books" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">Books</a></li> */}
-          <li><a href="/about" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">About</a></li>
+          <li>
+            <Link 
+              to="/" 
+              className={`${isActive('/')} hover:text-blue-600 font-medium transition-colors`}
+            >
+              Home
+            </Link>
+          </li>
+          <li>
+            <Link 
+              to="/about" 
+              className={`${isActive('/about')} hover:text-blue-600 font-medium transition-colors`}
+            >
+              About
+            </Link>
+          </li>
+          <li>
+            <Link 
+              to="/news" 
+              className={`${isActive('/news')} hover:text-blue-600 font-medium transition-colors`}
+            >
+              News
+            </Link>
+          </li>
         </ul>
       </div>
       <div className="flex space-x-4">
@@ -42,4 +68,4 @@ function HomePageNavbar() {
   )
 }
 
-export default HomePageNavbar
+export default HomePageNavbar;

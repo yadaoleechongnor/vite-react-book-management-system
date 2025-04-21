@@ -41,6 +41,7 @@ import ViewDownLoadDetail from './admin/AdminComponents/ViewDownLoadDetail';
 import HomPage from './homepage/HomPage';
 import HomePageLayout from './homepage/HomePageLayout';
 import About from './homepage/About';
+import News from './homepage/News';
 
 // Simple NotFound component
 const NotFound = () => (
@@ -79,12 +80,8 @@ function App() {
  {/*------------------------------------Public routes - redirect to dashboard if already logged in------------------------------------------------------------------- */}
 
           {/* Public routes - redirect to dashboard if already logged in */}
+        
           <Route path="/" element={
-            <PublicRoute>
-              <HomePageLayout />
-            </PublicRoute>
-          } />
-          <Route path="/homepage" element={
             <PublicRoute>
               < HomPage/>
             </PublicRoute>
@@ -92,6 +89,11 @@ function App() {
           <Route path="/about" element={
             <PublicRoute>
               < About/>
+            </PublicRoute>
+          } />
+          <Route path="/news" element={
+            <PublicRoute>
+              < News/>
             </PublicRoute>
           } />
           <Route path="/login" element={
