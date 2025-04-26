@@ -156,12 +156,14 @@ export default function FacultyPage() {
             <div className="p-6 w-full">
                 <h1 className="text-2xl font-bold mb-4">Faculty Page</h1>
                 <p className="mb-6">Welcome to the Faculty Page.</p>
-                <button 
-                    className="hover:shadow-2xl p-4 border rounded-full bg-gradient-to-tr from-sky-300 to-sky-500 text-white font-bold hover:bg-gradient-to-tl hover:from-sky-300 hover:to-sky-500 cursor-pointer"
-                    onClick={handleAddFaculty}
-                >
-                    Add Faculty
-                </button>
+                <div className="flex justify-end">
+                    <button 
+                        className="hover:shadow-2xl p-4 border rounded-full bg-gradient-to-tr from-sky-300 to-sky-500 text-white font-bold hover:bg-gradient-to-tl hover:from-sky-300 hover:to-sky-500 cursor-pointer"
+                        onClick={handleAddFaculty}
+                    >
+                        Add Faculty
+                    </button>
+                </div>
                 <div className="p-6 bg-white border rounded-lg mt-16 shadow-2xl ">
                 <table className="min-w-full bg-white  border-gray-200">
                     <thead>

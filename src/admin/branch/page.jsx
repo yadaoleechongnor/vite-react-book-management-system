@@ -29,12 +29,8 @@ export default function BranchPage() {
         fetch(`${API_BASE_URL}/branches/`, requestOptions)
             .then((response) => response.json())
             .then((result) => {
-                console.log("Branches response:", result);
                 if (result.data && result.data.branches) {
-                    console.log("Branches fetched:", result.data.branches);
                     setBranches(result.data.branches);
-                } else {
-                    console.log("No branches found in response");
                 }
                 setLoading(false);
             })
@@ -46,7 +42,6 @@ export default function BranchPage() {
         fetch(`${API_BASE_URL}/departments/`, requestOptions)
             .then((response) => response.json())
             .then((result) => {
-                console.log("Departments fetched:", result.data.departments);
                 setDepartments(result.data.departments);
             })
             .catch((error) => console.error(error));

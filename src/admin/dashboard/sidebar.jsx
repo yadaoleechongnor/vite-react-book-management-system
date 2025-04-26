@@ -5,13 +5,16 @@ import { Link } from 'react-router-dom';
 import { FaTachometerAlt, FaUsers, FaCog, FaUniversity, FaBuilding, FaTimes } from 'react-icons/fa'; // Added FaTimes icon
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
-  const [activeItem, setActiveItem] = useState('');
+  const [activeItem, setActiveItem] = useState('dashboard'); // Changed default to 'dashboard'
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const savedActiveItem = localStorage.getItem('activeSidebarItem');
     if (savedActiveItem) {
       setActiveItem(savedActiveItem);
+    } else {
+      // Set dashboard as default if no saved item
+      localStorage.setItem('activeSidebarItem', 'dashboard');
     }
     
     // Add check for mobile screen size
@@ -47,12 +50,12 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         />
       )}
 
-      <aside className={`sidebar border border-black bg-gradient-to-br from-sky-200 to-sky-400 shadow-2xl shadow-sky-200 w-64 rounded-tr-lg fixed md:static h-screen z-30 transition-all duration-300 ease-in-out ${isOpen ? 'left-0' : '-left-64 md:left-0'}`}>
+      <aside className={`sidebar  text-black  rounded-tr-lg fixed md:static h-screen z-30 transition-all duration-300 ease-in-out ${isOpen ? 'left-0' : '-left-64 md:left-0'}`}>
         <div className="flex justify-between items-center p-4 md:hidden">
           <h2 className="text-white font-bold">Admin Panel</h2>
           <button 
             onClick={() => setIsOpen(false)} 
-            className="text-white hover:text-sky-800"
+            className="text-black hover:text-sky-800"
           >
             <FaTimes size={24} />
           </button>
@@ -61,46 +64,54 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         <nav className="p-4">
           <ul className="space-y-2">
             <li
-              className={`p-2 rounded-full flex items-center gap-2 ${activeItem === 'dashboard' ? 'bg-white text-sky-500' : 'text-white'} hover:bg-white hover:text-sky-500`}
+              className={`p-2 rounded-full flex items-center gap-2 ${activeItem === 'dashboard' ? 'bg-white text-sky-500' : 'text-black'} hover:bg-white hover:text-sky-500`}
               onClick={() => handleItemClick('dashboard', '/admin/dashboard')}
             >
               <FaTachometerAlt />
               <Link to="/admin/dashboard">Dashboard</Link>
             </li>
             <li
-              className={`p-2 rounded-full flex items-center gap-2 ${activeItem === 'users' ? 'bg-white text-sky-500' : 'text-white'} hover:bg-white hover:text-sky-500`}
+              className={`p-2 rounded-full flex items-center gap-2 ${activeItem === 'users' ? 'bg-white text-sky-500' : 'text-black'} hover:bg-white hover:text-sky-500`}
               onClick={() => handleItemClick('users', '/admin/usermanagement')}
             >
               <FaUsers />
               <Link to="/admin/usermanagement">User Management</Link>
             </li>
             <li
-              className={`p-2 rounded-full flex items-center gap-2 ${activeItem === 'faculty' ? 'bg-white text-sky-500' : 'text-white'} hover:bg-white hover:text-sky-500`}
+              className={`p-2 rounded-full flex items-center gap-2 ${activeItem === 'faculty' ? 'bg-white text-sky-500' : 'text-black'} hover:bg-white hover:text-sky-500`}
               onClick={() => handleItemClick('faculty', '/admin/faculty')}
             >
               <FaUniversity />
               <Link to="/admin/faculty">Faculty Management</Link>
             </li>
             <li
-              className={`p-2 rounded-full flex items-center gap-2 ${activeItem === 'department' ? 'bg-white text-sky-500' : 'text-white'} hover:bg-white hover:text-sky-500`}
+              className={`p-2 rounded-full flex items-center gap-2 ${activeItem === 'department' ? 'bg-white text-sky-500' : 'text-black'} hover:bg-white hover:text-sky-500`}
               onClick={() => handleItemClick('department', '/admin/department')}
             >
               <FaBuilding />
               <Link to="/admin/department">Department Management</Link>
             </li>
             <li
-              className={`p-2 rounded-full flex items-center gap-2 ${activeItem === 'branch' ? 'bg-white text-sky-500' : 'text-white'} hover:bg-white hover:text-sky-500`}
+              className={`p-2 rounded-full flex items-center gap-2 ${activeItem === 'branch' ? 'bg-white text-sky-500' : 'text-black'} hover:bg-white hover:text-sky-500`}
               onClick={() => handleItemClick('branch', '/admin/branch')}
             >
               <FaUsers />
               <Link to="/admin/branch">Branch Management</Link>
             </li>
             <li
-              className={`p-2 rounded-full flex items-center gap-2 ${activeItem === 'bookupload' ? 'bg-white text-sky-500' : 'text-white'} hover:bg-white hover:text-sky-500`}
+              className={`p-2 rounded-full flex items-center gap-2 ${activeItem === 'bookupload' ? 'bg-white text-sky-500' : 'text-black'} hover:bg-white hover:text-sky-500`}
               onClick={() => handleItemClick('bookupload', '/admin/bookupload')}
             >
               <FaUsers />
               <Link to="/admin/bookupload">Book management</Link>
+            </li>
+          
+            <li
+              className={`p-2 rounded-full flex items-center gap-2 ${activeItem === 'adminnews' ? 'bg-white text-sky-500' : 'text-black'} hover:bg-white hover:text-sky-500`}
+              onClick={() => handleItemClick('adminnews', '/admin/adminnews')}
+            >
+              <FaUsers />
+              <Link to="/admin/adminnews">News-Management</Link>
             </li>
           
           </ul>

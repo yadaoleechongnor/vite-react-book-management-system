@@ -22,9 +22,6 @@ const TeacherProfile = () => {
         if (!token) return null;
         
         try {
-            console.log(`Fetching branch with ID: ${branchId}`);
-            
-            // Use authenticated fetch to get branch details
             const myHeaders = new Headers();
             myHeaders.append("Authorization", `Bearer ${token}`);
             
@@ -34,7 +31,6 @@ const TeacherProfile = () => {
                 redirect: "follow",
             };
             
-            // We now know the correct endpoint and data structure
             const endpoint = `${API_BASE_URL || "http://localhost:5000"}/branches/${branchId}`;
             
             const response = await fetch(endpoint, requestOptions);
@@ -45,9 +41,7 @@ const TeacherProfile = () => {
             }
             
             const result = await response.json();
-            console.log("Branch API response:", result);
             
-            // Extract the branch_name based on the known structure
             if (result.success && result.data && result.data.branch && result.data.branch.branch_name) {
                 return result.data.branch.branch_name;
             }
@@ -90,9 +84,7 @@ const TeacherProfile = () => {
                 }
                 
                 const result = await response.json();
-                console.log("Profile data received:", result);
                 
-                // Extract the user data from the nested structure
                 let userData = null;
                 if (result.success && result.data && result.data.user) {
                     userData = result.data.user;
@@ -104,17 +96,14 @@ const TeacherProfile = () => {
                     userData = result;
                 }
                 
-                console.log("Extracted user data:", userData);
                 setProfileDetails(userData);
                 
-                // If branch_id exists, fetch the branch name
                 if (userData && userData.branch_id) {
                     try {
                         const name = await fetchBranchName(userData.branch_id);
                         if (name) {
                             setBranchName(name);
                         } else {
-                            // If we can't get the branch name, just display the ID for now
                             setBranchName(`Branch ID: ${userData.branch_id}`);
                         }
                     } catch (branchError) {
@@ -122,7 +111,6 @@ const TeacherProfile = () => {
                         setBranchName(`Branch ID: ${userData.branch_id}`);
                     }
                 } else if (userData && userData.branch) {
-                    // Sometimes the branch might be directly available
                     if (typeof userData.branch === 'string') {
                         setBranchName(userData.branch);
                     } else if (userData.branch && userData.branch.branch_name) {

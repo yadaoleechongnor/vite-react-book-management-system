@@ -62,7 +62,6 @@ function DownloadTrends() {
       }
       
       const result = await response.json();
-      console.log(`Trends data (${range}):`, result);
       
       // Handle the specific API response structure
       if (result && (result.success || result.status === 'success')) {
@@ -74,8 +73,6 @@ function DownloadTrends() {
           allDownloads = result.data.trends.flatMap(week => 
             week.downloads || []
           );
-          
-          console.log(`Total downloads found across all periods: ${allDownloads.length}`);
         } 
         // Fallback to previous extraction methods if needed
         else if (result.data && typeof result.data === 'object') {
@@ -93,7 +90,6 @@ function DownloadTrends() {
         if (processedData.length === 0) {
           // If we still don't have data, create mock data for testing
           const mockData = generateMockData(range);
-          console.log("Using mock data for visualization:", mockData);
           setTrendData(mockData);
         } else {
           setTrendData(processedData);
@@ -108,7 +104,6 @@ function DownloadTrends() {
       
       // Generate mock data for testing when API fails
       const mockData = generateMockData(timeRange);
-      console.log("Using mock data after error:", mockData);
       setTrendData(mockData);
     } finally {
       setLoading(false);

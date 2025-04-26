@@ -225,13 +225,15 @@ export default function DepartmentPage() {
             <div className="p-6 w-full">
                 <h1 className="text-2xl font-bold mb-4">Department Page</h1>
                 <p className="mb-6">Welcome to the Department Page.</p>
-                <button 
-                    className="hover:shadow-2xl p-2 border rounded-full bg-gradient-to-tr md:p-4  from-sky-300 to-sky-500 text-white font-bold hover:bg-gradient-to-tl hover:from-sky-300 hover:to-sky-500 cursor-pointer"
-                    onClick={handleAddDepartment}
-                >
-                    Add Department
-                </button>
-                <p className="mt-4">Total Departments: {countDepartments()}</p>
+                <div className="flex justify-between items-center mb-4">
+                    <p>Total Departments: {countDepartments()}</p>
+                    <button 
+                        className="hover:shadow-2xl p-2 border rounded-full bg-gradient-to-tr md:p-4  from-sky-300 to-sky-500 text-white font-bold hover:bg-gradient-to-tl hover:from-sky-300 hover:to-sky-500 cursor-pointer"
+                        onClick={handleAddDepartment}
+                    >
+                        Add Department
+                    </button>
+                </div>
                 <div className="overflow-x-auto p-6 rounded-lg border bg-white shadow-2xl mt-8">
                     <table className="min-w-full bg-white border-gray-200">
                         <thead>

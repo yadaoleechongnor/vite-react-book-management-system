@@ -18,9 +18,6 @@ function StudentBookPage() {
         const token = getAuthToken(); // Use the imported auth utility
         if (!token) throw new Error("No authentication token found");
 
-        console.log("Found token for student book page, length:", token.length);
-        console.log("Fetching books from:", `${API_BASE_URL}/v1/books`);
-        
         const response = await fetch(`${API_BASE_URL}/v1/books`, {
           method: "GET",
           headers: {
@@ -34,7 +31,6 @@ function StudentBookPage() {
         }
 
         const result = await response.json();
-        console.log("API Response:", result);
         
         // More flexible handling of response structure
         let booksData = [];
@@ -57,14 +53,9 @@ function StudentBookPage() {
           }
         }
         
-        // Log the extracted books data for debugging
-        console.log("Extracted books data:", booksData);
-        
         if (booksData.length > 0) {
           setBooks(booksData);
-          console.log("Books loaded:", booksData.length);
         } else {
-          console.warn("No books found in the response");
           setBooks([]);
         }
       } catch (error) {
@@ -92,11 +83,7 @@ function StudentBookPage() {
       const token = getAuthToken(); // Use the imported auth utility
       if (!token) throw new Error("No authentication token found");
       
-      console.log(`Searching books with term: "${searchTerm}"`);
-      
-      // Using the search endpoint that supports partial/similar matches
       const searchUrl = `${API_BASE_URL}/v1/books/searchbook?title=${encodeURIComponent(searchTerm)}`;
-      console.log("Search URL:", searchUrl);
       
       const response = await fetch(searchUrl, {
         method: "GET",
@@ -111,7 +98,6 @@ function StudentBookPage() {
       }
       
       const result = await response.json();
-      console.log("Search Results:", result);
       
       // Process search results with more flexible handling for similar matches
       let searchedBooks = [];
@@ -139,7 +125,6 @@ function StudentBookPage() {
       }
       
       setBooks(searchedBooks);
-      console.log(`Found ${searchedBooks.length} books similar to "${searchTerm}"`);
       
     } catch (error) {
       console.error("Error searching books:", error);
@@ -230,8 +215,6 @@ function StudentBookPage() {
       const token = getAuthToken();
       if (!token) throw new Error("No authentication token found");
       
-      console.log(`Recording download for book ID: ${bookId}`);
-      
       // First, record the download
       const recordResponse = await fetch(`${API_BASE_URL}/downloads/books/${bookId}/record`, {
         method: "POST",
@@ -244,8 +227,6 @@ function StudentBookPage() {
       if (!recordResponse.ok) {
         console.error(`Failed to record download: ${recordResponse.status}`);
         // Continue with download even if recording fails
-      } else {
-        console.log("Download recorded successfully");
       }
       
       // Find the book to get its file URL and title
@@ -260,8 +241,6 @@ function StudentBookPage() {
       if (!fileUrl.startsWith('http://') && !fileUrl.startsWith('https://')) {
         fileUrl = `${API_BASE_URL}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
       }
-      
-      console.log("Using direct file URL for download:", fileUrl);
       
       // Fetch the file with authorization header
       const fileResponse = await fetch(fileUrl, {
@@ -330,9 +309,6 @@ function StudentBookPage() {
   // Safely render book cards
   const renderBookCard = (book, index) => {
     try {
-      // Debug the individual book object
-      console.log(`Rendering book ${index}:`, book);
-      
       return (
         <div
           key={`${book.id || index}-${index}`}

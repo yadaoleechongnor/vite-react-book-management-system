@@ -15,8 +15,6 @@ function DashboardLatestBookPage() {
       try {
         const token = getAuthToken();
         if (!token) throw new Error("No authentication token found");
-
-        console.log("Fetching latest books from:", `${API_BASE_URL}/v1/books`);
         
         const response = await fetch(`${API_BASE_URL}/v1/books`, {
           method: "GET",
@@ -32,7 +30,6 @@ function DashboardLatestBookPage() {
 
         const result = await response.json();
         
-        // Extract books data from response
         let booksData = [];
         
         if (Array.isArray(result)) {
@@ -50,19 +47,15 @@ function DashboardLatestBookPage() {
         }
         
         if (booksData.length > 0) {
-          // Sort books by created_at or createdAt date (newest first)
           booksData.sort((a, b) => {
             const dateA = new Date(a.created_at || a.createdAt || a.uploadDate || 0);
             const dateB = new Date(b.created_at || b.createdAt || b.uploadDate || 0);
             return dateB - dateA;
           });
           
-          // Get only the 10 latest books
           const latestBooks = booksData.slice(0, 10);
           setBooks(latestBooks);
-          console.log("Latest books loaded:", latestBooks.length);
         } else {
-          console.warn("No books found in the response");
           setBooks([]);
         }
       } catch (error) {
@@ -76,7 +69,6 @@ function DashboardLatestBookPage() {
     fetchLatestBooks();
   }, []);
 
-  // Function to truncate title if longer than 50 characters
   const truncateTitle = (title) => {
     if (!title) return "Untitled";
     if (title.length > 50) {
@@ -85,7 +77,6 @@ function DashboardLatestBookPage() {
     return title;
   };
 
-  // Function to format date
   const formatDate = (dateString) => {
     if (!dateString) return "Unknown date";
     
@@ -104,18 +95,13 @@ function DashboardLatestBookPage() {
     }
   };
 
-  // Function to handle book download
   const handleDownload = async (bookId) => {
     try {
-      // Set download status to "loading" for this book
       setDownloadStatus(prev => ({...prev, [bookId]: 'loading'}));
       
       const token = getAuthToken();
       if (!token) throw new Error("No authentication token found");
       
-      console.log(`Recording download for book ID: ${bookId}`);
-      
-      // First, record the download
       const recordResponse = await fetch(`${API_BASE_URL}/downloads/books/${bookId}/record`, {
         method: "POST",
         headers: {
@@ -126,24 +112,18 @@ function DashboardLatestBookPage() {
       
       if (!recordResponse.ok) {
         console.error(`Failed to record download: ${recordResponse.status}`);
-      } else {
-        console.log("Download recorded successfully");
       }
       
-      // Find the book to get its file URL and title
       const book = books.find(b => (b.id || b._id) === bookId);
       if (!book) throw new Error("Book not found");
       
-      // Get the file URL from the book object
       let fileUrl = book.book_file?.url || book.fileUrl || book.pdf || book.download_url;
       if (!fileUrl) throw new Error("No downloadable file available");
       
-      // Make sure it's an absolute URL
       if (!fileUrl.startsWith('http://') && !fileUrl.startsWith('https://')) {
         fileUrl = `${API_BASE_URL}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
       }
       
-      // Fetch the file with authorization header
       const fileResponse = await fetch(fileUrl, {
         method: "GET",
         headers: {
@@ -155,7 +135,6 @@ function DashboardLatestBookPage() {
         throw new Error(`Failed to download file: ${fileResponse.status}`);
       }
       
-      // Get content disposition to extract filename if available
       const contentDisposition = fileResponse.headers.get('content-disposition');
       let filename = book.title ? `${book.title}.pdf` : 'document.pdf';
       
@@ -166,10 +145,8 @@ function DashboardLatestBookPage() {
         }
       }
       
-      // Get the file as a blob
       const blob = await fileResponse.blob();
       
-      // Create a blob URL and trigger download
       const blobUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = blobUrl;
@@ -177,13 +154,11 @@ function DashboardLatestBookPage() {
       document.body.appendChild(link);
       link.click();
       
-      // Clean up
       document.body.removeChild(link);
       window.URL.revokeObjectURL(blobUrl);
       
       setDownloadStatus(prev => ({...prev, [bookId]: 'success'}));
       
-      // Reset status after 3 seconds
       setTimeout(() => {
         setDownloadStatus(prev => {
           const newStatus = {...prev};
@@ -196,7 +171,6 @@ function DashboardLatestBookPage() {
       console.error("Error downloading book:", error);
       setDownloadStatus(prev => ({...prev, [bookId]: 'error'}));
       
-      // Reset error status after 5 seconds
       setTimeout(() => {
         setDownloadStatus(prev => {
           const newStatus = {...prev};
@@ -249,7 +223,6 @@ function DashboardLatestBookPage() {
                   <h4 className="text-sm font-medium text-left">{truncateTitle(book.title)}</h4>
                   <p className="text-sm text-gray-600 text-left">ຂຽນໂດຍ:ທ່ານ {book.author || book.writer || 'Unknown'}</p>
                   
-                  {/* Added upload date */}
                   <p className="text-xs text-gray-500 text-left mt-1">
                     ເພີ່ມເຂົ້າມື້: {formatDate(book.created_at || book.createdAt || book.uploadDate)}
                     {index === 0 && <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded">ໃໝ່ລ່າສຸດ</span>}
@@ -269,7 +242,6 @@ function DashboardLatestBookPage() {
                     </span>
                   )}
                   
-                  {/* Download button */}
                   {(book.book_file?.url || book.fileUrl || book.pdf || book.download_url) && (
                     <button
                       onClick={() => handleDownload(book.id || book._id)}

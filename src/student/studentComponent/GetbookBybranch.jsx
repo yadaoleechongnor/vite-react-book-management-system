@@ -37,21 +37,14 @@ const GetbookBybranch = () => {
             })
             .then((result) => {
                 if (result && result.success && result.data) {
-                    // Format data to include branch name
                     const formattedBranches = result.data.map(item => {
-                        // Extract branch ID
                         const branchId = item.branch._id;
-                        
-                        // Get branch name directly from the branch object
-                        // In your API response, branch_name is directly available in item.branch
                         let branchName = "Unknown Branch";
                         
                         if (item.branch && item.branch.branch_name) {
-                            // Branch name is directly available in the branch object
                             branchName = item.branch.branch_name;
                         }
                         
-                        // Count the number of books in this branch
                         const bookCount = item.books ? item.books.length : 0;
                         
                         return {
@@ -61,7 +54,6 @@ const GetbookBybranch = () => {
                         };
                     });
                     
-                    console.log("Formatted branches:", formattedBranches);
                     setBranches(formattedBranches);
                 } else {
                     throw new Error("Invalid API response structure");
@@ -84,9 +76,6 @@ const GetbookBybranch = () => {
         
         setActiveMenu(branchId);
         navigate(`/student/getbookwithbranch/${branchId}`);
-        
-        // Log navigation for debugging
-        console.log(`Navigating to branch: ${branchId}`);
     };
 
     return (

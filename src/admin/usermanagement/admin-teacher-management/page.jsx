@@ -21,7 +21,6 @@ function AddminTeacherManagement() {
     const token = getAuthToken(); // Use the imported function
     
     if (token) {
-      console.log("Found teacher management token, length:", token.length);
       myHeaders.append("Authorization", `Bearer ${token}`);
     } else {
       console.warn("No authentication token found for teacher management, API call will likely fail");
@@ -41,7 +40,6 @@ function AddminTeacherManagement() {
         return response.json();
       })
       .then((result) => {
-        console.log("Teacher response received:", result);
         if (result.success && result.data && Array.isArray(result.data.teachers)) {
           setUsers(result.data.teachers);
         } else {
@@ -83,7 +81,6 @@ function AddminTeacherManagement() {
     fetch(`${API_BASE_URL}/branches/`, requestOptionsBranches)
       .then((response) => response.json())
       .then((result) => {
-        console.log("Branches response received:", result);
         // Handle branches data if needed
       })
       .catch((error) => {
@@ -94,7 +91,6 @@ function AddminTeacherManagement() {
 
 
   const handleDelete = (userId) => {
-    console.log("Deleting user with ID:", userId);
     if (!userId) {
       console.error("User ID is undefined");
       return;
@@ -124,8 +120,7 @@ function AddminTeacherManagement() {
 
         fetch(`${API_BASE_URL}/users/${userId}`, requestOptions)
           .then((response) => response.text())
-          .then((result) => {
-            console.log(result);
+          .then(() => {
             setUsers(users.filter(user => user._id !== userId));
             Swal.fire({
               title: 'Deleted!',
@@ -225,8 +220,6 @@ function AddminTeacherManagement() {
                 {isAdmin && (
                   <button onClick={(e) => { 
                     e.stopPropagation(); 
-                    console.log("Button clicked for user:", user); // Log the entire user object
-                    console.log("Button clicked for user ID:", user._id); // Log the user ID when button is clicked
                     handleDelete(user._id); 
                   }} className='text-red-600 hover:text-red-900'>
                     <FaTrashAlt className="inline-block w-5 h-5" />

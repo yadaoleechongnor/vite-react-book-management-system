@@ -1,8 +1,6 @@
 import axios from 'axios';
 import { API_BASE_URL } from './../../../utils/api';
 
-
-
 // Create configured axios instance
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -34,14 +32,10 @@ export const requestVerificationOTP = async (email) => {
  */
 export const requestPasswordResetOTP = async (email) => {
   try {
-    console.log('Requesting password reset OTP for:', email);
-    
     const response = await api.post('/otp/request-password-reset', { 
       email,
       purpose: 'password_reset'
     });
-    
-    console.log('Password reset OTP response:', response.data);
     return response.data;
   } catch (error) {
     console.error('Password reset OTP request error:', error.response?.data || error.message);
@@ -57,14 +51,7 @@ export const requestPasswordResetOTP = async (email) => {
  */
 export const verifyOTP = async (email, otp) => {
   try {
-    // Ensure OTP is properly formatted
     const formattedOTP = String(otp).trim();
-    
-    console.log('Sending OTP verification request:', { 
-      email, 
-      otp: formattedOTP,
-      purpose: 'password_reset' 
-    });
     
     const response = await api.post('/otp/verify', {
       email,
@@ -72,7 +59,6 @@ export const verifyOTP = async (email, otp) => {
       purpose: 'password_reset'
     });
     
-    console.log('OTP verification response:', response.data);
     return response.data;
   } catch (error) {
     console.error('OTP verification error details:', error.response?.data || error.message);
@@ -89,14 +75,12 @@ export const verifyOTP = async (email, otp) => {
  */
 export const resetPassword = async (email, otp, newPassword) => {
   try {
-    console.log('Sending password reset request:', { email, otp, newPassword: '***' });
     const response = await api.post('/otp/reset-password', {
       email,
       otp,
       newPassword,
-      purpose: 'password_reset' // Add purpose if the backend requires it
+      purpose: 'password_reset'
     });
-    console.log('Password reset response:', response.data);
     return response.data;
   } catch (error) {
     console.error('Password reset error details:', error.response?.data || error.message);
@@ -119,22 +103,16 @@ const handleApiError = (error) => {
 // Verify user email after registration
 export const verifyUserEmail = async (email, otp) => {
   try {
-    // Log the request payload for debugging
-    console.log('Sending verify email request with:', { email, otp, purpose: 'verification' });
-    
-    // The endpoint should match what your server expects
     const response = await api.post('/otp/verify', { 
       email, 
       otp,
       purpose: 'verification'
     });
     
-    console.log('Verify email response:', response.data);
     return response.data;
   } catch (error) {
     console.error('Detailed verification error:', error);
     
-    // Enhanced error handling to capture more information
     if (error.response) {
       console.error('Server response:', error.response.status, error.response.data);
       throw new Error(error.response.data?.message || `Server error: ${error.response.status}`);

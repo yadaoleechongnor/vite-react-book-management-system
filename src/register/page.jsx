@@ -14,19 +14,16 @@ const RegisterPage = () => {
   useEffect(() => {
     fetchBranches();
     
-    // Safer event binding with a check to make sure the form exists
     const form = document.getElementById("registerForm");
     if (form) {
       form.addEventListener("submit", handleSubmit);
       
-      // Cleanup function to remove event listener
       return () => {
         form.removeEventListener("submit", handleSubmit);
       };
     }
   }, []);
 
-  // Separate handler function to keep code organized
   const handleSubmit = (event) => {
     event.preventDefault();
     if (validateForm()) {
@@ -47,39 +44,26 @@ const RegisterPage = () => {
     fetch(`${API_BASE_URL}/branches/`, requestOptions)
       .then((response) => response.json())
       .then((result) => {
-        console.log("Fetched data:", result);
-
         if (result && result.success && result.data) {
-          console.log("Branch data structure:", JSON.stringify(result.data, null, 2));
-
           if (Array.isArray(result.data)) {
             setBranches(result.data);
           } else if (typeof result.data === "object") {
             const possibleArrays = Object.values(result.data).filter((val) => Array.isArray(val));
             if (possibleArrays.length > 0) {
               setBranches(possibleArrays[0]);
-              console.log("Found branches array:", possibleArrays[0]);
             } else {
               if (Object.keys(result.data).length > 0 && !Array.isArray(result.data)) {
                 const branchesArray = Object.values(result.data);
                 setBranches(branchesArray);
-                console.log("Using data object as branches:", branchesArray);
-              } else {
-                console.error("Could not find any array in the data object");
               }
             }
-          } else {
-            console.error("Data structure is not as expected");
           }
-        } else {
-          console.error("Invalid response structure:", result);
         }
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {});
   };
 
   const validateForm = () => {
-    // Safely get form elements and their values
     const getElementValue = (id) => {
       const element = document.getElementById(id);
       return element ? element.value : '';
@@ -100,7 +84,6 @@ const RegisterPage = () => {
     if (!password.trim()) errors.password = "Password is required";
     if (password.length < 8) errors.password = "Password must be at least 8 characters";
     
-    // Phone number validation
     if (!phone_number.trim()) {
       errors.phone_number = "Phone number is required";
     } else if (!/^\d{10}$/.test(phone_number)) {
@@ -111,7 +94,6 @@ const RegisterPage = () => {
     
     if (!branch_id) errors.branch_id = "Branch is required";
     
-    // Year validation
     if (!year.trim()) {
       errors.year = "Year is required";
     } else {
@@ -121,7 +103,6 @@ const RegisterPage = () => {
       }
     }
     
-    // Student code validation
     if (!student_code.trim()) {
       errors.student_code = "Student code is required";
     } else if (!/^\d{10}$/.test(student_code)) {
@@ -133,7 +114,6 @@ const RegisterPage = () => {
   };
 
   const registerUser = () => {
-    // Use the same safe method to get values
     const getElementValue = (id) => {
       const element = document.getElementById(id);
       return element ? element.value : '';
@@ -147,12 +127,11 @@ const RegisterPage = () => {
     const year = getElementValue("year");
     const student_code = getElementValue("student_code");
     
-    // Align payload with User model requirements
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
     const raw = JSON.stringify({
-      name: name,  // This is correct - matches backend expectation
+      name: name,
       email: email,
       password: password,
       phone_number: phone_number,
@@ -161,8 +140,6 @@ const RegisterPage = () => {
       student_code: student_code,
       role: "student"
     });
-
-    console.log("Sending registration data:", JSON.parse(raw));
 
     const requestOptions = {
       method: "POST",
@@ -173,11 +150,9 @@ const RegisterPage = () => {
 
     fetch(`${API_BASE_URL}/users/register`, requestOptions)
       .then((response) => {
-        console.log("Status:", response.status);
         return response.json();
       })
       .then((result) => {
-        console.log("Response:", result);
         if (result.success) {
           Swal.fire({
             title: "Registration Successful",
@@ -198,8 +173,7 @@ const RegisterPage = () => {
           });
         }
       })
-      .catch((error) => {
-        console.error(error);
+      .catch(() => {
         Swal.fire({
           title: "Registration Failed",
           text: "An error occurred during registration.",
@@ -212,14 +186,13 @@ const RegisterPage = () => {
 
   return (
     <div className="flex border bg-white  items-center justify-center min-h-screen ">
-      {/* Left Side with Background and Text (Reduced Width) */}
       <div className="flex border h-auto gap-8  shadow-xl rounded-lg md:flex  ">
      <div className=" md:flex flex-col items-center rounded-r-2xl bg-sky-300   justify-center border md:w-1/2 hidden ">
      <div
         className="hidden  w-full h-48   bg-sky-300   md:flex md:w-1/2 bg-gradient-to-br from-teal-800 to-teal-400 flex-col justify-center items-center"
         style={{
           backgroundImage: `url(${sphlogo})`,
-          backgroundSize: "140% 99%",
+          backgroundSize: "110% 99%",
           backgroundPosition: "center",
           minHeight: "auto",
         }}
@@ -232,7 +205,6 @@ const RegisterPage = () => {
 
      </div>
      
-      {/* Right Side with Form (Centered and Smaller) */}
       <div className="w-full   md:w-1/2 flex items-center justify-center p-6">
         <div className="w-full max-w-sm bg-white rounded-lg   ">
           <h2 className="text-xl font-bold mb-4 text-center">Sign Up</h2>
@@ -381,7 +353,6 @@ const RegisterPage = () => {
               )}
             </div>
             </div>
-            {/* Role input removed since backend enforces student role */}
 
             <button
               type="submit"

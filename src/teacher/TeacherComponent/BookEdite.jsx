@@ -64,28 +64,23 @@ const TeacherBookEditePage = () => {
 
         const result = await response.json();
         
-        // Save the complete book data for reference
         const bookData = result.data?.book || result.data || result;
         setCurrentBookData(bookData);
         
-        // Populate form fields with existing data
         setTitle(bookData.title || "");
         setAuthor(bookData.author || "");
         setBranchId(bookData.branch_id?._id || bookData.branch_id || "");
         setYear(bookData.year || "");
         setAbstract(bookData.abstract || "");
         
-        // Set existing file preview if available
         if (bookData.book_file?.url) {
           setPreview(bookData.book_file.url);
         }
         
-        // Set existing cover image if available
         if (bookData.cover_image) {
           setExistingCoverImage(bookData.cover_image);
         }
         
-        console.log("Fetched book data:", bookData);
       } catch (error) {
         console.error("Error fetching book:", error);
         Swal.fire({
@@ -119,13 +114,12 @@ const TeacherBookEditePage = () => {
   // Fetch authenticated user details on component mount
   useEffect(() => {
     const fetchUser = async () => {
-      const token = getAuthToken(); // Use the imported auth utility
+      const token = getAuthToken();
       if (!token) {
         setLoading(false);
         return;
       }
 
-      console.log("Found token for user fetch, length:", token.length);
       const headers = new Headers({ Authorization: `Bearer ${token}` });
 
       try {
@@ -138,18 +132,10 @@ const TeacherBookEditePage = () => {
         
         const responseData = await response.json();
         
-        // Correctly access user data based on the provided API response structure
         if (responseData.success && responseData.data && responseData.data.user) {
           const userData = responseData.data.user;
           setUploadedBy(userData._id || "");
           setUploadedByName(userData.user_name || "");
-          
-          // More detailed console logging about the current user
-          console.log("==== CURRENT USER DETAILS ====");
-          console.log("User ID:", userData._id);
-          console.log("Username:", userData.user_name);
-          console.log("Full user object:", userData);
-          console.log("==============================");
         } else {
           throw new Error("Unexpected API response structure");
         }
@@ -189,7 +175,6 @@ const TeacherBookEditePage = () => {
       reader.onload = (event) => setPreview(event.target.result);
       reader.readAsDataURL(selectedFile);
     } else {
-      // If no new file is selected, keep existing preview (if any)
       if (!preview && currentBookData?.book_file?.url) {
         setPreview(currentBookData.book_file.url);
       } else if (!selectedFile) {
@@ -205,7 +190,6 @@ const TeacherBookEditePage = () => {
     e.preventDefault();
     const token = getAuthToken();
     
-    // Validate required fields
     if (!token) {
       Swal.fire({
         title: "Authentication Error",
@@ -217,7 +201,6 @@ const TeacherBookEditePage = () => {
       return;
     }
     
-    // Book ID is required for update
     if (!bookId) {
       Swal.fire({
         title: "Error",
@@ -228,7 +211,6 @@ const TeacherBookEditePage = () => {
     }
 
     try {
-      // Create form data with all fields
       const formData = new FormData();
       formData.append("title", title);
       formData.append("author", author);
@@ -236,29 +218,10 @@ const TeacherBookEditePage = () => {
       formData.append("year", year);
       formData.append("abstract", abstract);
       
-      // Only append file if a new one is selected
       if (file) {
         formData.append("file", file);
       }
       
-      console.log("Updating book with ID:", bookId);
-      
-      // Try different endpoint formats to determine which one works
-      // First, log all the API attempts we're going to make
-      console.log("Attempting to update book with different API endpoints...");
-      
-      // Define possible API endpoints to try
-      const possibleEndpoints = [
-        { url: `${API_BASE_URL}/v1/books/${bookId}`, method: "PUT" },
-        { url: `${API_BASE_URL}/books/${bookId}`, method: "PUT" },
-        { url: `${API_BASE_URL}/v1/books/update/${bookId}`, method: "PUT" },
-        { url: `${API_BASE_URL}/v1/books/${bookId}/update`, method: "PUT" }
-      ];
-      
-      // Log the endpoints we'll try
-      console.log("Will attempt these endpoints:", possibleEndpoints.map(e => `${e.method} ${e.url}`));
-      
-      // Try the original endpoint first
       let response = await fetch(`${API_BASE_URL}/v1/books/${bookId}`, {
         method: "PUT",
         headers: {
@@ -267,11 +230,7 @@ const TeacherBookEditePage = () => {
         body: formData,
       });
       
-      console.log("First attempt status:", response.status);
-      
-      // If first attempt fails with 404, try alternative endpoints
       if (response.status === 404) {
-        // Display a message to the user
         Swal.fire({
           title: "Trying Alternative Methods",
           text: "First attempt failed. Trying alternative update methods...",
@@ -280,8 +239,6 @@ const TeacherBookEditePage = () => {
           showConfirmButton: false,
         });
         
-        // Try removing the v1 prefix
-        console.log("Trying without v1 prefix...");
         response = await fetch(`${API_BASE_URL}/books/${bookId}`, {
           method: "PUT",
           headers: {
@@ -289,12 +246,8 @@ const TeacherBookEditePage = () => {
           },
           body: formData,
         });
-        console.log("Second attempt status:", response.status);
       }
 
-      // Add logging to troubleshoot response
-      console.log("Final update response status:", response.status);
-      
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         console.error("Error details:", errorData);
@@ -302,7 +255,6 @@ const TeacherBookEditePage = () => {
           `Update failed with status ${response.status}. Please check server logs for correct API endpoint.`);
       }
 
-      // Success handling
       Swal.fire({
         title: "Update Success",
         text: "Your book has been updated successfully!",
@@ -310,7 +262,6 @@ const TeacherBookEditePage = () => {
         timer: 2000,
         showConfirmButton: false,
       }).then(() => {
-        // Navigate back to book page after successful update
         navigate("/teacher/bookpage");
       });
     } catch (error) {
@@ -342,7 +293,6 @@ const TeacherBookEditePage = () => {
         >
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Edit Book</h2>
           
-          {/* User info display */}
           {uploadedByName && (
             <div className="mb-4 p-3 bg-blue-50 rounded-md">
               <p className="text-sm text-gray-600">
@@ -352,7 +302,6 @@ const TeacherBookEditePage = () => {
           )}
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* File Upload Section */}
             <div className="md:col-span-1 lg:col-span-1">
               <div
                 className="flex flex-col justify-center items-center border-4 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer bg-gray-50 w-full h-48 sm:h-64"
@@ -376,7 +325,6 @@ const TeacherBookEditePage = () => {
               {preview && (
                 <div className="mt-4 flex flex-col items-center hidden md:flex">
                   {file ? (
-                    // For local file preview
                     <div className="w-full bg-gray-100 rounded-md p-4 text-center">
                       <p className="text-green-600 font-medium mb-2">File selected:</p>
                       <p className="text-gray-700">{file.name}</p>
@@ -385,7 +333,6 @@ const TeacherBookEditePage = () => {
                       </p>
                     </div>
                   ) : (
-                    // For existing file on server
                     <div className="w-full bg-gray-100 rounded-md p-4 text-center">
                       <p className="text-blue-600 font-medium mb-2">Current file:</p>
                       <div className="flex justify-center space-x-3 mt-2">
@@ -410,7 +357,6 @@ const TeacherBookEditePage = () => {
                 </div>
               )}
               
-              {/* Show existing cover image if available */}
               {existingCoverImage && (
                 <div className="mt-4 hidden md:block">
                   <p className="text-sm font-medium text-gray-700 mb-2">Current Cover Image:</p>
@@ -424,7 +370,6 @@ const TeacherBookEditePage = () => {
               )}
             </div>
 
-            {/* Form Fields Section */}
             <div className="md:col-span-1 lg:col-span-2 space-y-4">
               <div>
                 <label className="block text-base md:text-lg font-medium text-gray-700">Title</label>
@@ -484,7 +429,6 @@ const TeacherBookEditePage = () => {
             </div>
           </div>
 
-          {/* Form Actions */}
           <div className="flex justify-end space-x-2 mt-4">
             <button
               type="button"

@@ -42,6 +42,8 @@ import HomPage from './homepage/HomPage';
 import HomePageLayout from './homepage/HomePageLayout';
 import About from './homepage/About';
 import News from './homepage/News';
+import AdminNewsPage from './admin/news/AddminNewspage';
+import AddNews from './admin/news/AddNews';
 
 // Simple NotFound component
 const NotFound = () => (
@@ -179,6 +181,9 @@ function App() {
             <Route path="/admin/addteacheraddmin" element={<AddminTeacherManagement />} />
             <Route path="/admin/bookmanagement" element={<BookList />} />
             <Route path="/admin/bookasuser" element={<BookAsUser />} />
+            <Route path="/admin/adminnews" element={< AdminNewsPage />} />
+            <Route path="/admin/news/add" element={<AddNews />} />
+            <Route path="/admin/news/edit/:id" element={<AddNews />} />
             <Route path="/admin/ownbookpage" element={<AdminOwnBookPage />} />
             <Route path="/admin/bookupdate/:bookId" element={<AdminBookUpdate/>} />
             <Route path="/admin/viewdownloadeddetail/:downloadId" element={<ViewDownLoadDetail/>} />

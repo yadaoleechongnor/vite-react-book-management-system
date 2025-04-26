@@ -179,12 +179,6 @@ function ViewDownLoadDetail() {
     const userInfo = downloadData.user_id || downloadData.user || downloadData.userInfo || downloadData.user_details || {};
     const bookInfo = downloadData.book_id || downloadData.book || downloadData.bookInfo || downloadData.book_details || {};
     
-    console.log("Processing download item:", downloadData);
-    console.log("User info:", userInfo);
-    console.log("Book info:", bookInfo);
-    console.log("Book ID:", bookInfo._id);
-    console.log("Author:", bookInfo.author);
-    
     return {
       id: downloadData.id || downloadData._id || "N/A",
       title: bookInfo.title || extractBookTitle(downloadData),

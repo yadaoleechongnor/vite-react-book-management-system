@@ -30,7 +30,6 @@ const BookUpload = () => {
         const response = await fetch(`${API_BASE_URL}/branches/`);
         if (response.ok) {
           const data = await response.json();
-          console.log('Branch API data:', data); // Log the fetched data
           setBranches(data.data.branches);
         } else {
           setBranches([]);
@@ -48,10 +47,7 @@ const BookUpload = () => {
     setIsLoading(true);
     const token = getAuthToken();
     
-    console.log("Checking authentication with token:", token ? "Token exists" : "No token found");
-    
     if (!token) {
-      console.log("No token found, setting isAuthenticated to false");
       setIsAuthenticated(false);
       setIsLoading(false);
       
@@ -60,7 +56,6 @@ const BookUpload = () => {
       const tokenFromUrl = urlParams.get('token');
       
       if (tokenFromUrl) {
-        console.log("Found token in URL, saving to localStorage");
         saveAuthToken(tokenFromUrl);
         // Reload page to use the new token
         window.location.href = window.location.pathname;
@@ -71,22 +66,16 @@ const BookUpload = () => {
     }
     
     try {
-      console.log("Sending authentication request with token");
-      // Use authenticatedFetch instead of manual header creation
       const response = await authenticatedFetch(`${API_BASE_URL}/users/me`, {
         method: 'GET'
       });
       
-      console.log("Auth response status:", response.status);
-      
       if (response.ok) {
         const data = await response.json();
-        console.log("User data retrieved:", data);
         setUploadedBy(data._id || '');
         setUploadedByName(data.user_name || '');
         setIsAuthenticated(true);
       } else {
-        console.log("Auth failed with status:", response.status);
         if (response.status === 401) {
           setIsAuthenticated(false);
           // Clear invalid token
@@ -158,7 +147,6 @@ const BookUpload = () => {
       return;
     }
     
-    // Use authenticatedFetch for form submission
     const formData = new FormData();
     formData.append("title", title);
     formData.append("author", author);
@@ -183,7 +171,6 @@ const BookUpload = () => {
     })
       .then((response) => response.text())
       .then((result) => {
-        console.log(result);
         Swal.fire({
           title: 'Upload Success',
           text: 'Your file has been uploaded successfully!',

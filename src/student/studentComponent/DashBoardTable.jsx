@@ -17,7 +17,6 @@ function DashBoardTable() {
         if (!token) throw new Error("No authentication token found");
 
         try {
-          // Fetch user's download history
           const response = await fetch(`${API_BASE_URL}/downloads/user/history`, {
             method: "GET",
             headers: {
@@ -41,22 +40,16 @@ function DashBoardTable() {
             }
             
             setDownloadedBooks(downloadsData);
-            return; // Exit early if successful
+            return;
           }
           
-          // Log specific error details
-          console.warn(`Download history API returned status: ${response.status}. Falling back to books API.`);
-          
           if (response.status === 403) {
-            console.info("Access forbidden to download history. This might be due to insufficient permissions or API limitations.");
+            console.error("Access forbidden to download history. Insufficient permissions.");
           }
         } catch (historyError) {
           console.error("Error accessing download history API:", historyError);
-          // Continue to fallback path
         }
 
-        // Fallback to books API
-        console.info("Using fallback: fetching from general books API");
         const booksResponse = await fetch(`${API_BASE_URL}/v1/books`, {
           method: "GET",
           headers: {
@@ -66,9 +59,6 @@ function DashBoardTable() {
         });
         
         if (!booksResponse.ok) {
-          // Try another potential endpoint if the first one fails
-          console.warn(`Failed to fetch from /v1/books with status: ${booksResponse.status}. Trying alternate endpoint.`);
-          
           try {
             const alternateResponse = await fetch(`${API_BASE_URL}/books`, {
               method: "GET",
@@ -86,7 +76,6 @@ function DashBoardTable() {
             return processBookData(alternateResult);
           } catch (altError) {
             console.error("Error with alternate endpoint:", altError);
-            // Show a meaningful mock data as last resort
             const mockData = Array(3).fill(null).map((_, index) => ({
               id: `mock-${index}`,
               title: `Sample Book ${index + 1}`,
@@ -113,9 +102,7 @@ function DashBoardTable() {
       }
     };
     
-    // Helper function to process book data consistently
     const processBookData = (result) => {
-      // Extract books from response (flexible structure handling)
       let booksData = [];
       if (Array.isArray(result)) {
         booksData = result;
@@ -129,7 +116,6 @@ function DashBoardTable() {
         booksData = [result];
       }
       
-      // Simulate download history with the first 5 books 
       const mockDownloads = booksData.slice(0, 5).map((book, index) => ({
         id: book.id || book._id,
         title: book.title || 'Untitled',
@@ -144,36 +130,31 @@ function DashBoardTable() {
     fetchDownloadedBooks();
   }, []);
 
-  // Function to handle redirection to the detail page
   const handleViewDetail = (book) => {
-    // Add logging to help debug navigation
-    console.log("Navigating to book details:", book.id);
     navigate(`/student/downloadeddetail`, { 
       state: { 
         bookId: book.id, 
         bookData: book.bookData || book,
-        source: "dashboard"  // Add source information to help with debugging
+        source: "dashboard"
       } 
     });
   };
 
-  // Function to truncate text to a specific length and add ellipsis if needed
   const truncateText = (text, maxLength) => {
     if (!text) return '';
     return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
   };
 
-  // Get the formatted date from various possible date fields
   const getFormattedDate = (book) => {
     const dateField = book.downloadDate || book.downloaded_at || book.createdAt || book.date;
     if (!dateField) return "Unknown date";
     
     try {
       const date = new Date(dateField);
-      if (isNaN(date)) return dateField; // If parsing fails, return original string
+      if (isNaN(date)) return dateField;
       return date.toLocaleDateString();
     } catch (e) {
-      return dateField; // Fallback to original string
+      return dateField;
     }
   };
 

@@ -12,10 +12,9 @@ function AdminTable() {
   useEffect(() => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-    const token = getAuthToken(); // Use the imported function
+    const token = getAuthToken();
     
     if (token) {
-      console.log("Found admin table token, length:", token.length);
       myHeaders.append("Authorization", `Bearer ${token}`);
     } else {
       console.warn("No authentication token found for admin table, API call will likely fail");
@@ -35,7 +34,6 @@ function AdminTable() {
         return response.json();
       })
       .then((result) => {
-        console.log("Admin response received:", result);
         if (result.success && Array.isArray(result.data?.admins)) {
           setAdminUsers(result.data.admins);
         } else {
@@ -46,7 +44,6 @@ function AdminTable() {
       .catch((error) => {
         if (error.message === 'Unauthorized') {
           console.error("Unauthorized access - invalid token for admins");
-          // We don't need to show another error message here as the teacher management page will handle it
         } else {
           console.error("Error fetching admin users:", error);
         }
@@ -54,8 +51,23 @@ function AdminTable() {
       });
   }, []);
 
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const formatPhoneNumber = (phone) => {
+    return phone || 'N/A';
+  };
+
   const handleDelete = (userId) => {
-    console.log("Deleting user with ID:", userId);
     if (!userId) {
       console.error("User ID is undefined");
       Swal.fire({
@@ -94,7 +106,6 @@ function AdminTable() {
         fetch(`${API_BASE_URL}/users/${userId}`, requestOptions)
           .then((response) => response.text())
           .then((result) => {
-            console.log(result);
             setAdminUsers(adminUsers.filter(user => user._id !== userId));
             Swal.fire({
               title: 'Deleted!',
@@ -125,10 +136,10 @@ function AdminTable() {
         <div style="text-align: left;">
           <p><strong>User Name:</strong> ${user.name || 'N/A'}</p>
           <p><strong>Email:</strong> ${user.email || 'N/A'}</p>
-          <p><strong>Phone Number:</strong> ${user.phone_number || 'N/A'}</p>
+          <p><strong>Phone Number:</strong> ${formatPhoneNumber(user.phone_number)}</p>
           <p><strong>Role:</strong> ${user.role || 'N/A'}</p>
-          <p><strong>Created At:</strong> ${user.createdAt || 'N/A'}</p>
-          <p><strong>Updated At:</strong> ${user.updatedAt || 'N/A'}</p>
+          <p><strong>Created At:</strong> ${formatDate(user.createdAt)}</p>
+          <p><strong>Updated At:</strong> ${formatDate(user.updatedAt)}</p>
         </div>
       `,
       icon: 'info'
@@ -147,25 +158,27 @@ function AdminTable() {
               <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">#</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">User Name</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider md:table-cell hidden">Email</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider md:table-cell hidden">Phone</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider lg:table-cell hidden">Role</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider lg:table-cell hidden">Created</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {adminUsers.map((user, index) => (
               <tr key={`${user._id || index}-${index}`} 
-                  className={index % 2 === 0 ? "bg-gray-50 cursor-pointer" : "cursor-pointer"} 
+                  className={index % 2 === 0 ? "bg-gray-50 cursor-pointer hover:bg-gray-100" : "cursor-pointer hover:bg-gray-100"} 
                   onClick={() => handleRowClick(user)}>
                 <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{user.name}</td>
+                <td className="px-6 py-4 whitespace-nowrap font-medium">{user.name || 'N/A'}</td>
                 <td className="px-6 py-4 whitespace-nowrap md:table-cell hidden">{user.email || 'N/A'}</td>
+                <td className="px-6 py-4 whitespace-nowrap md:table-cell hidden">{formatPhoneNumber(user.phone_number)}</td>
                 <td className="px-6 py-4 whitespace-nowrap lg:table-cell hidden">{user.role || 'N/A'}</td>
+                <td className="px-6 py-4 whitespace-nowrap lg:table-cell hidden">{formatDate(user.createdAt)}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {isAdmin && index !== 0 && (
                     <button onClick={(e) => { 
                       e.stopPropagation(); 
-                      console.log("Button clicked for user:", user); // Log the entire user object
-                      console.log("Button clicked for user ID:", user._id); // Log the user ID when button is clicked
                       handleDelete(user._id); 
                     }} className='text-red-600 hover:text-red-900'>
                       <FaTrashAlt className="inline-block w-5 h-5" />
@@ -176,7 +189,7 @@ function AdminTable() {
             ))}
             {adminUsers.length === 0 && (
               <tr>
-                <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
+                <td colSpan="7" className="px-6 py-4 text-center text-gray-500">
                   No admin users found
                 </td>
               </tr>

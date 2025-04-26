@@ -58,7 +58,6 @@ const TeacherUploadPage = () => {
         return;
       }
 
-      console.log("Found token for user fetch, length:", token.length);
       const headers = new Headers({ Authorization: `Bearer ${token}` });
 
       try {
@@ -71,18 +70,10 @@ const TeacherUploadPage = () => {
         
         const responseData = await response.json();
         
-        // Correctly access user data based on the provided API response structure
         if (responseData.success && responseData.data && responseData.data.user) {
           const userData = responseData.data.user;
           setUploadedBy(userData._id || "");
           setUploadedByName(userData.user_name || "");
-          
-          // More detailed console logging about the current user
-          console.log("==== CURRENT USER DETAILS ====");
-          console.log("User ID:", userData._id);
-          console.log("Username:", userData.user_name);
-          console.log("Full user object:", userData);
-          console.log("==============================");
         } else {
           throw new Error("Unexpected API response structure");
         }
@@ -133,13 +124,6 @@ const TeacherUploadPage = () => {
     e.preventDefault();
     const token = getAuthToken(); // Use the imported auth utility
     
-    // Log current user information before submission
-    console.log("==== SUBMISSION USER CHECK ====");
-    console.log("Current uploader ID:", uploadedBy);
-    console.log("Current uploader name:", uploadedByName);
-    console.log("=============================");
-    
-    // Validate required fields
     if (!token) {
       Swal.fire({
         title: "Authentication Error",
@@ -180,15 +164,11 @@ const TeacherUploadPage = () => {
       formData.append("abstract", abstract);
       formData.append("file", file);
       formData.append("uploaded_by", uploadedBy); // User ID from state
-
-      console.log("Submitting with user ID:", uploadedBy);
       
-      // Set up headers without including them in the FormData
       const response = await fetch(`${API_BASE_URL}/v1/books`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`
-          // Don't set Content-Type - browser will set it with boundary for FormData
         },
         body: formData,
       });

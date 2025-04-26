@@ -24,9 +24,7 @@ function BookList() {
   const [preview, setPreview] = useState("");
 
   useEffect(() => {
-    console.log("Is authenticated:", isAuthenticated());
     if (isAuthenticated()) {
-      console.log("API Base URL:", API_BASE_URL);
       fetchBooks();
       fetchBranches();
     } else {
@@ -45,7 +43,9 @@ function BookList() {
     setLoading(true);
     setError(null);
     try {
-      const response = await authenticatedFetch(`${API_BASE_URL}/v1/books`);
+      const response = await authenticatedFetch(`${API_BASE_URL}/v1/books`, {
+        credentials: 'include' // Add credentials option
+      });
       
       if (!response.ok) {
         throw new Error(`Error fetching books: ${response.status} - ${response.statusText}`);
@@ -53,13 +53,7 @@ function BookList() {
       
       const result = await response.json();
       if (result.success) {
-        // Check for both possible data structures
         const books = Array.isArray(result.data) ? result.data : (result.data?.books || []);
-        console.log("Fetched books:", books);
-        // Look at the first book's branch data structure for debugging
-        if (books.length > 0) {
-          console.log("First book branch structure:", books[0].branch_id);
-        }
         setBooks(books);
         setBookCount(books.length);
       } else {
@@ -79,7 +73,9 @@ function BookList() {
 
   const fetchBranches = async () => {
     try {
-      const response = await authenticatedFetch(`${API_BASE_URL}/branches/`);
+      const response = await authenticatedFetch(`${API_BASE_URL}/branches/`, {
+        credentials: 'include' // Add credentials option
+      });
       
       if (!response.ok) {
         throw new Error(`Error fetching branches: ${response.statusText}`);
@@ -242,6 +238,7 @@ function BookList() {
       const response = await authenticatedFetch(`${API_BASE_URL}/v1/books/${bookId}`, {
         method: "PATCH",
         body: formdata,
+        credentials: 'include' // Add credentials option
       });
       
       if (!response.ok) {
@@ -288,9 +285,7 @@ function BookList() {
       const result = await response.json();
       
       if (result.success) {
-        // Check for both possible data structures
         const searchResults = Array.isArray(result.data) ? result.data : (result.data?.books || []);
-        console.log("Search results:", searchResults);
         setBooks(searchResults);
         setBookCount(searchResults.length);
       } else {
@@ -310,30 +305,142 @@ function BookList() {
     searchBooks(event.target.value);
   };
 
-  const showBookDetails = (book) => {
-    const pdfUrl = `${API_BASE_URL}/uploads/${book.book_file.public_id}`;
-    const downloadUrl = pdfUrl;
-    Swal.fire({
-      title: book.title,
-      html: `
-        <p><strong>Author:</strong> ${book.author}</p>
-        <p><strong>Branch:</strong> ${book.branch_id.branch_name}</p>
-        <p><strong>Year:</strong> ${book.year}</p>
-        <p><strong>Abstract:</strong> ${book.abstract}</p>
-        <p><strong>Uploaded By:</strong> ${book.uploaded_by?.user_name || 'Unknown'}</p>
-        <p><strong>Upload Date:</strong> ${new Date(book.upload_date).toLocaleDateString()}</p>
-        <iframe src="${pdfUrl}" width="100%" height="400px" title="PDF Preview"></iframe>
-        <br/>
-        <a href="${downloadUrl}" download="${book.title}.pdf" target="_blank" class="btn btn-primary">Download PDF</a>
-      `,
-      icon: "info",
-      width: "800px",
-    });
-  };
+  // const showBookDetails = (book) => {
+  //   const pdfUrl = `${API_BASE_URL}/uploads/${book.book_file.public_id}`;
+  //   const downloadUrl = pdfUrl;
+    
+  //   console.log('PDF URL:', pdfUrl); // Debug URL
+  //   console.log('Book details:', book); // Debug book object
+    
+  //   Swal.fire({
+  //     title: book.title,
+  //     html: `
+  //       <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
+  //         <div class="space-y-4 mb-6">
+  //           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  //             <div class="bg-gray-50 p-3 rounded-lg">
+  //               <p class="text-gray-600 font-medium">Author</p>
+  //               <p class="text-gray-900">${book.author}</p>
+  //             </div>
+  //             <div class="bg-gray-50 p-3 rounded-lg">
+  //               <p class="text-gray-600 font-medium">Branch</p>
+  //               <p class="text-gray-900">${book.branch_id.branch_name}</p>
+  //             </div>
+  //             <div class="bg-gray-50 p-3 rounded-lg">
+  //               <p class="text-gray-600 font-medium">Year</p>
+  //               <p class="text-gray-900">${book.year}</p>
+  //             </div>
+  //             <div class="bg-gray-50 p-3 rounded-lg">
+  //               <p class="text-gray-600 font-medium">Upload Date</p>
+  //               <p class="text-gray-900">${new Date(book.upload_date).toLocaleDateString()}</p>
+  //             </div>
+  //           </div>
+            
+  //           <div class="bg-gray-50 p-4 rounded-lg">
+  //             <p class="text-gray-600 font-medium mb-2">Abstract</p>
+  //             <p class="text-gray-900 leading-relaxed">${book.abstract}</p>
+  //           </div>
+            
+  //           <div class="bg-gray-50 p-4 rounded-lg">
+  //             <p class="text-gray-600 font-medium mb-2">Uploaded By</p>
+  //             <p class="text-gray-900">${book.uploaded_by?.user_name || 'Unknown'}</p>
+  //           </div>
+  //         </div>
+
+  //         <div class="pdf-container border-2 border-gray-200 rounded-lg overflow-hidden">
+  //           <embed
+  //             src="${pdfUrl}"
+  //             type="application/pdf"
+  //             width="100%"
+  //             height="500px"
+  //             class="pdf-viewer"
+  //           />
+  //           <div class="fallback-container hidden p-4 text-center">
+  //             <p class="text-gray-600 mb-4">PDF viewer not available.</p>
+  //             <div class="space-y-2">
+  //               <a href="${downloadUrl}" 
+  //                  download="${book.title}.pdf"
+  //                  class="block w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+  //                 Download PDF
+  //               </a>
+  //               <button 
+  //                 onclick="window.open('${pdfUrl}', '_blank')"
+  //                 class="block w-full px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg">
+  //                 Open in New Tab
+  //               </button>
+  //             </div>
+  //           </div>
+  //         </div>
+
+  //         <div class="mt-6 text-center space-x-4">
+  //           <a href="${downloadUrl}" 
+  //              download="${book.title}.pdf" 
+  //              target="_blank" 
+  //              rel="noopener noreferrer" 
+  //              class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-150 ease-in-out">
+  //              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+  //                <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z"/>
+  //              </svg>
+  //              Download PDF
+  //           </a>
+  //           <button 
+  //             onclick="window.open('${pdfUrl}', '_blank', 'noopener,noreferrer')"
+  //             class="inline-flex items-center px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition duration-150 ease-in-out">
+  //             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  //               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+  //               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+  //             </svg>
+  //             View in New Tab
+  //           </button>
+  //         </div>
+  //       </div>
+  //     `,
+  //     icon: "info",
+  //     width: "900px",
+  //     showCloseButton: true,
+  //     customClass: {
+  //       container: 'swal2-container-custom',
+  //       popup: 'swal2-popup-custom rounded-xl',
+  //       content: 'swal2-content-custom'
+  //     },
+  //     didOpen: () => {
+  //       const pdfViewer = document.querySelector('.pdf-viewer');
+  //       const fallbackContainer = document.querySelector('.fallback-container');
+        
+  //       // Check if PDF viewer is supported
+  //       if (pdfViewer) {
+  //         pdfViewer.addEventListener('error', () => {
+  //           console.log('PDF viewer error occurred');
+  //           pdfViewer.style.display = 'none';
+  //           if (fallbackContainer) {
+  //             fallbackContainer.classList.remove('hidden');
+  //           }
+  //         });
+
+  //         // Test PDF loading
+  //         fetch(pdfUrl)
+  //           .then(response => {
+  //             if (!response.ok) {
+  //               throw new Error(`HTTP error! status: ${response.status}`);
+  //             }
+  //             console.log('PDF fetch successful');
+  //           })
+  //           .catch(error => {
+  //             console.error('PDF fetch error:', error);
+  //             pdfViewer.style.display = 'none';
+  //             if (fallbackContainer) {
+  //               fallbackContainer.classList.remove('hidden');
+  //             }
+  //           });
+  //       }
+  //     }
+  //   });
+  // };
 
   const handleViewPdf = (e, publicId) => {
     e.stopPropagation();
-    window.open(`${API_BASE_URL}/uploads/${publicId}`, '_blank');
+    const pdfUrl = `${API_BASE_URL}/uploads/${publicId}`;
+    window.open(pdfUrl, '_blank', 'noopener,noreferrer');
   };
 
   const truncateText = (text, maxLength) => {

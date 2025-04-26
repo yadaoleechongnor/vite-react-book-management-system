@@ -81,13 +81,7 @@ const ForgotPasswordPage = () => {
       } else {
         // Handle non-JSON responses
         const text = await response.text();
-        console.error('Received non-JSON response:', text.substring(0, 100) + '...');
-        
-        if (response.status === 401) {
-          setError('Authentication required. You may need to log in first or the API requires different credentials.');
-        } else {
-          setError(`Server error (${response.status}): The API endpoint may be incorrect or not available.`);
-        }
+        setError(`Server error (${response.status}): The API endpoint may be incorrect or not available.`);
       }
     } catch (error) {
       setError('An error occurred. Please try again later.');

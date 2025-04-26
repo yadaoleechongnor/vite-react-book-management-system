@@ -11,20 +11,6 @@ const AdminForgotPassword = () => {
   const [error, setError] = useState('');
   const [debugInfo, setDebugInfo] = useState(null);
   const navigate = useNavigate();
- 
-  // // API base URL
-  // const API_BASE_URL = 'http://localhost:5000/api';
-  
-  // Debug mode
-  const DEBUG_MODE = true;
-
-  // Debug logging function
-  const debugLog = (message, data) => {
-    if (DEBUG_MODE) {
-      const timestamp = new Date().toISOString().split('T')[1].split('.')[0];
-      console.log(`[DEBUG ${timestamp}] ${message}`, data || '');
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,40 +21,29 @@ const AdminForgotPassword = () => {
     setDebugInfo(null);
     
     try {
-      // Get auth token if it exists in localStorage
       const token = localStorage.getItem('token') || sessionStorage.getItem('token');
       const headers = {
         'Content-Type': 'application/json',
       };
       
-      // Add authorization header if token exists
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
       }
       
-      debugLog('Sending request to admin forgot password endpoint', { email });
-      
-      // Store the admin email for future reference
       localStorage.setItem('adminEmail', email);
       
-      // Use the admin-specific endpoint for password reset
       const response = await fetch(`${API_BASE_URL}/admin/forgot-password`, {
         method: 'POST',
         headers,
         body: JSON.stringify({ email }),
       });
 
-      // Get raw response text for debugging
       const responseText = await response.text();
-      debugLog('Raw response text:', responseText);
       
-      // Try to parse as JSON
       let data;
       try {
         data = JSON.parse(responseText);
-        debugLog('Parsed response data:', data);
       } catch (e) {
-        debugLog('Failed to parse response as JSON:', e);
         setError('Server returned an invalid response format');
         setDebugInfo({
           error: 'JSON parse error',
@@ -79,12 +54,9 @@ const AdminForgotPassword = () => {
         return;
       }
       
-      debugLog('Response status:', response.status);
-      
       if (response.ok) {
         setMessage(data.message || 'Password reset link has been sent to your email.');
         
-        // Display success message using SweetAlert
         Swal.fire({
           icon: 'success',
           title: 'Success!',
@@ -92,32 +64,21 @@ const AdminForgotPassword = () => {
           confirmButtonColor: '#3085d6'
         });
         
-        // For development purposes, you can display the reset URL
         if (data.resetURL) {
           setResetURL(data.resetURL);
-          debugLog('Reset URL received:', data.resetURL);
           
-          // Extract token from resetURL 
           let token = '';
           
           if (data.resetToken) {
-            // Use the direct token if provided by API
             token = data.resetToken;
-            debugLog('Using reset token directly from API response:', token);
           } else if (data.resetURL.includes('/admin-reset-password/')) {
             token = data.resetURL.split('/admin-reset-password/')[1];
           } else {
-            // Fall back to just taking the last part of the URL
             const urlParts = data.resetURL.split('/');
             token = urlParts[urlParts.length - 1];
           }
           
-          debugLog('Extracted token:', token);
-          
           if (token) {
-            // Store the token in a way that's compatible with your backend
-            // The backend is using crypto.createHash('sha256').update(token).digest('hex')
-            // So we need to store both the raw token and create a compatible hash if needed
             const tokenInfo = {
               token: token,
               email: email,
@@ -126,20 +87,13 @@ const AdminForgotPassword = () => {
               generated: new Date().toISOString()
             };
             
-            // Store token info for use during reset
             localStorage.setItem('adminResetToken', token);
             localStorage.setItem('adminResetTokenInfo', JSON.stringify(tokenInfo));
             localStorage.setItem('adminEmail', email);
-            
-            // Create an endpoint to try during reset
             localStorage.setItem('adminResetPasswordEndpoint', `/admin/reset-password/${token}`);
             
-            // Make sure to use the path that matches your React route configuration
-            // Use the URL format exactly as specified by the backend
             const redirectPath = `/admin-reset-password/${token}`;
-            debugLog('Will redirect to:', redirectPath);
             
-            // Present option to either continue directly or copy link
             Swal.fire({
               icon: 'success',
               title: 'Password Reset Link Generated',
@@ -155,10 +109,8 @@ const AdminForgotPassword = () => {
               reverseButtons: true
             }).then((result) => {
               if (result.isConfirmed) {
-                // Continue to reset page
                 navigate(redirectPath);
               } else {
-                // Copy link to clipboard
                 navigator.clipboard.writeText(data.resetURL)
                   .then(() => {
                     Swal.fire({
@@ -168,9 +120,7 @@ const AdminForgotPassword = () => {
                       confirmButtonColor: '#3085d6'
                     });
                   })
-                  .catch(err => {
-                    debugLog('Failed to copy link:', err);
-                    // Fallback if clipboard access is denied
+                  .catch(() => {
                     setResetURL(data.resetURL);
                   });
               }
@@ -178,7 +128,6 @@ const AdminForgotPassword = () => {
           }
         }
       } else {
-        // Handle specific error cases with detailed debug info
         if (response.status === 404) {
           setError('No administrator account was found with that email address.');
           setDebugInfo({
@@ -224,7 +173,6 @@ const AdminForgotPassword = () => {
         }
       }
     } catch (error) {
-      debugLog('Error in forgot password request:', error);
       setError('An error occurred. Please try again later.');
       setDebugInfo({
         error: error.message,
@@ -334,8 +282,7 @@ const AdminForgotPassword = () => {
         </div>
       )}
       
-      {/* Add debug information section at the bottom */}
-      {DEBUG_MODE && debugInfo && (
+      {debugInfo && (
         <details style={{ marginTop: '20px', textAlign: 'left', borderTop: '1px solid #ddd', paddingTop: '10px' }}>
           <summary style={{ cursor: 'pointer', fontWeight: 'bold', color: '#555' }}>Debug Information</summary>
           <pre style={{ 

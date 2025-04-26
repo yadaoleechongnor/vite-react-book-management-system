@@ -31,7 +31,6 @@ function DownlaodedBookHistoryDetail() {
             }
           });
         } catch (error) {
-          console.log("First branch endpoint failed, trying with /v1 prefix");
           response = await axios.get(`${API_BASE_URL}/v1/branches`, {
             headers: {
               Authorization: `Bearer ${token}`
@@ -40,8 +39,6 @@ function DownlaodedBookHistoryDetail() {
         }
         
         if (response.data) {
-          console.log("Fetched branches:", response.data);
-          
           // Handle different API response structures
           let branchesData = [];
           if (Array.isArray(response.data)) {
@@ -55,7 +52,6 @@ function DownlaodedBookHistoryDetail() {
           }
           
           setBranches(branchesData);
-          console.log("Processed branches:", branchesData);
         }
       } catch (error) {
         console.error("Error fetching branches:", error);
@@ -65,7 +61,6 @@ function DownlaodedBookHistoryDetail() {
           const cachedBranches = localStorage.getItem('branches');
           if (cachedBranches) {
             const parsedBranches = JSON.parse(cachedBranches);
-            console.log("Using cached branches:", parsedBranches);
             setBranches(parsedBranches);
           }
         } catch (cacheError) {
@@ -79,7 +74,6 @@ function DownlaodedBookHistoryDetail() {
     // Try to get branches data from window if another component has loaded it
     const checkBranchesInterval = setInterval(() => {
       if (window.formattedBranches && Array.isArray(window.formattedBranches) && window.formattedBranches.length > 0) {
-        console.log("Using branches data from window:", window.formattedBranches);
         setBranches(window.formattedBranches);
         clearInterval(checkBranchesInterval);
       }
@@ -118,14 +112,12 @@ function DownlaodedBookHistoryDetail() {
       let response;
       
       try {
-        console.log("Fetching book details from:", bookEndpoint);
         response = await axios.get(bookEndpoint, {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
       } catch (error) {
-        console.log("First attempt failed, trying alternative endpoint");
         bookEndpoint = `${API_BASE_URL}/books/${bookId}`;
         response = await axios.get(bookEndpoint, {
           headers: {
@@ -133,8 +125,6 @@ function DownlaodedBookHistoryDetail() {
           }
         });
       }
-      
-      console.log("Book details response:", response.data);
       
       if (response.data) {
         // Extract the book data from the response
@@ -152,14 +142,11 @@ function DownlaodedBookHistoryDetail() {
           branchIdValue = branchId._id;
         }
         
-        console.log("Branch ID extracted:", branchIdValue);
-        
         // Check if branch info exists in our branches array
         if (branchIdValue && branches.length > 0) {
           const foundBranch = branches.find(b => b._id === branchIdValue);
           if (foundBranch) {
             branchInfo = foundBranch.branch_name || foundBranch.name;
-            console.log("Found branch name from ID:", branchInfo);
           }
         } else if (bookData.branch_name) {
           branchInfo = bookData.branch_name;
@@ -173,7 +160,6 @@ function DownlaodedBookHistoryDetail() {
           );
           if (windowBranch) {
             branchInfo = windowBranch.branch_name || windowBranch.name;
-            console.log("Found branch name from window data:", branchInfo);
           }
         }
         
@@ -188,11 +174,6 @@ function DownlaodedBookHistoryDetail() {
             uploaderInfo = `User ID: ${bookData.uploaded_by._id}`;
           }
         }
-        
-        console.log("Final branch information:", branchInfo);
-        console.log("Uploader information:", uploaderInfo);
-        
-        // Skip download history API call since it returns 404 Not Found
         
         setBook({
           ...existingData,
@@ -245,9 +226,6 @@ function DownlaodedBookHistoryDetail() {
       
       const bookId = book.id || book._id;
       
-      console.log(`Recording download for book ID: ${bookId}`);
-      
-      // Use the same approach as StudentBookPage.jsx for recording downloads
       const recordResponse = await fetch(`${API_BASE_URL}/downloads/books/${bookId}/record`, {
         method: "POST",
         headers: {
@@ -257,9 +235,6 @@ function DownlaodedBookHistoryDetail() {
       });
       
       if (!recordResponse.ok) {
-        console.warn(`Failed to record download: ${recordResponse.status}. Trying alternative endpoints...`);
-        
-        // Try alternative endpoints as a fallback
         try {
           const altResponse = await fetch(`${API_BASE_URL}/downloads/record`, {
             method: "POST",
@@ -274,16 +249,12 @@ function DownlaodedBookHistoryDetail() {
             })
           });
           
-          if (altResponse.ok) {
-            console.log("Download recorded successfully with alternative endpoint");
-          } else {
+          if (!altResponse.ok) {
             console.error("Failed to record download with alternative endpoint");
           }
         } catch (altError) {
           console.error("Error with alternative record endpoint:", altError);
         }
-      } else {
-        console.log("Download recorded successfully");
       }
       
       // Get the file URL from the book object
@@ -294,8 +265,6 @@ function DownlaodedBookHistoryDetail() {
       if (!fileUrl.startsWith('http://') && !fileUrl.startsWith('https://')) {
         fileUrl = `${API_BASE_URL}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
       }
-      
-      console.log("Using direct file URL for download:", fileUrl);
       
       // Fetch the file with authorization header
       const fileResponse = await fetch(fileUrl, {
@@ -462,9 +431,6 @@ function DownlaodedBookHistoryDetail() {
   if (typeof branchDisplay !== 'string') {
     branchDisplay = "General";
   }
-  
-  console.log("Downloaded by information:", downloadedBy);
-  console.log("Branch information used:", branchDisplay);
 
   return (
     <StudentLayout>

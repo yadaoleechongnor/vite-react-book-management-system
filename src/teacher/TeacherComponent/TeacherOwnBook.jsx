@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import TeacherLayout from "../TeacherComponent/TeacherLayout";
 import book_img from "../../../public/images/book_img.png";
 import { API_BASE_URL } from "../../utils/api";
@@ -12,9 +12,6 @@ function TeacherOwnBookPage() {
   const [searching, setSearching] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
-  const [debugPanelPosition, setDebugPanelPosition] = useState({ x: window.innerWidth - 160, y: 80 });
-  const [isDragging, setIsDragging] = useState(false);
-  const dragRef = useRef(null);
 
   // Get current user ID from API using the token
   useEffect(() => {
@@ -442,57 +439,6 @@ function TeacherOwnBookPage() {
     return uploaderId ? `User ${String(uploaderId).substring(0, 6)}` : "Unknown User";
   };
 
-  // Handler to start dragging
-  const handleMouseDown = (e) => {
-    if (e.target.closest('.debug-panel-header')) {
-      setIsDragging(true);
-      
-      // Calculate offset from mouse position to panel corner
-      const rect = dragRef.current.getBoundingClientRect();
-      const offsetX = e.clientX - rect.left;
-      const offsetY = e.clientY - rect.top;
-      
-      // Store the offset in the ref
-      dragRef.current.offsetX = offsetX;
-      dragRef.current.offsetY = offsetY;
-      
-      e.preventDefault();
-    }
-  };
-
-  // Dragging event handlers
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (isDragging && dragRef.current) {
-        const newX = e.clientX - dragRef.current.offsetX;
-        const newY = e.clientY - dragRef.current.offsetY;
-        
-        // Keep panel within window boundaries
-        const maxX = window.innerWidth - dragRef.current.offsetWidth;
-        const maxY = window.innerHeight - dragRef.current.offsetHeight;
-        
-        setDebugPanelPosition({
-          x: Math.max(0, Math.min(newX, maxX)),
-          y: Math.max(0, Math.min(newY, maxY))
-        });
-      }
-    };
-    
-    const handleMouseUp = () => {
-      setIsDragging(false);
-    };
-    
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-    }
-    
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging]);
-
   return (
     <TeacherLayout>
       <div className="h-screen p-6 min-h-screen bg-white rounded-lg overflow-hidden flex justify-center">
@@ -500,29 +446,6 @@ function TeacherOwnBookPage() {
         {successMessage && (
           <div className="fixed top-24 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out">
             {successMessage}
-          </div>
-        )}
-        
-        {/* Draggable Debug info panel */}
-        {process.env.NODE_ENV === 'development' && (
-          <div 
-            ref={dragRef}
-            onMouseDown={handleMouseDown}
-            className="fixed bg-black bg-opacity-70 text-white p-2 rounded text-xs z-50 max-w-xs overflow-hidden shadow-lg"
-            style={{
-              left: `${debugPanelPosition.x}px`,
-              top: `${debugPanelPosition.y}px`,
-              cursor: isDragging ? 'grabbing' : 'default',
-              transition: isDragging ? 'none' : 'opacity 0.2s',
-              opacity: isDragging ? 0.8 : 1,
-            }}
-          >
-            <div className="debug-panel-header font-bold border-b pb-1 mb-1 flex justify-between items-center cursor-grab">
-              <p>Owner Book</p>
-              <span className="text-gray-400 text-xs">⟺ Drag me</span>
-            </div>
-            {/* <p>User ID: {currentUserId || 'Not set'}</p> */}
-            <p>Your Books: {books.length}</p>
           </div>
         )}
         

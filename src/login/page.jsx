@@ -14,7 +14,6 @@ function LoginPage() {
   const navigate = useNavigate();
   const { login, isAuthenticated, userRole, getRedirectPath } = useAuth();
   
-  // If user is already logged in, redirect to appropriate dashboard
   useEffect(() => {
     if (isAuthenticated && userRole) {
       navigate(getRedirectPath());
@@ -27,53 +26,35 @@ function LoginPage() {
     setLoading(true);
     
     try {
-      // Validate inputs before sending request
       if (!email || !password) {
         throw new Error('Email and password are required');
       }
       
-      // Use login utility from auth.js
       const result = await authLogin(email, password);
       
       if (result && result.success) {
-        // Extract token from response - handle both structures
         const token = result.data?.token || (result.data?.data?.token || '');
         
-        // Prioritize the role from the server response
         let role;
-        // Check for nested user object first (most common structure)
         if (result.data?.user?.role) {
           role = result.data.user.role;
-          console.log('Using server-provided role from user object:', role);
         }
-        // Check data.data.user.role structure
         else if (result.data?.data?.user?.role) {
           role = result.data.data.user.role;
-          console.log('Using server-provided nested role from user object:', role);
         }
-        // Check for direct role property
         else if (result.data?.role) {
           role = result.data.role;
-          console.log('Using server-provided direct role property:', role);
         }
-        // Fallback to email pattern detection
         else {
           role = determineUserRole(email);
-          console.log('Server did not provide role, determined from email:', role);
         }
-        
-        // Debug log the found role and token
-        console.log('Final assigned role:', role);
-        console.log('Token found:', token ? 'Yes (length: ' + token.length + ')' : 'No');
         
         if (!token) {
           throw new Error('Authentication successful but no token received');
         }
         
-        // Set up redirect path before login updates the context
-        // This ensures we navigate with the correct role
         let redirectPath;
-        switch(role.toLowerCase()) {  // Case-insensitive role check
+        switch(role.toLowerCase()) {
           case 'admin':
             redirectPath = '/admin/dashboard';
             break;
@@ -87,26 +68,19 @@ function LoginPage() {
             redirectPath = '/';
         }
         
-        console.log(`Role determined: '${role}', redirecting to: ${redirectPath}`);
-        
-        // Update context with token and role
         login(token, role);
         
-        // Show success Sweet Alert
         Swal.fire({
           icon: 'success',
           title: 'Login Successful!',
-          text: `Welcome back! Logged in as ${role}. Redirecting to ${redirectPath}...`,
+          text: `Welcome back! Logged in as ${role}...`,
           timer: 3000,
           timerProgressBar: true,
           showConfirmButton: false
         }).then(() => {
-          // Navigate directly to the predetermined path
-          console.log(`Navigating to: ${redirectPath}`);
           navigate(redirectPath);
         });
       } else {
-        // Display error message from the login attempt
         setError(result?.error || 'Login failed. Please check your credentials.');
         Swal.fire({
           icon: 'error',
@@ -115,9 +89,6 @@ function LoginPage() {
         });
       }
     } catch (err) {
-      console.error('Login error:', err);
-      
-      // Provide more specific error messages based on the error
       let errorMessage = 'An error occurred. Please try again later.';
       
       if (err.message.includes('correctPassword')) {
@@ -128,7 +99,6 @@ function LoginPage() {
       
       setError(errorMessage);
       
-      // Show error Sweet Alert with more specific message
       Swal.fire({
         icon: 'error',
         title: 'Login Failed',
@@ -139,25 +109,17 @@ function LoginPage() {
     }
   };
   
-  // Helper function to determine user role based on email pattern (for demo purposes)
   const determineUserRole = (email) => {
-    // Convert email to lowercase for case-insensitive matching
     const emailLower = email.toLowerCase();
     
-    console.log('Determining role for email:', emailLower);
-    
-    // More specific checks for roles based on email patterns
     if (emailLower.includes('admin')) {
-      console.log('Email contains "admin", setting role as admin');
       return 'admin';
     } else if (emailLower.includes('teacher') || 
               emailLower.includes('lecturer') || 
               emailLower.includes('professor') || 
               emailLower.includes('instructor')) {
-      console.log('Email contains teacher-related terms, setting role as teacher');
       return 'teacher';
     } else {
-      console.log('No special patterns found, defaulting to student role');
       return 'student';
     }
   };

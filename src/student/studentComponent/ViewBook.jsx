@@ -53,7 +53,6 @@ const StudentViewBookPage = () => {
         
         // Process book data
         const bookData = result.data?.book || result.data || result;
-        console.log("Fetched book data:", bookData);
         
         // Set book details
         setTitle(bookData.title || "");
@@ -114,8 +113,6 @@ const StudentViewBookPage = () => {
         }
         setUploadedByName(uploadedBy);
         
-        console.log("Branch name set to:", branch);
-        console.log("Uploaded by name set to:", uploadedBy);
       } catch (error) {
         console.error("Error fetching book:", error);
         setError(error.message);
@@ -161,8 +158,6 @@ const StudentViewBookPage = () => {
       if (!recordResponse.ok) {
         console.error(`Failed to record download: ${recordResponse.status}`);
         // Continue with download even if recording fails
-      } else {
-        console.log("Download recorded successfully");
       }
       
       // Use the file URL directly instead of the download endpoint
@@ -172,8 +167,6 @@ const StudentViewBookPage = () => {
         // If the URL is relative, convert it to absolute using API_BASE_URL
         downloadUrl = `${API_BASE_URL}${downloadUrl.startsWith('/') ? '' : '/'}${downloadUrl}`;
       }
-      
-      console.log("Using direct file URL for download:", downloadUrl);
       
       // Fetch the file with authorization header
       const fileResponse = await fetch(downloadUrl, {
@@ -239,12 +232,6 @@ const StudentViewBookPage = () => {
   const handleGoBack = () => {
     navigate("/student/bookpage");
   };
-
-  // Debug log for branch and uploaded by
-  useEffect(() => {
-    console.log("Current branch name:", branchName);
-    console.log("Current uploaded by:", uploadedByName);
-  }, [branchName, uploadedByName]);
 
   return (
     <StudentLayout>

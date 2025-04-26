@@ -5,12 +5,14 @@ import { Link } from "react-router-dom";
 import AdminLayout from "../dashboard/adminLayout";
 
 const UserManagementLayout = ({ children }) => {
-    const [activeItem, setActiveItem] = useState('');
+    const [activeItem, setActiveItem] = useState('users');  // Set default to 'users'
 
     useEffect(() => {
       const savedActiveItem = localStorage.getItem('activeNavbarItem');
       if (savedActiveItem) {
         setActiveItem(savedActiveItem);
+      } else {
+        localStorage.setItem('activeNavbarItem', 'users');  // Set default in localStorage
       }
     }, []);
   
@@ -24,12 +26,12 @@ const UserManagementLayout = ({ children }) => {
     <div className="admin-layout w-full h-screen flex flex-col">
      <header className='flex p-4 justify-between bg-white rounded-full border items-center'>
      <h1 className="text-xl hidden md:block">User Management</h1>
-        <nav className=" flex justify-end">
+        <nav className="flex justify-end">
           <ul className="flex space-x-4">
             <li>
               <Link 
                 to="/admin/usermanagement"
-                className={`text-sky-600 hover:text-sky-800 ${activeItem === 'users' ? 'bg-sky-300 text-white rounded-full p-2' : ''}`}
+                className={`${activeItem === 'users' ? 'text-sky-600 font-semibold' : 'text-black hover:text-sky-600'}`}
                 onClick={() => handleItemClick('users')}
               >
                 Users
@@ -38,21 +40,21 @@ const UserManagementLayout = ({ children }) => {
             <li>
               <Link 
                 to="/admin/addteacheraddmin"
-                className={`text-sky-600 hover:text-sky-800 ${activeItem === 'roles' ? 'bg-sky-300 text-white rounded-full p-2' : ''}`}
+                className={`${activeItem === 'roles' ? 'text-sky-600 font-semibold' : 'text-black hover:text-sky-600'}`}
                 onClick={() => handleItemClick('roles')}
               >
                 Teacher-Admin-Management
               </Link>
             </li>
-             {/* <li>
+            {/* <li>
               <Link 
                 to="/admin/usermanagement"
-                className={`text-sky-600 hover:text-sky-800 ${activeItem === 'permissions' ? 'bg-sky-300 text-white rounded-full p-2' : ''}`}
+                className={`${activeItem === 'permissions' ? 'text-sky-600 font-semibold' : 'text-black hover:text-sky-600'}`}
                 onClick={() => handleItemClick('permissions')}
               >
                 Permissions
               </Link>
-            </li>  */}
+            </li> */}
           </ul>
         </nav>
      </header>

@@ -13,11 +13,9 @@ function UserMagementPage() {
   useEffect(() => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-    // Use the imported getAuthToken function instead
     const token = getAuthToken(); 
     
     if (token) {
-      console.log("Found token, length:", token.length);
       myHeaders.append("Authorization", `Bearer ${token}`);
     } else {
       console.warn("No authentication token found, API call will likely fail");
@@ -37,7 +35,6 @@ function UserMagementPage() {
         return response.json();
       })
       .then((result) => {
-        console.log("Response received:", result);
         if (result.success && Array.isArray(result.data.users)) {
           setUsers(result.data.users);
         } else {
@@ -54,7 +51,6 @@ function UserMagementPage() {
             icon: 'error',
             confirmButtonText: 'Login Again'
           }).then(() => {
-            // Redirect to login page
             window.location.href = "/login";
           });
         } else {
@@ -65,7 +61,6 @@ function UserMagementPage() {
   }, []);
 
   const handleDelete = (userId) => {
-    console.log("Deleting user with ID:", userId);
     if (!userId) {
       console.error("User ID is undefined");
       return;
@@ -82,7 +77,6 @@ function UserMagementPage() {
       if (result.isConfirmed) {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-        // Use imported function here as well
         myHeaders.append("Authorization", `Bearer ${getAuthToken()}`);
 
         const requestOptions = {
@@ -93,8 +87,7 @@ function UserMagementPage() {
 
         fetch(`${API_BASE_URL}/users/${userId}`, requestOptions)
           .then((response) => response.text())
-          .then((result) => {
-            console.log(result);
+          .then(() => {
             setUsers(users.filter(user => user._id !== userId));
             Swal.fire({
               title: 'Deleted!',
@@ -146,7 +139,6 @@ function UserMagementPage() {
           <thead className="bg-green-600">
             <tr>
               <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">#</th>
-              {/* Increased minimum width to allow for longer names */}
               <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider min-w-[200px]">User Name</th>
               <th className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Email</th>
               <th className="hidden lg:table-cell px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Role</th>
@@ -157,7 +149,6 @@ function UserMagementPage() {
             {users.map((user, index) => (
               <tr key={`${user._id}-${index}`} className={index % 2 === 0 ? "bg-gray-50 cursor-pointer" : "cursor-pointer"} onClick={() => handleRowClick(user)}>
                 <td className="px-2 sm:px-4 py-3 whitespace-nowrap">{index + 1}</td>
-                {/* Removed truncate class and improved styling to show full name */}
                 <td className="px-3 sm:px-6 py-3 break-words">{user.name}</td>
                 <td className="hidden md:table-cell px-6 py-3 whitespace-nowrap">{user.email}</td>
                 <td className="hidden lg:table-cell px-6 py-3 whitespace-nowrap">{user.role}</td>
@@ -165,8 +156,6 @@ function UserMagementPage() {
                   {user.role !== 'admin' && (
                     <button onClick={(e) => { 
                       e.stopPropagation();
-                      console.log("Button clicked for user:", user);
-                      console.log("Button clicked for user ID:", user._id);
                       handleDelete(user._id); 
                     }} className='text-red-600 hover:text-red-900'>
                       <FaTrashAlt className="inline-block w-4 h-4 sm:w-5 sm:h-5" />

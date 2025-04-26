@@ -10,7 +10,6 @@ function AllDownLoaded() {
 
   useEffect(() => {
     const fetchDownloads = async () => {
-      // Get token from localStorage
       const token = localStorage.getItem('token');
       
       const requestOptions = {
@@ -38,19 +37,14 @@ function AllDownLoaded() {
         
         try {
           result = JSON.parse(text);
-          console.log("API Response:", result); // Log the full response for debugging
         } catch (e) {
-          console.error("Failed to parse JSON response:", text);
           throw new Error("Invalid JSON response");
         }
         
-        // Handle different possible response structures
         let count = 0;
         
         if (result && result.success === true && typeof result.results === 'number') {
-          // Handle the format shown in logs: {success: true, results: 3, data: {...}}
           count = result.results;
-          console.log("Using 'results' value as download count:", count);
         } else if (result && typeof result.total === 'number') {
           count = result.total;
         } else if (result && typeof result.count === 'number') {
@@ -62,25 +56,20 @@ function AllDownLoaded() {
         } else if (result && result.data && typeof result.data.total === 'number') {
           count = result.data.total;
         } else if (result && typeof result === 'number') {
-          // If the API returns just a number
           count = result;
         } else if (result && typeof result === 'object') {
-          // Try to find any numeric property that might represent count
           const numericProps = Object.entries(result)
             .filter(([_, value]) => typeof value === 'number')
             .map(([key, value]) => ({ key, value }));
           
           if (numericProps.length > 0) {
-            // Use the first numeric property as a fallback
             count = numericProps[0].value;
-            console.log(`Using '${numericProps[0].key}' as download count:`, count);
           }
         }
         
         setDownloadCount(count);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching downloads:", error);
         setError(error.message);
         setLoading(false);
       }

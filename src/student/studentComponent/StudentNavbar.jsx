@@ -40,10 +40,8 @@ export default function StudentNavbar({ toggleSidebar, sidebarOpen }) {
       }
       
       const result = await response.json();
-      console.log("User data:", result.data.user);
       setUserData(result.data.user);
       
-      // If branch_id exists, fetch branch details
       if (result.data.user.branch_id) {
         fetchBranchDetails(result.data.user.branch_id, token);
       }
@@ -72,9 +70,7 @@ export default function StudentNavbar({ toggleSidebar, sidebarOpen }) {
       }
       
       const result = await response.json();
-      console.log("Branch data:", result);
       
-      // Check for different possible structures of the response
       if (result.data && result.data.branch) {
         setBranchName(result.data.branch.name || result.data.branch.branch_name || 'Unknown');
       } else if (result.data) {

@@ -64,7 +64,7 @@ function HomPage() {
    
         {/* Hero Section */}
         <div
-          className="bg-gray-100 py-16 px-5 text-center rounded-lg mb-10 relative"
+          className="bg-gray-100 py-16 px-5 text-center rounded-lg mb-10 relative z-0"
           style={{
             backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${SU_sign})`,
             backgroundSize: "cover",

@@ -24,7 +24,6 @@ const ResetPassword = () => {
       
       if (stateEmail) setEmail(stateEmail);
       if (stateOtp) {
-        console.log('Received OTP from state:', stateOtp);
         setOtp(stateOtp);
       }
       if (verified) setOtpVerified(true);
@@ -50,13 +49,6 @@ const ResetPassword = () => {
       setLoading(false);
       return;
     }
-    
-    // Log data being sent for debugging
-    console.log('Attempting password reset with:', {
-      email,
-      otp,
-      passwordLength: newPassword.length
-    });
     
     try {
       const response = await resetPassword(email, otp, newPassword);

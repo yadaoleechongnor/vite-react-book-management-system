@@ -6,8 +6,7 @@ import { API_BASE_URL } from './api';
 // Save authentication token to localStorage
 export const saveAuthToken = (token) => {
   if (token) {
-    localStorage.setItem('token', token); // Changed from 'authToken' to 'token' to match AuthContext
-    console.log("Token saved to localStorage");
+    localStorage.setItem('token', token);
     return true;
   }
   return false;
@@ -15,9 +14,8 @@ export const saveAuthToken = (token) => {
 
 // Get token from localStorage
 export const getAuthToken = () => {
-  const token = localStorage.getItem('token'); // Changed from 'authToken' to 'token' to match AuthContext
+  const token = localStorage.getItem('token');
   if (!token) {
-    console.log("No token found in localStorage");
     return null;
   }
   return token;
@@ -25,10 +23,9 @@ export const getAuthToken = () => {
 
 // Clear authentication token
 export const clearAuthToken = () => {
-  localStorage.removeItem('token'); // Changed from 'authToken' to 'token' to match AuthContext
-  localStorage.removeItem('userRole'); // Also clear the role
-  localStorage.removeItem('tokenExpiry'); // And the expiry
-  console.log("Token and role removed from localStorage");
+  localStorage.removeItem('token');
+  localStorage.removeItem('userRole');
+  localStorage.removeItem('tokenExpiry');
 };
 
 // Check if user is authenticated
@@ -46,7 +43,6 @@ export const isAuthenticated = async () => {
     
     return response.ok;
   } catch (error) {
-    console.error("Error verifying authentication:", error);
     return false;
   }
 };
@@ -68,20 +64,17 @@ export const login = async (username, password) => {
     }
     
     const data = await response.json();
-    console.log("Login response:", data); // Log full response for debugging
     
     if (data.token) {
       saveAuthToken(data.token);
       return { success: true, data };
     } else if (data.data?.token) {
-      // Handle nested token structure
       saveAuthToken(data.data.token);
       return { success: true, data };
     } else {
       throw new Error('No token received from server');
     }
   } catch (error) {
-    console.error("Login error:", error);
     return { success: false, error: error.message };
   }
 };

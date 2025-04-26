@@ -14,8 +14,6 @@ function PopularBook() {
       try {
         const token = getAuthToken();
         if (!token) throw new Error("No authentication token found");
-
-        console.log("Fetching popular books");
         
         const response = await fetch(`${API_BASE_URL}/downloads/popular`, {
           method: "GET",
@@ -30,49 +28,37 @@ function PopularBook() {
         }
 
         const result = await response.json();
-        console.log("Popular books API Response:", result);
-        
-        // Handle different possible response structures
         let booksData = [];
         
-        // Based on console logs, response has structure: {success: true, results: 10, data: {...}}
         if (result && result.data) {
-          // Check if data is an array directly
           if (Array.isArray(result.data)) {
             booksData = result.data;
           } 
-          // Check if data contains a books array
           else if (result.data.books && Array.isArray(result.data.books)) {
             booksData = result.data.books;
           }
-          // Check if data contains a popularBooks array
           else if (result.data.popularBooks && Array.isArray(result.data.popularBooks)) {
             booksData = result.data.popularBooks;
           }
-          // Check if data itself is the books object (contains multiple book objects)
           else if (typeof result.data === 'object' && Object.keys(result.data).length > 0) {
-            // Convert object of books to array if needed
             if (Object.values(result.data)[0] && typeof Object.values(result.data)[0] === 'object') {
               booksData = Object.values(result.data);
             }
           }
         } 
-        // Try other possible structures
         else if (Array.isArray(result)) {
           booksData = result;
-        } else if (result.books && Array.isArray(result.books)) {
+        } 
+        else if (result.books && Array.isArray(result.books)) {
           booksData = result.books;
-        } else if (result.popularBooks && Array.isArray(result.popularBooks)) {
+        } 
+        else if (result.popularBooks && Array.isArray(result.popularBooks)) {
           booksData = result.popularBooks;
         }
         
-        console.log("Extracted popular books data:", booksData);
-        
         if (booksData.length > 0) {
           setPopularBooks(booksData);
-          console.log("Popular books loaded:", booksData.length);
         } else {
-          console.warn("No popular books found in the response");
           setPopularBooks([]);
         }
       } catch (error) {
@@ -86,7 +72,6 @@ function PopularBook() {
     fetchPopularBooks();
   }, []);
 
-  // Function to truncate title if longer than 50 characters
   const truncateTitle = (title) => {
     if (!title) return "Untitled";
     if (title.length > 50) {
@@ -95,20 +80,13 @@ function PopularBook() {
     return title;
   };
 
-  // Safely render book cards
   const renderBookCard = (book, index) => {
     try {
-      // Log the individual book to understand its structure
-      console.log(`Book ${index} structure:`, book);
-      
-      // Book ID
       const bookId = book.book_id || book.bookId || book.id || book._id || 
                      (book.book && (book.book._id || book.book.id));
       
-      // Extract download count from the book object
       const downloadCount = book.downloadCount || book.downloads || book.download_count || 0;
       
-      // If book details are nested inside a 'book' property
       const bookDetails = book.book || book;
       
       return (

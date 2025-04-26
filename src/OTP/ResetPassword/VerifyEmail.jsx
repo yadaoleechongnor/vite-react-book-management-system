@@ -74,7 +74,6 @@ const VerifyEmail = () => {
     
     try {
       const formattedOtp = otp.trim(); // Remove spaces
-      console.log('Attempting to verify OTP with:', { email, otp: formattedOtp });
       
       // Use verifyOTP instead of verifyUserEmail since we're verifying for password reset
       const response = await verifyOTP(email, formattedOtp);

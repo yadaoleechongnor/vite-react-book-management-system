@@ -22,35 +22,23 @@ function AddTeacherAdmin() {
         const response = await fetch(`${API_BASE_URL}/branches/`);
         const result = await response.json();
         
-        console.log("Full API response:", result);
-        console.log("Branch data contents:", result.data);
-        
         if (result.success) {
           let branchList = [];
           if (Array.isArray(result.data)) {
             branchList = result.data;
-            console.log("Using result.data as branchList:", branchList);
           } else if (result.data && Array.isArray(result.data.branches)) {
             branchList = result.data.branches;
-            console.log("Using result.data.branches as branchList:", branchList);
           } else {
             console.error("Unexpected branch data structure:", result.data);
             setBranches([]);
             return;
           }
 
-          console.log("Branch list before validation:", branchList);
-          branchList.forEach((branch, index) => {
-            console.log(`Branch ${index}:`, branch);
-          });
-
           // Normalize branch data
           const normalizedBranches = branchList.map(branch => ({
             _id: branch._id || branch.id || branch.branch_id || '',
             name: branch.branch_name || branch.name || 'Unnamed Branch'
           }));
-
-          console.log("Normalized branches:", normalizedBranches);
 
           if (normalizedBranches.every(branch => branch._id && branch.name)) {
             setBranches(normalizedBranches);
@@ -99,7 +87,6 @@ function AddTeacherAdmin() {
     const token = getAuthToken();
     
     if (token) {
-      console.log("Token found, length:", token.length);
       myHeaders.append("Authorization", `Bearer ${token}`);
     } else {
       console.error("No token found. Please log in.");
@@ -128,7 +115,6 @@ function AddTeacherAdmin() {
       .then((response) => response.json())
       .then((result) => {
         if (result.success) {
-          console.log("User added successfully:", result);
           Swal.fire({
             icon: 'success',
             title: 'User added successfully',

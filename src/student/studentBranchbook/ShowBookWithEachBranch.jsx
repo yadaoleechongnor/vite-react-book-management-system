@@ -52,8 +52,6 @@ function ShowBookWithEachBranch() {
       })
       .then((result) => {
         if (result && result.success && result.data) {
-          console.log("API Response:", result.data);
-          
           // Find the branch with matching ID
           const branchData = result.data.find(item => item.branch._id === branchId);
           
@@ -65,7 +63,6 @@ function ShowBookWithEachBranch() {
             if (firstBook && firstBook.branch_name) {
               extractedBranchName = firstBook.branch_name;
             } else if (firstBook && firstBook.title) {
-              // Use first part of title as branch name if needed
               extractedBranchName = firstBook.title.split(' ')[0].substring(0, 30);
             }
             
@@ -135,7 +132,6 @@ function ShowBookWithEachBranch() {
         return response.json();
       })
       .then((result) => {
-        console.log("Search result:", result);
         if (result && result.success) {
           setBooks(result.data || []);
         } else {
@@ -172,8 +168,6 @@ function ShowBookWithEachBranch() {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No authentication token found");
       
-      console.log(`Recording download for book ID: ${bookId}`);
-      
       // First, record the download
       const recordResponse = await fetch(`${API_BASE_URL}/downloads/books/${bookId}/record`, {
         method: "POST",
@@ -186,8 +180,6 @@ function ShowBookWithEachBranch() {
       if (!recordResponse.ok) {
         console.error(`Failed to record download: ${recordResponse.status}`);
         // Continue with download even if recording fails
-      } else {
-        console.log("Download recorded successfully");
       }
       
       // Find the book to get its file URL and title
@@ -202,8 +194,6 @@ function ShowBookWithEachBranch() {
       if (!fileUrl.startsWith('http://') && !fileUrl.startsWith('https://')) {
         fileUrl = `${API_BASE_URL}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
       }
-      
-      console.log("Using direct file URL for download:", fileUrl);
       
       // Fetch the file with authorization header
       const fileResponse = await fetch(fileUrl, {
@@ -272,9 +262,6 @@ function ShowBookWithEachBranch() {
   // Updated renderBookCard function with view and download buttons
   const renderBookCard = (book, index) => {
     try {
-      // Debug the individual book object
-      console.log(`Rendering book ${index}:`, book);
-      
       return (
         <div
           key={`${book._id || index}-${index}`}

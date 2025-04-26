@@ -1,24 +1,26 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom"; // Changed from next/link to react-router-dom
+import { Link, useLocation } from "react-router-dom"; // Add useLocation
 import AdminLayout from "../dashboard/adminLayout";
 
 const AdminBookLayout = ({ children }) => {
   const [activeItem, setActiveItem] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
-    const savedActiveItem = localStorage.getItem("activeNavbarItem");
-    if (savedActiveItem) {
-      setActiveItem(savedActiveItem);
-    }
-  }, []);
+    // Set active item based on current path
+    const path = location.pathname;
+    if (path.includes("/admin/bookupload")) setActiveItem("upload");
+    else if (path.includes("/admin/bookmanagement")) setActiveItem("booklist");
+    else if (path.includes("/admin/ownbookpage")) setActiveItem("adminownbook");
+    else if (path.includes("/admin/bookasuser")) setActiveItem("adminbookasuser");
+  }, [location]);
 
   const handleItemClick = (item) => {
     setActiveItem(item);
-    localStorage.setItem("activeNavbarItem", item);
-    setMobileMenuOpen(false); // Close mobile menu when item is clicked
+    setMobileMenuOpen(false);
   };
 
   const toggleMobileMenu = () => {
@@ -49,9 +51,9 @@ const AdminBookLayout = ({ children }) => {
                 <li>
                   <Link 
                     to="/admin/bookupload"
-                    className={`text-sky-600 hover:text-sky-800 block md:inline-block ${
+                    className={`text-black hover:text-sky-600 block md:inline-block ${
                       activeItem === "upload"
-                        ? "bg-sky-300 text-white rounded-full p-2"
+                        ? "font-bold underline text-sky-600"
                         : ""
                     }`}
                     onClick={() => handleItemClick("upload")}
@@ -62,9 +64,9 @@ const AdminBookLayout = ({ children }) => {
                 <li>
                   <Link 
                     to="/admin/bookmanagement"
-                    className={`text-sky-600 hover:text-sky-800 block md:inline-block ${
+                    className={`text-black hover:text-sky-600 block md:inline-block ${
                       activeItem === "booklist"
-                        ? "bg-sky-300 text-white rounded-full p-2"
+                        ? "font-bold underline text-sky-600"
                         : ""
                     }`}
                     onClick={() => handleItemClick("booklist")}
@@ -75,29 +77,29 @@ const AdminBookLayout = ({ children }) => {
                 <li>
                   <Link 
                     to="/admin/ownbookpage"
-                    className={`text-sky-600 hover:text-sky-800 block md:inline-block ${
+                    className={`text-black hover:text-sky-600 block md:inline-block ${
                       activeItem === 'adminownbook' 
-                        ? 'bg-sky-300 text-white rounded-full p-2' 
+                        ? 'font-bold underline text-sky-600' 
                         : ''
                     }`}
                     onClick={() => handleItemClick('adminownbook')}
                   >
                     Admin Owner Book
                   </Link>
-                </li> 
+                </li>
                 <li>
                   <Link 
                     to="/admin/bookasuser"
-                    className={`text-sky-600 hover:text-sky-800 block md:inline-block ${
+                    className={`text-black hover:text-sky-600 block md:inline-block ${
                       activeItem === 'adminbookasuser' 
-                        ? 'bg-sky-300 text-white rounded-full p-2' 
+                        ? 'font-bold underline text-sky-600' 
                         : ''
                     }`}
                     onClick={() => handleItemClick('adminbookasuser')}
                   >
                     Views-Book
                   </Link>
-                </li> 
+                </li>
               </ul>
             </nav>
           </div>
