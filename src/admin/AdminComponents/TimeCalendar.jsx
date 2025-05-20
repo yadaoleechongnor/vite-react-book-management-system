@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 function TimeCalendar() {
+  const { t, i18n } = useTranslation();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [calendarMonth, setCalendarMonth] = useState(new Date());
   
@@ -63,11 +65,34 @@ function TimeCalendar() {
            date.getFullYear() === today.getFullYear();
   };
   
-  // Format month name and year
+  // Update formatMonthYear to use translations
   const formatMonthYear = (date) => {
-    const options = { month: 'long', year: 'numeric' };
-    return date.toLocaleDateString('en-US', options);
+    const monthNames = [
+      t('calendar.months.january'),
+      t('calendar.months.february'),
+      t('calendar.months.march'),
+      t('calendar.months.april'),
+      t('calendar.months.may'),
+      t('calendar.months.june'),
+      t('calendar.months.july'),
+      t('calendar.months.august'),
+      t('calendar.months.september'),
+      t('calendar.months.october'),
+      t('calendar.months.november'),
+      t('calendar.months.december')
+    ];
+    return `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
   };
+
+  const weekdays = [
+    t('calendar.weekdays.sun'),
+    t('calendar.weekdays.mon'),
+    t('calendar.weekdays.tue'),
+    t('calendar.weekdays.wed'),
+    t('calendar.weekdays.thu'),
+    t('calendar.weekdays.fri'),
+    t('calendar.weekdays.sat')
+  ];
   
   // Handle month navigation
   const goToPreviousMonth = () => {
@@ -93,15 +118,15 @@ function TimeCalendar() {
   }, []);
 
   const calendarDays = generateCalendarDays();
-  const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   return (
-    <div className="flex flex-col mb-6 items-center justify-center w-full ">
+    <div className="flex flex-col mb-6 items-center justify-center w-full">
       <div className="bg-white rounded-lg w-full overflow-hidden">
         <div className="flex justify-between items-center p-3 border-b">
           <button 
             onClick={goToPreviousMonth} 
             className="text-gray-600 hover:text-gray-800 px-2 py-1 rounded hover:bg-gray-100"
+            title={t('calendar.navigation.previous')}
           >
             &lt;
           </button>
@@ -109,6 +134,7 @@ function TimeCalendar() {
           <button 
             onClick={goToNextMonth} 
             className="text-gray-600 hover:text-gray-800 px-2 py-1 rounded hover:bg-gray-100"
+            title={t('calendar.navigation.next')}
           >
             &gt;
           </button>
@@ -141,7 +167,7 @@ function TimeCalendar() {
         {formatTime(currentTime)}
       </div>
     </div>
-  )
+  );
 }
 
-export default TimeCalendar
+export default TimeCalendar;

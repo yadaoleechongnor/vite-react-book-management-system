@@ -1,16 +1,17 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom"; // Add useLocation
+import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import AdminLayout from "../dashboard/adminLayout";
 
 const AdminBookLayout = ({ children }) => {
+  const { t } = useTranslation();
   const [activeItem, setActiveItem] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
-    // Set active item based on current path
     const path = location.pathname;
     if (path.includes("/admin/bookupload")) setActiveItem("upload");
     else if (path.includes("/admin/bookmanagement")) setActiveItem("booklist");
@@ -31,10 +32,9 @@ const AdminBookLayout = ({ children }) => {
     <AdminLayout>
       <div className="admin-layout h-screen flex flex-col w-full">
         <header className="flex p-4 justify-between items-center bg-white rounded-full border">
-          <h1 className="text-xl hidden md:block">Book Management</h1>
+          <h1 className="text-xl hidden md:block">{t('admin.bookManagement.title')}</h1>
           
-          <div className="flex items-center ml-auto"> {/* Added container with ml-auto for right alignment */}
-            {/* Mobile menu button */}
+          <div className="flex items-center ml-auto">
             <button 
               className="md:hidden text-sky-600 focus:outline-none ml-auto" 
               onClick={toggleMobileMenu}
@@ -45,59 +45,50 @@ const AdminBookLayout = ({ children }) => {
               </svg>
             </button>
             
-            {/* Desktop and mobile navigation */}
             <nav className={`${mobileMenuOpen ? 'block' : 'hidden'} md:flex absolute md:relative top-16 md:top-0 right-0 left-0 md:left-auto bg-white md:bg-transparent p-4 md:p-0 shadow-md md:shadow-none z-50 rounded-b-lg md:rounded-none transition-all duration-300 ease-in-out`}>
               <ul className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 md:justify-end">
                 <li>
                   <Link 
                     to="/admin/bookupload"
                     className={`text-black hover:text-sky-600 block md:inline-block ${
-                      activeItem === "upload"
-                        ? "font-bold underline text-sky-600"
-                        : ""
+                      activeItem === "upload" ? "font-bold underline text-sky-600" : ""
                     }`}
                     onClick={() => handleItemClick("upload")}
                   >
-                    Upload Book
+                    {t('admin.bookManagement.uploadBook')}
                   </Link>
                 </li>
                 <li>
                   <Link 
                     to="/admin/bookmanagement"
                     className={`text-black hover:text-sky-600 block md:inline-block ${
-                      activeItem === "booklist"
-                        ? "font-bold underline text-sky-600"
-                        : ""
+                      activeItem === "booklist" ? "font-bold underline text-sky-600" : ""
                     }`}
                     onClick={() => handleItemClick("booklist")}
                   >
-                    Book List
+                    {t('admin.bookManagement.bookList')}
                   </Link>
                 </li>
                 <li>
                   <Link 
                     to="/admin/ownbookpage"
                     className={`text-black hover:text-sky-600 block md:inline-block ${
-                      activeItem === 'adminownbook' 
-                        ? 'font-bold underline text-sky-600' 
-                        : ''
+                      activeItem === 'adminownbook' ? 'font-bold underline text-sky-600' : ''
                     }`}
                     onClick={() => handleItemClick('adminownbook')}
                   >
-                    Admin Owner Book
+                    {t('admin.bookManagement.adminOwnBook')}
                   </Link>
                 </li>
                 <li>
                   <Link 
                     to="/admin/bookasuser"
                     className={`text-black hover:text-sky-600 block md:inline-block ${
-                      activeItem === 'adminbookasuser' 
-                        ? 'font-bold underline text-sky-600' 
-                        : ''
+                      activeItem === 'adminbookasuser' ? 'font-bold underline text-sky-600' : ''
                     }`}
                     onClick={() => handleItemClick('adminbookasuser')}
                   >
-                    Views-Book
+                    {t('admin.bookManagement.viewAsUser')}
                   </Link>
                 </li>
               </ul>

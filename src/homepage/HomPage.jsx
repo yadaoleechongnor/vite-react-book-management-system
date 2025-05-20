@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import HomePageLayout from './HomePageLayout';
 import { API_BASE_URL } from "../utils/api"; 
 import SU_sign from "../assets/SU_sign.jpg";
@@ -9,6 +10,7 @@ function HomPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchLatestBooks = async () => {
@@ -61,25 +63,22 @@ function HomPage() {
   return (
     <HomePageLayout>
       <div className="max-w-7xl mx-auto p-5">
-   
         {/* Hero Section */}
-        <div
-          className="bg-gray-100 py-16 px-5 text-center rounded-lg mb-10 relative z-0"
+        <div className="bg-gray-100 py-16 px-5 text-center rounded-lg mb-10 relative z-0"
           style={{
             backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${SU_sign})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
-          }}
-        >
+          }}>
           <div className="max-w-3xl mx-auto text-white">
-            <h1 className="text-4xl font-bold mb-4">Discover Your Next Favorite Book</h1>
-            <p className="text-xl mb-6">Explore books from various Branches and authors</p>
+            <h1 className="text-4xl font-bold mb-4">{t('home.hero.title')}</h1>
+            <p className="text-xl mb-6">{t('home.hero.subtitle')}</p>
           </div>
         </div>
         
         {/* Featured Books Section */}
         <div className="mb-10">
-          <h2 className="text-2xl font-bold text-center mb-6">Featured Books</h2>
+          <h2 className="text-2xl font-bold text-center mb-6">{t('home.featured.title')}</h2>
           {loading ? (
             <div className="flex justify-center items-center h-40">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
@@ -91,7 +90,7 @@ function HomPage() {
           ) : books.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {books.map((book, index) => (
-                <div key={book.id || book._id || index} className="border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition">
+                <div key={book.id || book._id || index} className="border border-sky-500 rounded-lg p-4 shadow-sm hover:shadow-md transition">
                   <div className="h-48 bg-gray-200 mb-3 rounded">
                     <img
                       src={book.cover_image?.url || book.coverImage || book.cover || "/images/book_img.png"}
@@ -100,23 +99,21 @@ function HomPage() {
                     />
                   </div>
                   <h3 className="font-semibold text-lg">
-                    ຫົວຂໍ້: {book.title && book.title.length > 60 ? `${book.title.substring(0, 60)}...` : book.title || 'Untitled'}
+                    {t('home.featured.bookTitle')}: {book.title && book.title.length > 60 ? `${book.title.substring(0, 60)}...` : book.title || 'Untitled'}
                   </h3>
-                  <p className="text-gray-600 mb-2">ຜູ້ຂຽນ: {book.author || 'Unknown Author'}</p>
+                  <p className="text-gray-600 mb-2">{t('home.featured.author')}: {book.author || 'Unknown Author'}</p>
                   <button
-                    onClick={() => {
-                      navigate(`/login`);
-                    }}
+                    onClick={() => navigate('/login')}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition"
                   >
-                    View Details
+                    {t('home.featured.viewDetails')}
                   </button>
                 </div>
               ))}
             </div>
           ) : (
             <div className="text-center p-10 bg-gray-50 rounded-lg">
-              <p className="text-gray-500">No books available yet</p>
+              <p className="text-gray-500">{t('home.featured.noBooks')}</p>
             </div>
           )}
         </div>
@@ -125,26 +122,25 @@ function HomPage() {
         <footer className="bg-gray-800 text-white p-10 rounded-lg">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
             <div>
-              <h3 className="font-bold text-lg mb-4">About Us</h3>
-              <p>Your trusted source for quality books since 2025</p>
+              <h3 className="font-bold text-lg mb-4">{t('home.footer.about')}</h3>
+              <p>{t('home.footer.aboutText')}</p>
             </div>
             <div>
-             
               <ul>
-                <li className="mb-2"><a href="/" className="text-gray-300 hover:text-white transition">Home</a></li>
-                <li className="mb-2"><a href="/about" className="text-gray-300 hover:text-white transition">Books</a></li>
-                <li className="mb-2"><a href="#" className="text-gray-300 hover:text-white transition">Categories</a></li>
-                <li className="mb-2"><a href="#" className="text-gray-300 hover:text-white transition">Contact</a></li>
+                <li className="mb-2"><a href="/" className="text-gray-300 hover:text-white transition">{t('home.footer.home')}</a></li>
+                <li className="mb-2"><a href="/about" className="text-gray-300 hover:text-white transition">{t('home.footer.books')}</a></li>
+                <li className="mb-2"><a href="#" className="text-gray-300 hover:text-white transition">{t('home.footer.categories')}</a></li>
+                <li className="mb-2"><a href="#" className="text-gray-300 hover:text-white transition">{t('home.footer.contact')}</a></li>
               </ul>
             </div>
             <div>
-              <h3 className="font-bold text-lg mb-4">Contact</h3>
-              <p className="mb-2">Email: souphanouvonguniversity@gmail.com</p>
-              <p>Phone: +856 20 78945632</p>
+              <h3 className="font-bold text-lg mb-4">{t('home.footer.contact')}</h3>
+              <p className="mb-2">{t('home.footer.email')}</p>
+              <p>{t('home.footer.phone')}</p>
             </div>
           </div>
           <div className="border-t border-gray-700 pt-6 text-center">
-            <p>&copy; 2025 Master-Library. All rights reserved.</p>
+            <p>{t('home.footer.copyright')}</p>
           </div>
         </footer>
       </div>

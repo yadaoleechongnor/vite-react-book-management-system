@@ -3,8 +3,10 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import AdminLayout from "../dashboard/adminLayout";
+import { useTranslation } from 'react-i18next';
 
 const UserManagementLayout = ({ children }) => {
+    const { t } = useTranslation();
     const [activeItem, setActiveItem] = useState('users');  // Set default to 'users'
 
     useEffect(() => {
@@ -25,7 +27,7 @@ const UserManagementLayout = ({ children }) => {
     <AdminLayout>
     <div className="admin-layout w-full h-screen flex flex-col">
      <header className='flex p-4 justify-between bg-white rounded-full border items-center'>
-     <h1 className="text-xl hidden md:block">User Management</h1>
+     <h1 className="text-xl hidden md:block">{t('admin.users.title')}</h1>
         <nav className="flex justify-end">
           <ul className="flex space-x-4">
             <li>
@@ -34,7 +36,7 @@ const UserManagementLayout = ({ children }) => {
                 className={`${activeItem === 'users' ? 'text-sky-600 font-semibold' : 'text-black hover:text-sky-600'}`}
                 onClick={() => handleItemClick('users')}
               >
-                Users
+                {t('admin.users.allUsers')}
               </Link>
             </li>
             <li>
@@ -43,18 +45,9 @@ const UserManagementLayout = ({ children }) => {
                 className={`${activeItem === 'roles' ? 'text-sky-600 font-semibold' : 'text-black hover:text-sky-600'}`}
                 onClick={() => handleItemClick('roles')}
               >
-                Teacher-Admin-Management
+                {t('admin.users.teacherAdminManagement')}
               </Link>
             </li>
-            {/* <li>
-              <Link 
-                to="/admin/usermanagement"
-                className={`${activeItem === 'permissions' ? 'text-sky-600 font-semibold' : 'text-black hover:text-sky-600'}`}
-                onClick={() => handleItemClick('permissions')}
-              >
-                Permissions
-              </Link>
-            </li> */}
           </ul>
         </nav>
      </header>

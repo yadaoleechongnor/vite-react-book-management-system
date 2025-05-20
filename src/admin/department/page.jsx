@@ -5,10 +5,12 @@ import Swal from "sweetalert2";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import AdminLayout from "../dashboard/adminLayout";
 import { API_BASE_URL } from "../../utils/api";
+import { useTranslation } from 'react-i18next';
 
 export default function DepartmentPage() {
     const [departments, setDepartments] = useState([]);
     const [faculties, setFaculties] = useState([]);
+    const { t } = useTranslation();
 
     useEffect(() => {
         const requestOptions = {
@@ -33,15 +35,15 @@ export default function DepartmentPage() {
 
     const handleAddDepartment = () => {
         Swal.fire({
-            title: 'Add Department',
+            title: t('admin.department.addDepartment'),
             html: `
                 <div class="flex flex-col space-y-4">
                     <div>
-                        <label for="department-name" class="block font-medium text-gray-700">Department Name</label>
-                        <input type="text" id="department-name" class="mt-1 h-12 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500 sm:text-sm" placeholder="Enter department name">
+                        <label for="department-name" class="block font-medium text-gray-700">${t('admin.department.departmentName')}</label>
+                        <input type="text" id="department-name" class="mt-1 h-12 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500 sm:text-sm" placeholder="${t('admin.department.enterDepartmentName')}">
                     </div>
                     <div>
-                        <label for="faculty-select" class="block text-sm font-medium text-gray-700">Select Faculty</label>
+                        <label for="faculty-select" class="block text-sm font-medium text-gray-700">${t('admin.department.selectFaculty')}</label>
                         <select id="faculty-select" class="mt-1 block w-full h-12 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500 sm:text-sm">
                             ${faculties.map(faculty => `<option value="${faculty._id}">${faculty.faculties_name}</option>`).join('')}
                         </select>
@@ -49,7 +51,7 @@ export default function DepartmentPage() {
                 </div>
             `,
             showCancelButton: true,
-            confirmButtonText: 'Add',
+            confirmButtonText: t('admin.common.add'),
             customClass: {
                 popup: 'bg-white rounded-lg p-6 shadow-lg',
                 title: 'text-xl font-semibold text-gray-900',
@@ -82,19 +84,19 @@ export default function DepartmentPage() {
                         if (result.success) {
                             setDepartments([...departments, result.data.department]);
                             Swal.fire({
-                                title: 'Success',
-                                text: 'Department added successfully',
+                                title: t('admin.common.success'),
+                                text: t('admin.department.departmentAdded'),
                                 icon: 'success',
                                 timer: 2000,
                                 showConfirmButton: false
                             });
                         } else {
-                            Swal.fire('Error', 'Failed to add department', 'error');
+                            Swal.fire(t('admin.common.error'), t('admin.department.failedToAdd'), 'error');
                         }
                     })
                     .catch((error) => {
                         console.error('Error:', error);
-                        Swal.fire('Error', 'Failed to add department', 'error');
+                        Swal.fire(t('admin.common.error'), t('admin.department.failedToAdd'), 'error');
                     });
             }
         });
@@ -102,12 +104,12 @@ export default function DepartmentPage() {
 
     const handleDeleteDepartment = (id) => {
         Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
+            title: t('admin.common.areYouSure'),
+            text: t('admin.common.cannotRevert'),
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'No, cancel!',
+            confirmButtonText: t('admin.common.yesDelete'),
+            cancelButtonText: t('admin.common.noCancel'),
             customClass: {
                 popup: 'bg-white rounded-lg p-6 shadow-lg',
                 title: 'text-xl font-semibold text-gray-900',
@@ -133,8 +135,8 @@ export default function DepartmentPage() {
                         if (result.success) {
                             setDepartments(departments.filter(department => department._id !== id));
                             Swal.fire({
-                                title: 'Deleted!',
-                                text: 'Department has been deleted.',
+                                title: t('admin.common.deleted'),
+                                text: t('admin.department.departmentDeleted'),
                                 icon: 'success',
                                 timer: 2000,
                                 showConfirmButton: false,
@@ -146,11 +148,11 @@ export default function DepartmentPage() {
                                 window.location.reload();
                             });
                         } else {
-                            Swal.fire('Error', 'Failed to delete department', 'error');
+                            Swal.fire(t('admin.common.error'), t('admin.department.failedToDelete'), 'error');
                         }
                     })
                     .catch((error) => {
-                        Swal.fire('Error', 'Failed to delete department', 'error');
+                        Swal.fire(t('admin.common.error'), t('admin.department.failedToDelete'), 'error');
                     });
             }
         });
@@ -158,15 +160,15 @@ export default function DepartmentPage() {
 
     const handleEditDepartment = (id, currentName, currentFacultyId) => {
         Swal.fire({
-            title: 'Edit Department',
+            title: t('admin.department.editDepartment'),
             html: `
                 <div class="flex flex-col space-y-4">
                     <div>
-                        <label for="department-name" class="block text-sm text-left font-medium text-gray-700">Department Name</label>
+                        <label for="department-name" class="block text-sm text-left font-medium text-gray-700">${t('admin.department.departmentName')}</label>
                         <input type="text" id="department-name" class="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm px-3 focus:ring-sky-500 focus:border-sky-500 text-base" value="${currentName}">
                     </div>
                     <div>
-                        <label for="faculty-select" class="block text-left font-medium text-gray-700">Select Faculty</label>
+                        <label for="faculty-select" class="block text-left font-medium text-gray-700">${t('admin.department.selectFaculty')}</label>
                         <select id="faculty-select" class="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm px-3 focus:ring-sky-500 focus:border-sky-500 text-base">
                             ${faculties.map(faculty => `<option value="${faculty._id}" ${faculty._id === currentFacultyId ? 'selected' : ''}>${faculty.faculties_name}</option>`).join('')}
                         </select>
@@ -174,7 +176,7 @@ export default function DepartmentPage() {
                 </div>
             `,
             showCancelButton: true,
-            confirmButtonText: 'Update',
+            confirmButtonText: t('admin.common.update'),
             customClass: {
                 popup: 'bg-white rounded-lg p-6 shadow-lg',
                 title: 'text-xl font-semibold text-gray-900',
@@ -206,73 +208,66 @@ export default function DepartmentPage() {
                     .then((result) => {
                         if (result.success) {
                             setDepartments(departments.map(department => department._id === id ? result.data.department : department));
-                            Swal.fire('Success', 'Department updated successfully', 'success');
+                            Swal.fire(t('admin.common.success'), t('admin.department.departmentUpdated'), 'success');
                         } else {
-                            Swal.fire('Error', 'Failed to update department', 'error');
+                            Swal.fire(t('admin.common.error'), t('admin.department.failedToUpdate'), 'error');
                         }
                     })
                     .catch((error) => {
                         console.error('Error:', error);
-                        Swal.fire('Error', 'Failed to update department', 'error');
+                        Swal.fire(t('admin.common.error'), t('admin.department.failedToUpdate'), 'error');
                     });
             }
         });
     };
-    
 
     return (
         <AdminLayout>
             <div className="p-6 w-full">
-                <h1 className="text-2xl font-bold mb-4">Department Page</h1>
-                <p className="mb-6">Welcome to the Department Page.</p>
-                <div className="flex justify-between items-center mb-4">
-                    <p>Total Departments: {countDepartments()}</p>
+                <h1 className="text-2xl font-bold mb-4">{t('admin.department.title')}</h1>
+                <div className="flex justify-end">
                     <button 
-                        className="hover:shadow-2xl p-2 border rounded-full bg-gradient-to-tr md:p-4  from-sky-300 to-sky-500 text-white font-bold hover:bg-gradient-to-tl hover:from-sky-300 hover:to-sky-500 cursor-pointer"
                         onClick={handleAddDepartment}
+                        className="hover:shadow-2xl p-4 border rounded-full bg-gradient-to-tr from-sky-300 to-sky-500"
                     >
-                        Add Department
+                        {t('admin.department.addDepartment')}
                     </button>
                 </div>
-                <div className="overflow-x-auto p-6 rounded-lg border bg-white shadow-2xl mt-8">
-                    <table className="min-w-full bg-white border-gray-200">
-                        <thead>
-                            <tr className="bg-gray-100">
-                                <th className="py-2 px-4 border-b text-start">#</th>
-                                <th className="py-2 px-4 border-b">Department</th>
-                                <th className="py-2 px-4 border-b md:table-cell hidden">Faculty</th>
-                                <th className="py-2 px-4 border-b lg:table-cell hidden">Created At</th>
-                                <th className="py-2 px-4 border-b lg:table-cell hidden">Updated At</th>
-                                <th className="py-2 px-4 border-b text-center">Actions</th>
+
+                <table className="min-w-full bg-white mt-4">
+                    <thead>
+                        <tr>
+                            <th className="py-2 px-4 border-b">{t('admin.department.departmentName')}</th>
+                            <th className="py-2 px-4 border-b">{t('admin.department.faculty')}</th>
+                            <th className="py-2 px-4 border-b">{t('admin.department.actions')}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {departments.map((department, index) => (
+                            <tr key={department._id} className="hover:bg-gray-50">
+                                <td className="py-2 px-4 border-b text-center">{index + 1}</td>
+                                <td className="py-2 px-4 border-b">{department.department_name}</td>
+                                <td className="py-2 px-4 border-b md:table-cell hidden">{department.faculties_id?.faculties_name}</td>
+                                <td className="py-2 px-4 border-b text-center lg:table-cell hidden">{new Date(department.createdAt).toLocaleDateString()}</td>
+                                <td className="py-2 px-4 border-b text-center lg:table-cell hidden">{new Date(department.updatedAt).toLocaleDateString()}</td>
+                                <td className="py-2 px-4 border-b text-center">
+                                    <button 
+                                        className="text-blue-500 hover:text-blue-700 mr-2"
+                                        onClick={() => handleEditDepartment(department._id, department.department_name, department.faculty?._id)}
+                                    >
+                                        <FaEdit />
+                                    </button>
+                                    <button 
+                                        className="text-red-500 hover:text-red-700"
+                                        onClick={() => handleDeleteDepartment(department._id)}
+                                    >
+                                        <FaTrash />
+                                    </button>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            {departments.map((department, index) => (
-                                <tr key={department._id} className="hover:bg-gray-50">
-                                    <td className="py-2 px-4 border-b text-center">{index + 1}</td>
-                                    <td className="py-2 px-4 border-b">{department.department_name}</td>
-                                    <td className="py-2 px-4 border-b md:table-cell hidden">{department.faculties_id?.faculties_name}</td>
-                                    <td className="py-2 px-4 border-b text-center lg:table-cell hidden">{new Date(department.createdAt).toLocaleDateString()}</td>
-                                    <td className="py-2 px-4 border-b text-center lg:table-cell hidden">{new Date(department.updatedAt).toLocaleDateString()}</td>
-                                    <td className="py-2 px-4 border-b text-center">
-                                        <button 
-                                            className="text-blue-500 hover:text-blue-700 mr-2"
-                                            onClick={() => handleEditDepartment(department._id, department.department_name, department.faculty?._id)}
-                                        >
-                                            <FaEdit />
-                                        </button>
-                                        <button 
-                                            className="text-red-500 hover:text-red-700"
-                                            onClick={() => handleDeleteDepartment(department._id)}
-                                        >
-                                            <FaTrash />
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                        ))}
+                    </tbody>
+                </table>
             </div>
         </AdminLayout>
     );

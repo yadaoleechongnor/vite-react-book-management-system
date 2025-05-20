@@ -1,48 +1,67 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { FaTachometerAlt, FaUsers, FaCog, FaUniversity, FaBuilding, FaTimes } from 'react-icons/fa'; // Added FaTimes icon
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { FaTachometerAlt, FaUsers, FaCog, FaUniversity, FaBuilding, FaTimes } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
-  const [activeItem, setActiveItem] = useState('dashboard'); // Changed default to 'dashboard'
+  const { t } = useTranslation();
+  const [activeItem, setActiveItem] = useState('dashboard');
   const [isMobile, setIsMobile] = useState(false);
+  const location = useLocation();
+  const sidebarRef = useRef(null);
 
   useEffect(() => {
-    const savedActiveItem = localStorage.getItem('activeSidebarItem');
-    if (savedActiveItem) {
-      setActiveItem(savedActiveItem);
-    } else {
-      // Set dashboard as default if no saved item
-      localStorage.setItem('activeSidebarItem', 'dashboard');
-    }
+    const token = localStorage.getItem('token');
+    const savedActiveMenu = localStorage.getItem('activeSidebarItem');
     
-    // Add check for mobile screen size
+    if (!token) {
+      setActiveItem('dashboard');
+      localStorage.setItem('activeSidebarItem', 'dashboard');
+    } else if (savedActiveMenu) {
+      setActiveItem(savedActiveMenu);
+    }
+
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        return;
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkIsMobile();
     window.addEventListener('resize', checkIsMobile);
-    
-    return () => window.removeEventListener('resize', checkIsMobile);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('resize', checkIsMobile);
+    };
   }, []);
 
-  const handleItemClick = (item, path) => {
+  const handleItemClick = (item) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setActiveItem('dashboard');
+      localStorage.setItem('activeSidebarItem', 'dashboard');
+      return;
+    }
+    
     setActiveItem(item);
     localStorage.setItem('activeSidebarItem', item);
     
-    // Auto hide sidebar on mobile when clicking a menu item
     if (isMobile) {
       setIsOpen(false);
     }
-    
-    window.location.href = path;
   };
 
   return (
     <>
-      {/* Overlay for mobile */}
       {isMobile && isOpen && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 z-20"
@@ -50,9 +69,12 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
         />
       )}
 
-      <aside className={`sidebar  text-black  rounded-tr-lg fixed md:static h-screen z-30 transition-all duration-300 ease-in-out ${isOpen ? 'left-0' : '-left-64 md:left-0'}`}>
+      <aside 
+        ref={sidebarRef}
+        className={`sidebar border-r-sky-500 border border-top-none text-black rounded-tr-lg fixed md:static h-screen z-30 transition-all duration-300 ease-in-out ${isOpen ? 'left-0' : '-left-64 md:left-0'}`}
+      >
         <div className="flex justify-between items-center p-4 md:hidden">
-          <h2 className="text-white font-bold">Admin Panel</h2>
+          <h2 className="text-white font-bold">{t('sidebar.adminPanel')}</h2>
           <button 
             onClick={() => setIsOpen(false)} 
             className="text-black hover:text-sky-800"
@@ -61,59 +83,57 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
           </button>
         </div>
         
-        <nav className="p-4">
+        <nav className="">
           <ul className="space-y-2">
             <li
               className={`p-2 rounded-full flex items-center gap-2 ${activeItem === 'dashboard' ? 'bg-white text-sky-500' : 'text-black'} hover:bg-white hover:text-sky-500`}
-              onClick={() => handleItemClick('dashboard', '/admin/dashboard')}
+              onClick={() => handleItemClick('dashboard')}
             >
               <FaTachometerAlt />
-              <Link to="/admin/dashboard">Dashboard</Link>
+              <Link to="/admin/dashboard">{t('sidebar.dashboard')}</Link>
             </li>
             <li
               className={`p-2 rounded-full flex items-center gap-2 ${activeItem === 'users' ? 'bg-white text-sky-500' : 'text-black'} hover:bg-white hover:text-sky-500`}
-              onClick={() => handleItemClick('users', '/admin/usermanagement')}
+              onClick={() => handleItemClick('users')}
             >
               <FaUsers />
-              <Link to="/admin/usermanagement">User Management</Link>
+              <Link to="/admin/usermanagement">{t('sidebar.userManagement')}</Link>
             </li>
             <li
               className={`p-2 rounded-full flex items-center gap-2 ${activeItem === 'faculty' ? 'bg-white text-sky-500' : 'text-black'} hover:bg-white hover:text-sky-500`}
-              onClick={() => handleItemClick('faculty', '/admin/faculty')}
+              onClick={() => handleItemClick('faculty')}
             >
               <FaUniversity />
-              <Link to="/admin/faculty">Faculty Management</Link>
+              <Link to="/admin/faculty">{t('sidebar.facultyManagement')}</Link>
             </li>
             <li
               className={`p-2 rounded-full flex items-center gap-2 ${activeItem === 'department' ? 'bg-white text-sky-500' : 'text-black'} hover:bg-white hover:text-sky-500`}
-              onClick={() => handleItemClick('department', '/admin/department')}
+              onClick={() => handleItemClick('department')}
             >
               <FaBuilding />
-              <Link to="/admin/department">Department Management</Link>
+              <Link to="/admin/department">{t('sidebar.departmentManagement')}</Link>
             </li>
             <li
               className={`p-2 rounded-full flex items-center gap-2 ${activeItem === 'branch' ? 'bg-white text-sky-500' : 'text-black'} hover:bg-white hover:text-sky-500`}
-              onClick={() => handleItemClick('branch', '/admin/branch')}
+              onClick={() => handleItemClick('branch')}
             >
               <FaUsers />
-              <Link to="/admin/branch">Branch Management</Link>
+              <Link to="/admin/branch">{t('sidebar.branchManagement')}</Link>
             </li>
             <li
               className={`p-2 rounded-full flex items-center gap-2 ${activeItem === 'bookupload' ? 'bg-white text-sky-500' : 'text-black'} hover:bg-white hover:text-sky-500`}
-              onClick={() => handleItemClick('bookupload', '/admin/bookupload')}
+              onClick={() => handleItemClick('bookupload')}
             >
               <FaUsers />
-              <Link to="/admin/bookupload">Book management</Link>
+              <Link to="/admin/bookupload">{t('sidebar.bookManagement')}</Link>
             </li>
-          
             <li
               className={`p-2 rounded-full flex items-center gap-2 ${activeItem === 'adminnews' ? 'bg-white text-sky-500' : 'text-black'} hover:bg-white hover:text-sky-500`}
-              onClick={() => handleItemClick('adminnews', '/admin/adminnews')}
+              onClick={() => handleItemClick('adminnews')}
             >
               <FaUsers />
-              <Link to="/admin/adminnews">News-Management</Link>
+              <Link to="/admin/adminnews">{t('sidebar.newsManagement')}</Link>
             </li>
-          
           </ul>
         </nav>
       </aside>

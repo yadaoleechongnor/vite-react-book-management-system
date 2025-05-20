@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../../../src/utils/api';  // Updated import path
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 function NewsCard() {
   const [news, setNews] = useState([]);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -32,13 +34,12 @@ function NewsCard() {
     return url.replace(/([^:]\/)\/+/g, "$1"); // Clean up any double slashes
   };
 
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
       {news.map((item) => (
         <div key={item._id} className="bg-white rounded-lg shadow-md p-4 flex flex-col">
           <div className="flex justify-between items-center mb-3">
-            <h3 className="text-xl font-bold">{item.title}</h3>
+            <h3 className="text-xl font-bold">{t('admin.components.news.title')}: {item.title}</h3>
             <div className="flex gap-2">
               <button 
                 onClick={() => handleEdit(item._id)}

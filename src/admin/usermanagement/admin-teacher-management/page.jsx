@@ -8,12 +8,13 @@ import AdminTable from "./AdminTable"
 import AddTeacherAdmin from "./AddTeacher-Admin"
 import { API_BASE_URL } from '../../../utils/api';
 import { getAuthToken } from '../../../utils/auth'; // Import the auth utility
+import { useTranslation } from 'react-i18next';
 
 function AddminTeacherManagement() {
   const [users, setUsers] = useState([]);
   const [branches, setBranches] = useState([]); // Add state for branches
   const [showForm, setShowForm] = useState(false);
-  
+  const { t } = useTranslation();
 
   useEffect(() => {
     const myHeaders = new Headers();
@@ -170,7 +171,22 @@ function AddminTeacherManagement() {
 
   return (
     <UserManagementLayout>
-     <div className="flex justify-end ">  <AddTeacherAdmin/></div>
+      <div className="p-6">
+        <h1 className="text-2xl font-bold mb-6">{t('admin.users.teacherManagement')}</h1>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label>{t('admin.users.teacherName')}</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={t('admin.users.enterTeacherName')}
+            />
+          </div>
+          {/* ...existing form fields... */}
+        </form>
+      </div>
+      <div className="flex justify-end ">  <AddTeacherAdmin/></div>
       {showForm && (
         <div className="form-popup">
           <h2>Add New User</h2>

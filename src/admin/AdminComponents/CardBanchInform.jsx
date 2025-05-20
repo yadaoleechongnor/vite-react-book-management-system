@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_BASE_URL } from '../../utils/api';
 
 function CardBanchInform() {
+  const { t } = useTranslation();
   const [branchCount, setBranchCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
@@ -38,9 +40,9 @@ function CardBanchInform() {
       <h2 className="text-2xl font-semibold">
         {loading ? "..." : branchCount}
       </h2>
-      <p className="text-sm">Branch Inform </p>
+      <p className="text-sm">{t('admin.components.cards.branch')}</p>
     </div>
-  )
+  );
 }
 
-export default CardBanchInform
+export default CardBanchInform;

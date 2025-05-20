@@ -5,9 +5,11 @@ import Swal from "sweetalert2";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import AdminLayout from "../dashboard/adminLayout";
 import { API_BASE_URL } from "../../utils/api";
+import { useTranslation } from 'react-i18next';
 
 export default function FacultyPage() {
     const [faculties, setFaculties] = useState([]);
+    const { t } = useTranslation();
 
     useEffect(() => {
         const requestOptions = {
@@ -23,12 +25,12 @@ export default function FacultyPage() {
 
     const handleAddFaculty = () => {
         Swal.fire({
-            title: 'Add Faculty',
+            title: t('admin.faculty.addFaculty'),
             input: 'text',
-            inputLabel: 'Faculty Name',
-            inputPlaceholder: 'Enter faculty name',
+            inputLabel: t('admin.faculty.facultyName'),
+            inputPlaceholder: t('admin.faculty.enterFacultyName'),
             showCancelButton: true,
-            confirmButtonText: 'Add',
+            confirmButtonText: t('admin.faculty.add'),
             preConfirm: (name) => {
                 const token = localStorage.getItem('authToken');
                 const myHeaders = new Headers();
@@ -51,13 +53,13 @@ export default function FacultyPage() {
                     .then((result) => {
                         if (result.success) {
                             setFaculties([...faculties, result.data.faculty]);
-                            Swal.fire('Success', 'Faculty added successfully', 'success');
+                            Swal.fire(t('admin.success'), t('admin.faculty.addSuccess'), 'success');
                         } else {
-                            Swal.fire('Error', 'Failed to add faculty', 'error');
+                            Swal.fire(t('admin.error'), t('admin.faculty.addError'), 'error');
                         }
                     })
                     .catch((error) => {
-                        Swal.fire('Error', 'Failed to add faculty', 'error');
+                        Swal.fire(t('admin.error'), t('admin.faculty.addError'), 'error');
                     });
             }
         });
@@ -65,12 +67,12 @@ export default function FacultyPage() {
 
     const handleDeleteFaculty = (id) => {
         Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
+            title: t('admin.faculty.confirmDelete'),
+            text: t('admin.faculty.deleteWarning'),
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'No, cancel!'
+            confirmButtonText: t('admin.faculty.confirm'),
+            cancelButtonText: t('admin.faculty.cancel')
         }).then((result) => {
             if (result.isConfirmed) {
                 const token = localStorage.getItem('authToken');
@@ -90,8 +92,8 @@ export default function FacultyPage() {
                         if (result.success) {
                             setFaculties(faculties.filter(faculty => faculty._id !== id));
                             Swal.fire({
-                                title: 'Deleted!',
-                                text: 'Faculty has been deleted.',
+                                title: t('admin.faculty.deleted'),
+                                text: t('admin.faculty.deleteSuccess'),
                                 icon: 'success',
                                 timer: 2000,
                                 showConfirmButton: false
@@ -99,11 +101,11 @@ export default function FacultyPage() {
                                 window.location.reload();
                             });
                         } else {
-                            Swal.fire('Error', 'Failed to delete faculty', 'error');
+                            Swal.fire(t('admin.error'), t('admin.faculty.deleteError'), 'error');
                         }
                     })
                     .catch((error) => {
-                        Swal.fire('Error', 'Failed to delete faculty', 'error');
+                        Swal.fire(t('admin.error'), t('admin.faculty.deleteError'), 'error');
                     });
             }
         });
@@ -111,12 +113,12 @@ export default function FacultyPage() {
 
     const handleEditFaculty = (id, currentName) => {
         Swal.fire({
-            title: 'Edit Faculty',
+            title: t('admin.faculty.editFaculty'),
             input: 'text',
-            inputLabel: 'Faculty Name',
+            inputLabel: t('admin.faculty.facultyName'),
             inputValue: currentName,
             showCancelButton: true,
-            confirmButtonText: 'Update',
+            confirmButtonText: t('admin.faculty.update'),
             preConfirm: (name) => {
                 const token = localStorage.getItem('authToken');
                 const myHeaders = new Headers();
@@ -139,13 +141,13 @@ export default function FacultyPage() {
                     .then((result) => {
                         if (result.success) {
                             setFaculties(faculties.map(faculty => faculty._id === id ? result.data.faculty : faculty));
-                            Swal.fire('Success', 'Faculty updated successfully', 'success');
+                            Swal.fire(t('admin.success'), t('admin.faculty.updateSuccess'), 'success');
                         } else {
-                            Swal.fire('Error', 'Failed to update faculty', 'error');
+                            Swal.fire(t('admin.error'), t('admin.faculty.updateError'), 'error');
                         }
                     })
                     .catch((error) => {
-                        Swal.fire('Error', 'Failed to update faculty', 'error');
+                        Swal.fire(t('admin.error'), t('admin.faculty.updateError'), 'error');
                     });
             }
         });
@@ -154,52 +156,50 @@ export default function FacultyPage() {
     return (
         <AdminLayout>
             <div className="p-6 w-full">
-                <h1 className="text-2xl font-bold mb-4">Faculty Page</h1>
-                <p className="mb-6">Welcome to the Faculty Page.</p>
+                <h1 className="text-2xl font-bold mb-4">{t('admin.faculty.title')}</h1>
+                <p className="mb-6">{t('admin.faculty.welcome')}</p>
                 <div className="flex justify-end">
                     <button 
                         className="hover:shadow-2xl p-4 border rounded-full bg-gradient-to-tr from-sky-300 to-sky-500 text-white font-bold hover:bg-gradient-to-tl hover:from-sky-300 hover:to-sky-500 cursor-pointer"
                         onClick={handleAddFaculty}
                     >
-                        Add Faculty
+                        {t('admin.faculty.addFaculty')}
                     </button>
                 </div>
                 <div className="p-6 bg-white border rounded-lg mt-16 shadow-2xl ">
-                <table className="min-w-full bg-white  border-gray-200">
-                    <thead>
-                        <tr className="bg-gray-100">
-                            {/* <th className="py-2 px-4 border-b">ID</th> */}
-                            <th className="py-2 px-4 border-b text-center">Name</th>
-                            <th className="py-2 px-4 border-b text-center hidden md:table-cell">Created At</th>
-                            <th className="py-2 px-4 border-b text-center hidden lg:table-cell">Updated At</th>
-                            <th className="py-2 px-4 border-b text-center">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {faculties.map((faculty) => (
-                            <tr key={faculty._id} className="hover:bg-gray-50">
-                                {/* <td className="py-2 px-4 border-b text-center">{faculty._id}</td> */}
-                                <td className="py-2 px-4 border-b text-center">{faculty.faculties_name}</td>
-                                <td className="py-2 px-4 border-b text-center hidden md:table-cell">{new Date(faculty.createdAt).toLocaleDateString()}</td>
-                                <td className="py-2 px-4 border-b text-center hidden lg:table-cell">{new Date(faculty.updatedAt).toLocaleDateString()}</td>
-                                <td className="py-2 px-4 border-b text-center">
-                                    <button 
-                                        className="text-blue-500 hover:text-blue-700 mr-2"
-                                        onClick={() => handleEditFaculty(faculty._id, faculty.faculties_name)}
-                                    >
-                                        <FaEdit />
-                                    </button>
-                                    <button 
-                                        className="text-red-500 hover:text-red-700"
-                                        onClick={() => handleDeleteFaculty(faculty._id)}
-                                    >
-                                        <FaTrash />
-                                    </button>
-                                </td>
+                    <table className="min-w-full bg-white">
+                        <thead>
+                            <tr className="bg-gray-100">
+                                <th className="py-2 px-4 border-b text-center">{t('admin.faculty.facultyName')}</th>
+                                <th className="py-2 px-4 border-b text-center hidden md:table-cell">{t('admin.faculty.createdAt')}</th>
+                                <th className="py-2 px-4 border-b text-center hidden lg:table-cell">{t('admin.faculty.updatedAt')}</th>
+                                <th className="py-2 px-4 border-b text-center">{t('admin.common.actions')}</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {faculties.map((faculty) => (
+                                <tr key={faculty._id} className="hover:bg-gray-50">
+                                    <td className="py-2 px-4 border-b text-center">{faculty.faculties_name}</td>
+                                    <td className="py-2 px-4 border-b text-center hidden md:table-cell">{new Date(faculty.createdAt).toLocaleDateString()}</td>
+                                    <td className="py-2 px-4 border-b text-center hidden lg:table-cell">{new Date(faculty.updatedAt).toLocaleDateString()}</td>
+                                    <td className="py-2 px-4 border-b text-center">
+                                        <button 
+                                            className="text-blue-500 hover:text-blue-700 mr-2"
+                                            onClick={() => handleEditFaculty(faculty._id, faculty.faculties_name)}
+                                        >
+                                            <FaEdit />
+                                        </button>
+                                        <button 
+                                            className="text-red-500 hover:text-red-700"
+                                            onClick={() => handleDeleteFaculty(faculty._id)}
+                                        >
+                                            <FaTrash />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </AdminLayout>

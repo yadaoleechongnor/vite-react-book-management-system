@@ -4,7 +4,8 @@ import React, { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import TeacherLayout from "../TeacherComponent/TeacherLayout";
 import { API_BASE_URL } from "../../utils/api";
-import { getAuthToken } from "../../utils/auth"; // Import the auth utility
+import { getAuthToken } from "../../utils/auth";
+import { useTranslation } from "react-i18next";
 
 /**
  * @typedef {Object} Branch
@@ -19,6 +20,8 @@ import { getAuthToken } from "../../utils/auth"; // Import the auth utility
  */
 
 const TeacherUploadPage = () => {
+  const { t } = useTranslation();
+
   // State declarations with initial values
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -52,7 +55,7 @@ const TeacherUploadPage = () => {
   // Fetch authenticated user details on component mount
   useEffect(() => {
     const fetchUser = async () => {
-      const token = getAuthToken(); // Use the imported auth utility
+      const token = getAuthToken();
       if (!token) {
         setLoading(false);
         return;
@@ -65,11 +68,11 @@ const TeacherUploadPage = () => {
           method: "GET",
           headers,
         });
-        
+
         if (!response.ok) throw new Error("Failed to fetch user data");
-        
+
         const responseData = await response.json();
-        
+
         if (responseData.success && responseData.data && responseData.data.user) {
           const userData = responseData.data.user;
           setUploadedBy(userData._id || "");
@@ -122,8 +125,8 @@ const TeacherUploadPage = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = getAuthToken(); // Use the imported auth utility
-    
+    const token = getAuthToken();
+
     if (!token) {
       Swal.fire({
         title: "Authentication Error",
@@ -135,7 +138,7 @@ const TeacherUploadPage = () => {
       });
       return;
     }
-    
+
     if (!file) {
       Swal.fire({
         title: "Missing File",
@@ -163,12 +166,12 @@ const TeacherUploadPage = () => {
       formData.append("year", year);
       formData.append("abstract", abstract);
       formData.append("file", file);
-      formData.append("uploaded_by", uploadedBy); // User ID from state
-      
+      formData.append("uploaded_by", uploadedBy);
+
       const response = await fetch(`${API_BASE_URL}/v1/books`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
@@ -208,17 +211,20 @@ const TeacherUploadPage = () => {
           onSubmit={handleSubmit}
           className="p-6 bg-white rounded-lg shadow-md w-full max-w-[95%] md:max-w-[85%] lg:max-w-[70%] mx-auto"
         >
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Upload Files</h2>
-          
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">
+            {t("teacher.teacherUpload.title")}
+          </h2>
+
           {/* User info display */}
           {uploadedByName && (
             <div className="mb-4 p-3 bg-blue-50 rounded-md">
               <p className="text-sm text-gray-600">
-                Uploading as: <span className="font-medium text-blue-700">{uploadedByName}</span>
+                {t("teacher.teacherUpload.uploadingAs")}{" "}
+                <span className="font-medium text-blue-700">{uploadedByName}</span>
               </p>
             </div>
           )}
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* File Upload Section */}
             <div>
@@ -239,7 +245,7 @@ const TeacherUploadPage = () => {
                   htmlFor="fileInput"
                   className="block text-lg font-medium text-gray-700"
                 >
-                  {file ? file.name : "Drop files here or click to upload"}
+                  {file ? file.name : t("teacher.teacherUpload.dropFiles")}
                 </label>
               </div>
               {preview && (
@@ -258,7 +264,9 @@ const TeacherUploadPage = () => {
             {/* Form Fields Section */}
             <div className="md:col-span-2 space-y-4">
               <div>
-                <label className="block text-lg font-medium text-gray-700">Title</label>
+                <label className="block text-lg font-medium text-gray-700">
+                  {t("teacher.teacherUpload.form.title")}
+                </label>
                 <input
                   type="text"
                   value={title}
@@ -268,7 +276,9 @@ const TeacherUploadPage = () => {
                 />
               </div>
               <div>
-                <label className="block text-lg font-medium text-gray-700">Author</label>
+                <label className="block text-lg font-medium text-gray-700">
+                  {t("teacher.teacherUpload.form.author")}
+                </label>
                 <input
                   type="text"
                   value={author}
@@ -278,14 +288,16 @@ const TeacherUploadPage = () => {
                 />
               </div>
               <div>
-                <label className="block text-lg font-medium text-gray-700">Branch ID</label>
+                <label className="block text-lg font-medium text-gray-700">
+                  {t("teacher.teacherUpload.form.branchId")}
+                </label>
                 <select
                   value={branchId}
                   onChange={(e) => setBranchId(e.target.value)}
                   required
                   className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
                 >
-                  <option value="">Select Branch</option>
+                  <option value="">{t("teacher.teacherUpload.form.selectBranch")}</option>
                   {branches.map((branch) => (
                     <option key={branch._id} value={branch._id}>
                       {branch.branch_name}
@@ -294,7 +306,9 @@ const TeacherUploadPage = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-lg font-medium text-gray-700">Year</label>
+                <label className="block text-lg font-medium text-gray-700">
+                  {t("teacher.teacherUpload.form.year")}
+                </label>
                 <input
                   type="text"
                   value={year}
@@ -304,7 +318,9 @@ const TeacherUploadPage = () => {
                 />
               </div>
               <div>
-                <label className="block text-lg font-medium text-gray-700">Abstract</label>
+                <label className="block text-lg font-medium text-gray-700">
+                  {t("teacher.teacherUpload.form.abstract")}
+                </label>
                 <textarea
                   value={abstract}
                   onChange={(e) => setAbstract(e.target.value)}
@@ -321,13 +337,13 @@ const TeacherUploadPage = () => {
               type="button"
               className="bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300"
             >
-              Cancel
+              {t("teacher.teacherUpload.form.cancel")}
             </button>
             <button
               type="submit"
               className="bg-gradient-to-tr from-blue-400 to-blue-600 hover:from-blue-300 hover:to-blue-500 text-white py-2 px-4 rounded-md shadow-md"
             >
-              Upload Files
+              {t("teacher.teacherUpload.form.uploadFiles")}
             </button>
           </div>
         </form>

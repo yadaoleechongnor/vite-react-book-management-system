@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import HomePageLayout from './HomePageLayout';
 import { API_BASE_URL } from '../../src/utils/api';
 
 function News() {
+  const { t } = useTranslation();
   const [news, setNews] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [showDetails, setShowDetails] = useState(null);
@@ -46,11 +48,12 @@ function News() {
     <HomePageLayout>
       <main className="max-w-6xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
         {news.map((item) => (
-          <div
-            key={item._id}
-            className="bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition duration-300 cursor-pointer"
-            onClick={() => handleImageClick(getImageUrl(item.imageUrl), item._id)}
-          >
+          <div key={item._id} className="bg-white rounded-2xl overflow-hidden shadow-md">
+            <div className='w-full'>
+              <h3 className="font-bold text-lg mb-2 ml-3">
+                {t('news.title')}: {item.title}
+              </h3>
+            </div>
             <img 
               src={getImageUrl(item.imageUrl)} 
               alt={item.title} 
@@ -63,15 +66,12 @@ function News() {
               }}
             />
             <div className="p-4">
-              <h3 className="font-bold text-lg mb-2">{item.title}</h3>
-              {showDetails === item._id && (
-                <>
-                  <p className="text-sm text-gray-600 mb-2">
-                    {new Date(item.createdAt).toLocaleDateString()}
-                  </p>
-                  <p className="text-sm text-gray-700">{item.description}</p>
-                </>
-              )}
+              <p className="text-sm text-gray-700">
+                {t('news.description')}: {item.description}
+              </p>
+              <p className="text-sm text-gray-600">
+                {t('news.date')}: {new Date(item.createdAt).toLocaleDateString()}
+              </p>
             </div>
           </div>
         ))}

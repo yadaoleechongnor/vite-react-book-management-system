@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
 import { API_BASE_URL } from '../../utils/api';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 function AddNews() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const editId = searchParams.get('edit');
@@ -129,79 +131,80 @@ function AddNews() {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-between mb-4">
-        <h2 className="text-2xl font-bold">{editId ? 'Edit News' : 'Add News'}</h2>
-        {!editId && (
-          <button
-            onClick={() => setIsFormVisible(!isFormVisible)}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
-            {isFormVisible ? 'Close Form' : 'Add News'}
-          </button>
-        )}
-      </div>
-      
-      {isFormVisible && (
-        <div className="mt-4">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block mb-1">Title:</label>
-              <input
-                type="text"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-            <div>
-              <label className="block mb-1">Description:</label>
-              <textarea
-                name="description"
-                value={formData.description}
-                onChange={handleChange}
-                className="w-full p-2 border rounded"
-                rows="4"
-                required
-              />
-            </div>
-            <div>
-              <label className="block mb-1">Image:</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="w-full p-2 border rounded"
-                required={!isEditing}
-              />
-              {imagePreview && (
-                <div className="mt-2">
-                  <img
-                    src={imagePreview}
-                    alt="Preview"
-                    className="max-w-xs rounded"
-                    crossOrigin="anonymous"
-                    onError={(e) => {
-                      console.log('Image load error, trying fallback');
-                      e.target.src = '/no-image.png';
-                    }}
-                  />
-                </div>
-              )}
-            </div>
-            <button
-              type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              disabled={isLoading}
-            >
-              {isLoading ? (editId ? 'Updating...' : 'Adding...') : (editId ? 'Update News' : 'Add News')}
-            </button>
-          </form>
+    <form onSubmit={handleSubmit} className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold mb-6">
+        {isEditing ? t('admin.news.editNews') : t('admin.news.addNews')}
+      </h2>
+
+      <div className="space-y-6">
+        {/* Title Input */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">{t('admin.news.newsTitle')}</label>
+          <input
+            type="text"
+            value={formData.title}
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            required
+          />
         </div>
-      )}
-    </div>
+
+        {/* Description Input */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">{t('admin.news.description')}</label>
+          <textarea
+            value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            rows={3}
+            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            required
+          />
+        </div>
+
+        {/* Image Upload */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700">{t('admin.news.uploadImage')}</label>
+          <input
+            type="file"
+            onChange={handleImageChange}
+            accept="image/*"
+            className="mt-1 block w-full"
+          />
+          {imagePreview && (
+            <div className="mt-2">
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="max-w-xs rounded"
+                crossOrigin="anonymous"
+                onError={(e) => {
+                  console.log('Image load error, trying fallback');
+                  e.target.src = '/no-image.png';
+                }}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Submit Button */}
+        <div className="flex justify-end space-x-3">
+          <button
+            type="button"
+            onClick={() => navigate('/admin/adminnews')}
+            className="px-4 py-2 text-gray-700 bg-gray-200 rounded hover:bg-gray-300"
+          >
+            {t('admin.common.cancel')}
+          </button>
+          <button
+            type="submit"
+            className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
+            disabled={isLoading}
+          >
+            {isLoading ? t('admin.common.loading') : t('admin.common.save')}
+          </button>
+        </div>
+      </div>
+    </form>
   );
 }
 

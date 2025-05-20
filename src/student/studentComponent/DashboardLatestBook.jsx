@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import StudentLayout from './StudentLayout';
 import book_img from "../../../public/images/book_img.png";
 import { API_BASE_URL } from "../../utils/api";
 import { getAuthToken } from "../../utils/auth";
 
 function DashboardLatestBookPage() {
+  const { t, i18n } = useTranslation();
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -70,7 +72,7 @@ function DashboardLatestBookPage() {
   }, []);
 
   const truncateTitle = (title) => {
-    if (!title) return "Untitled";
+    if (!title) return t('admin.bookList.noBooks');
     if (title.length > 50) {
       return title.substring(0, 47) + "...";
     }
@@ -78,11 +80,11 @@ function DashboardLatestBookPage() {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return "Unknown date";
+    if (!dateString) return t('admin.common.noData');
     
     try {
       const date = new Date(dateString);
-      if (isNaN(date)) return "Invalid date";
+      if (isNaN(date)) return t('admin.common.invalidDate');
       
       return date.toLocaleDateString('en-US', {
         year: 'numeric',
@@ -91,7 +93,7 @@ function DashboardLatestBookPage() {
       });
     } catch (error) {
       console.error("Error formatting date:", error);
-      return "Date error";
+      return t('admin.common.dateError');
     }
   };
 
@@ -185,8 +187,8 @@ function DashboardLatestBookPage() {
     <StudentLayout>
       <div className="border p-6 min-h-screen bg-white rounded-lg">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">Latest Books</h2>
-          <p className="text-gray-600">Showing the 10 most recently added books</p>
+          <h2 className="text-2xl font-bold text-gray-800">{t('student.dashboard.latestBooks')}</h2>
+          <p className="text-gray-600">{t('dashboard.student.showingLatest', { count: 10 })}</p>
         </div>
         
         {loading ? (
@@ -195,12 +197,12 @@ function DashboardLatestBookPage() {
           </div>
         ) : error ? (
           <div className="text-center text-red-500 p-4 bg-red-50 rounded-lg">
-            <p>Error: {error}</p>
+            <p>{t('admin.common.error')}: {error}</p>
             <button 
               className="mt-2 px-4 py-1 bg-blue-500 text-white rounded"
               onClick={() => window.location.reload()}
             >
-              Retry
+              {t('admin.bookUpload.retry')}
             </button>
           </div>
         ) : books.length > 0 ? (
@@ -213,7 +215,7 @@ function DashboardLatestBookPage() {
                 <div className="mb-2 flex flex-col w-full">
                   <img
                     src={book.cover_image?.url || book.coverImage || book.cover || book_img}
-                    alt={`Preview of ${book.title || 'Untitled'}`}
+                    alt={`${t('home.featured.bookTitle')}: ${book.title || t('admin.bookList.noBooks')}`}
                     className="w-full h-auto mb-2 object-cover"
                     onError={(e) => {
                       e.target.onerror = null;
@@ -221,11 +223,13 @@ function DashboardLatestBookPage() {
                     }}
                   />
                   <h4 className="text-sm font-medium text-left">{truncateTitle(book.title)}</h4>
-                  <p className="text-sm text-gray-600 text-left">ຂຽນໂດຍ:ທ່ານ {book.author || book.writer || 'Unknown'}</p>
+                  <p className="text-sm text-gray-600 text-left">
+                    {t('teacher.books.writtenBy')} {book.author || book.writer || t('admin.common.noData')}
+                  </p>
                   
                   <p className="text-xs text-gray-500 text-left mt-1">
-                    ເພີ່ມເຂົ້າມື້: {formatDate(book.created_at || book.createdAt || book.uploadDate)}
-                    {index === 0 && <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded">ໃໝ່ລ່າສຸດ</span>}
+                    {t('admin.bookList.uploadDate')}: {formatDate(book.created_at || book.createdAt || book.uploadDate)}
+                    {index === 0 && <span className="ml-2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded">{t('navbar.student.latestBooks')}</span>}
                   </p>
                 </div>
                 <div className="w-full flex flex-col gap-2 mt-auto">
@@ -234,11 +238,11 @@ function DashboardLatestBookPage() {
                       href={`/student/viewbookpage/${book.id || book._id}`}
                       className="mt-auto px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-lg w-full text-center"
                     >
-                      View Details
+                      {t('home.featured.viewDetails')}
                     </a>
                   ) : (
                     <span className="mt-auto px-3 py-1 bg-gray-300 text-gray-600 rounded-lg w-full text-center">
-                      No file available
+                      {t('teacher.books.noFileAvailable')}
                     </span>
                   )}
                   
@@ -262,18 +266,18 @@ function DashboardLatestBookPage() {
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
-                          Downloading...
+                          {t('teacher.books.downloading')}
                         </>
                       ) : downloadStatus[book.id || book._id] === 'error' ? (
-                        'Download Failed'
+                        t('teacher.books.downloadFailed')
                       ) : downloadStatus[book.id || book._id] === 'success' ? (
-                        'Downloaded!'
+                        t('teacher.books.downloaded')
                       ) : (
                         <>
                           <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                           </svg>
-                          Download
+                          {t('student.books.download')}
                         </>
                       )}
                     </button>
@@ -284,8 +288,8 @@ function DashboardLatestBookPage() {
           </div>
         ) : (
           <div className="text-center p-10 bg-gray-50 rounded-lg">
-            <p className="text-gray-500">No books available yet</p>
-            <p className="text-sm text-gray-400 mt-2">Check back later for new arrivals</p>
+            <p className="text-gray-500">{t('admin.bookList.noBooks')}</p>
+            <p className="text-sm text-gray-400 mt-2">{t('home.featured.noBooks')}</p>
           </div>
         )}
       </div>

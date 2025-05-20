@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import StudentLayout from './StudentLayout'
-import book_img from "../../../public/images/book_img.png";
-import { API_BASE_URL } from "../../utils/api";
-import { getAuthToken } from "../../utils/auth";
+import book_img from "../../../public/images/book_img.png"
+import { API_BASE_URL } from "../../utils/api"
+import { getAuthToken } from "../../utils/auth"
 
 function PopularBook() {
+  const { t } = useTranslation();
   const [popularBooks, setPopularBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -97,7 +99,7 @@ function PopularBook() {
           <div className="mb-2 flex flex-col w-full">
             <img
               src={bookDetails.cover_image?.url || bookDetails.coverImage || bookDetails.cover || book_img}
-              alt={`Preview of ${bookDetails.title || 'Untitled'}`}
+              alt={`${t('home.featured.bookTitle')}: ${bookDetails.title || t('admin.bookList.noBooks')}`}
               className="w-full h-auto mb-2 object-cover"
               onError={(e) => {
                 e.target.onerror = null;
@@ -105,12 +107,14 @@ function PopularBook() {
               }}
             />
             <h4 className="text-sm font-medium text-left">{truncateTitle(bookDetails.title)}</h4>
-            <p className="text-sm text-gray-600 text-left">ຂຽນໂດຍ:ທ່ານ {bookDetails.author || bookDetails.writer || 'Unknown'}</p>
+            <p className="text-sm text-gray-600 text-left">
+              {t('teacher.books.writtenBy')} {bookDetails.author || bookDetails.writer || t('admin.common.noData')}
+            </p>
             <div className="flex items-center mt-2">
               <svg className="w-5 h-5 text-blue-500 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                 <path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"></path>
               </svg>
-              <span className="text-sm font-semibold text-blue-600">{downloadCount} downloads</span>
+              <span className="text-sm font-semibold text-blue-600">{downloadCount} {t('admin.downloads.title')}</span>
             </div>
           </div>
           <div className="w-full flex flex-col gap-2">
@@ -119,7 +123,7 @@ function PopularBook() {
                 href={`/student/viewbookpage/${bookId}`}
                 className="mt-auto px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-lg w-full text-center"
               >
-                View Details
+                {t('home.featured.viewDetails')}
               </a>
             ) : (
               <a
@@ -129,7 +133,7 @@ function PopularBook() {
                 <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                View Book Details
+                {t('home.featured.viewDetails')}
               </a>
             )}
           </div>
@@ -139,7 +143,7 @@ function PopularBook() {
       console.error("Error rendering popular book card:", err, book);
       return (
         <div key={index} className="p-4 bg-red-50 text-red-600 shadow-md rounded-lg">
-          Error displaying this book
+          {t('admin.common.error')}
         </div>
       );
     }
@@ -150,8 +154,8 @@ function PopularBook() {
       <div className="border p-6 min-h-screen bg-white rounded-lg">
         <div className="w-full p-6 rounded-2xl">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">Popular Books</h2>
-            <p className="text-gray-600">The most downloaded books in our library</p>
+            <h2 className="text-2xl font-bold text-gray-800">{t('navbar.student.popularBooks')}</h2>
+            <p className="text-gray-600">{t('student.dashboard.popularBooks')}</p>
           </div>
 
           {loading ? (
@@ -160,12 +164,12 @@ function PopularBook() {
             </div>
           ) : error ? (
             <div className="text-center text-red-500 p-4 bg-red-50 rounded-lg">
-              <p>Error: {error}</p>
+              <p>{t('admin.common.error')}: {error}</p>
               <button 
                 className="mt-2 px-4 py-1 bg-blue-500 text-white rounded"
                 onClick={() => window.location.reload()}
               >
-                Retry
+                {t('admin.bookUpload.retry')}
               </button>
             </div>
           ) : popularBooks.length > 0 ? (
@@ -174,12 +178,12 @@ function PopularBook() {
             </div>
           ) : (
             <div className="text-center p-10">
-              <p className="text-gray-500 mb-4">No popular books available at the moment</p>
+              <p className="text-gray-500 mb-4">{t('admin.bookList.noBooks')}</p>
               <button 
                 className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
                 onClick={() => window.location.reload()}
               >
-                Refresh
+                {t('admin.common.update')}
               </button>
             </div>
           )}

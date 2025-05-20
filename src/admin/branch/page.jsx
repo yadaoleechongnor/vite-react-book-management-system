@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useTranslation } from 'react-i18next';
 import Swal from "sweetalert2";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import AdminLayout from "../dashboard/adminLayout";
@@ -11,6 +12,7 @@ function saveToken(token) {
 }
 
 export default function BranchPage() {
+    const { t } = useTranslation();
     const [branches, setBranches] = useState([]);
     const [departments, setDepartments] = useState([]);
     const [faculties, setFaculties] = useState([]);
@@ -54,15 +56,15 @@ export default function BranchPage() {
 
     const handleAddBranch = () => {
         Swal.fire({
-            title: 'Add Branch',
+            title: t('admin.branch.addBranch'),
             html: `
                 <div class="flex flex-col space-y-4">
                     <div>
-                        <label for="branch-name" class="block font-medium text-gray-700">Branch Name</label>
-                        <input type="text" id="branch-name" class="mt-1 h-12 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500 sm:text-sm" placeholder="Enter branch name">
+                        <label for="branch-name" class="block font-medium text-gray-700">${t('admin.branch.name')}</label>
+                        <input type="text" id="branch-name" class="mt-1 h-12 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500 sm:text-sm" placeholder="${t('admin.branch.enterName')}">
                     </div>
                     <div>
-                        <label for="department-select" class="block text-sm font-medium text-gray-700">Select Department</label>
+                        <label for="department-select" class="block text-sm font-medium text-gray-700">${t('admin.branch.department')}</label>
                         <select id="department-select" class="mt-1 block w-full h-12 p-2 border border-gray-300 rounded-md shadow-sm focus:ring-sky-500 focus:border-sky-500 sm:text-sm">
                             ${departments ? departments.map(department => `<option value="${department._id}">${department.department_name}</option>`).join('') : ''}
                         </select>
@@ -70,7 +72,7 @@ export default function BranchPage() {
                 </div>
             `,
             showCancelButton: true,
-            confirmButtonText: 'Add',
+            confirmButtonText: t('admin.common.add'),
             customClass: {
                 popup: 'bg-white rounded-lg p-6 shadow-lg',
                 title: 'text-xl font-semibold text-gray-900',
@@ -103,19 +105,19 @@ export default function BranchPage() {
                         if (result.success) {
                             setBranches([...branches, result.data.branch]);
                             Swal.fire({
-                                title: 'Success',
-                                text: 'Branch added successfully',
+                                title: t('admin.common.success'),
+                                text: t('admin.branch.addSuccess'),
                                 icon: 'success',
                                 timer: 2000,
                                 showConfirmButton: false
                             });
                         } else {
-                            Swal.fire('Error', 'Failed to add branch', 'error');
+                            Swal.fire(t('admin.common.error'), t('admin.branch.addError'), 'error');
                         }
                     })
                     .catch((error) => {
                         console.error('Error:', error);
-                        Swal.fire('Error', 'Failed to add branch', 'error');
+                        Swal.fire(t('admin.common.error'), t('admin.branch.addError'), 'error');
                     });
             }
         });
@@ -123,18 +125,13 @@ export default function BranchPage() {
 
     const handleDeleteBranch = (id) => {
         Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
+            title: t('admin.common.deleteWarning'),
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Yes, delete it!',
-            cancelButtonText: 'No, cancel!',
-            customClass: {
-                popup: 'bg-white rounded-lg p-6 shadow-lg',
-                title: 'text-xl font-semibold text-gray-900',
-                confirmButton: 'bg-red-500 text-white rounded-md px-4 py-2 hover:bg-red-600 focus:ring-2 focus:ring-offset-2 focus:ring-red-500',
-                cancelButton: 'bg-gray-300 text-gray-900 rounded-md px-4 py-2 hover:bg-gray-400 focus:ring-2 focus:ring-offset-2 focus:ring-gray-500'
-            }
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: t('admin.common.yesDelete'),
+            cancelButtonText: t('admin.common.noCancel')
         }).then((result) => {
             if (result.isConfirmed) {
                 const token = localStorage.getItem('authToken');
@@ -154,8 +151,8 @@ export default function BranchPage() {
                         if (result.success) {
                             setBranches(branches.filter(branch => branch._id !== id));
                             Swal.fire({
-                                title: 'Deleted!',
-                                text: 'Branch has been deleted.',
+                                title: t('admin.common.deleted'),
+                                text: t('admin.branch.deleteSuccess'),
                                 icon: 'success',
                                 timer: 2000,
                                 showConfirmButton: false,
@@ -167,11 +164,11 @@ export default function BranchPage() {
                                 window.location.reload();
                             });
                         } else {
-                            Swal.fire('Error', 'Failed to delete branch', 'error');
+                            Swal.fire(t('admin.common.error'), t('admin.branch.deleteError'), 'error');
                         }
                     })
                     .catch((error) => {
-                        Swal.fire('Error', 'Failed to delete branch', 'error');
+                        Swal.fire(t('admin.common.error'), t('admin.branch.deleteError'), 'error');
                     });
             }
         });
@@ -179,15 +176,15 @@ export default function BranchPage() {
 
     const handleEditBranch = (id, currentName, currentDepartmentId) => {
         Swal.fire({
-            title: 'Edit Branch',
+            title: t('admin.branch.editBranch'),
             html: `
                 <div class="flex flex-col space-y-4">
                     <div>
-                        <label for="branch-name" class="block text-sm text-left font-medium text-gray-700">Branch Name</label>
+                        <label for="branch-name" class="block text-sm text-left font-medium text-gray-700">${t('admin.branch.name')}</label>
                         <input type="text" id="branch-name" class="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm px-3 focus:ring-sky-500 focus:border-sky-500 text-base" value="${currentName}">
                     </div>
                     <div>
-                        <label for="department-select" class="block text-left font-medium text-gray-700">Select Department</label>
+                        <label for="department-select" class="block text-left font-medium text-gray-700">${t('admin.branch.department')}</label>
                         <select id="department-select" class="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm px-3 focus:ring-sky-500 focus:border-sky-500 text-base">
                             ${departments ? departments.map(department => `<option value="${department._id}" ${department._id === currentDepartmentId ? 'selected' : ''}>${department.department_name}</option>`).join('') : ''}
                         </select>
@@ -195,7 +192,7 @@ export default function BranchPage() {
                 </div>
             `,
             showCancelButton: true,
-            confirmButtonText: 'Update',
+            confirmButtonText: t('admin.common.update'),
             customClass: {
                 popup: 'bg-white rounded-lg p-6 shadow-lg',
                 title: 'text-xl font-semibold text-gray-900',
@@ -227,81 +224,62 @@ export default function BranchPage() {
                     .then((result) => {
                         if (result.success) {
                             setBranches(branches.map(branch => branch._id === id ? result.data.branch : branch));
-                            Swal.fire('Success', 'Branch updated successfully', 'success');
+                            Swal.fire(t('admin.common.success'), t('admin.branch.updateSuccess'), 'success');
                         } else {
-                            Swal.fire('Error', 'Failed to update branch', 'error');
+                            Swal.fire(t('admin.common.error'), t('admin.branch.updateError'), 'error');
                         }
                     })
                     .catch((error) => {
                         console.error('Error:', error);
-                        Swal.fire('Error', 'Failed to update branch', 'error');
+                        Swal.fire(t('admin.common.error'), t('admin.branch.updateError'), 'error');
                     });
             }
         });
     };
 
     return (
-                <AdminLayout>
-                   <div className="flex-1 p-6">
-                <div className="flex justify-between items-center mb-6">
-                    <h1 className="text-2xl font-bold">Branch Management</h1>
-                    <button 
-                        className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
-                        onClick={handleAddBranch}
-                    >
-                        + Add Branch
-                    </button>
-                </div>
-                
-                <p className="mb-4 text-gray-600">Total Branches: {countBranches()}</p>
-                
-                {loading ? (
-                    <p>Loading...</p>
-                ) : (
-                    <div className="bg-white p-4 rounded-lg shadow-md overflow-x-auto border ">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="bg-gray-100">
-                                    <th className="py-2 px-4 text-left">#</th>
-                                    <th className="py-2 px-4 text-left">Branch</th>
-                                    <th className="py-2 px-4 text-left md:table-cell hidden">Department</th>
-                                    <th className="py-2 px-4 text-left lg:table-cell hidden">Faculty</th>
-                                    <th className="py-2 px-4 text-left lg:table-cell hidden">Created At</th>
-                                    <th className="py-2 px-4 text-left md:table-cell hidden">Updated At</th>
-                                    <th className="py-2 px-4 text-left">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {branches && branches.length > 0 ? branches.map((branch, index) => (
-                                    <tr key={branch._id} className="border-t hover:bg-gray-50">
-                                        <td className="py-3 px-4">{index + 1}</td>
-                                        <td className="py-3 px-4">{branch.branch_name}</td>
-                                        <td className="py-3 px-4 md:table-cell hidden">{branch.department_id?.department_name || 'N/A'}</td>
-                                        <td className="py-3 px-4 lg:table-cell hidden">{branch.department_id?.faculties_id?.faculties_name || 'N/A'}</td>
-                                        <td className="py-3 px-4 lg:table-cell hidden">{new Date(branch.createdAt).toLocaleDateString()}</td>
-                                        <td className="py-3 px-4 md:table-cell hidden">{new Date(branch.updatedAt).toLocaleDateString()}</td>
-                                        <td className="py-3 px-4 flex space-x-2">
-                                            <button className="text-blue-500 hover:text-blue-700" onClick={() => handleEditBranch(branch._id, branch.branch_name, branch.department_id._id)}>
-                                                <FaEdit />
-                                            </button>
-                                            <button className="text-red-500 hover:text-red-700" onClick={() => handleDeleteBranch(branch._id)}>
-                                                <FaTrash />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                )) : (
-                                    <tr>
-                                        <td colSpan="7" className="py-4 text-center text-gray-500">No branches available</td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
+        <AdminLayout>
+            <div className="p-6 w-full">
+                <h1 className="text-2xl font-bold mb-4">{t('admin.branch.title')}</h1>
+                <button 
+                    className="mb-4 hover:shadow-2xl p-4 border rounded-full bg-gradient-to-tr from-sky-300 to-sky-500"
+                    onClick={handleAddBranch}
+                >
+                    {t('admin.branch.addBranch')}
+                </button>
+                <table className="min-w-full bg-white">
+                    <thead>
+                        <tr>
+                            <th>{t('admin.branch.branchName')}</th>
+                            <th>{t('admin.branch.department')}</th>
+                            <th>{t('admin.common.actions')}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {branches && branches.length > 0 ? branches.map((branch, index) => (
+                            <tr key={branch._id} className="border-t hover:bg-gray-50">
+                                <td className="py-3 px-4">{branch.branch_name}</td>
+                                <td className="py-3 px-4">{branch.department_id?.department_name || t('admin.common.na')}</td>
+                                <td className="py-3 px-4 flex space-x-2">
+                                    <button className="text-blue-500 hover:text-blue-700" onClick={() => handleEditBranch(branch._id, branch.branch_name, branch.department_id._id)}>
+                                        <FaEdit />
+                                    </button>
+                                    <button className="text-red-500 hover:text-red-700" onClick={() => handleDeleteBranch(branch._id)}>
+                                        <FaTrash />
+                                    </button>
+                                </td>
+                            </tr>
+                        )) : (
+                            <tr>
+                                <td colSpan="3" className="py-4 text-center text-gray-500">{t('admin.branch.noBranches')}</td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
             </div>
-                </AdminLayout>
-            );
-        };
+        </AdminLayout>
+    );
+}
 
 
 

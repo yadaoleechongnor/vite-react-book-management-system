@@ -3,8 +3,10 @@ import book_img from "../../../../public/images/book_img.png";
 import { API_BASE_URL } from "../../../utils/api";
 import { getAuthToken } from "../../../utils/auth"; // Import the auth utility
 import AdminLayout from "../AdminBookLayout";
+import { useTranslation } from 'react-i18next';
 
 function BookAsUser() {
+  const { t } = useTranslation();
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -445,7 +447,15 @@ function BookAsUser() {
 
   return (
     <AdminLayout>
-      <div className="rounded-lg h-screen p-6 min-h-screen overflow-hidden bg-white flex justify-center">
+      <div className="container mx-auto p-6">
+        <h1 className="text-2xl font-bold mb-6">{t('admin.bookManagement.viewAsUser')}</h1>
+        <input
+          type="text"
+          placeholder={t('admin.common.search')}
+          className="search-input"
+          value={searchTerm}
+          onChange={handleSearchChange}
+        />
         {/* Success Message Alert */}
         {successMessage && (
           <div className="fixed top-24 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out">
@@ -478,13 +488,6 @@ function BookAsUser() {
         <div className="w-full flex flex-col overflow-auto p-6 bg-white rounded-2xl">
           <div className="flex justify-between items-center mb-6">
             <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hidden sm:block">Shelves</button>
-            <input
-              type="text"
-              placeholder="Search in My Library"
-              className="p-2 border w-full border-gray-300 rounded-lg md:w-1/2"
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
           </div>
 
           <h3 className="text-lg font-semibold text-gray-700">

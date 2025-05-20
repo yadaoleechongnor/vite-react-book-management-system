@@ -1,0 +1,687 @@
+{
+  "navbar": {
+    "common": {
+      "dashboard": "Dashboard",
+      "logout": "Logout",
+      "profile": "Profile",
+      "language": "Language"
+    },
+    "admin": {
+      "userManagement": "User Management",
+      "faculty": "Faculty",
+      "department": "Department",
+      "branch": "Branch",
+      "bookUpload": "Book Upload",
+      "bookManagement": "Book Management",
+      "allDownloads": "All Downloads",
+      "news": "News Management"
+    },
+    "teacher": {
+      "bookPage": "Book Page",
+      "uploadBook": "Upload Book",
+      "ownBooks": "My Books",
+      "topDownloads": "Top Downloads"
+    },
+    "student": {
+      "books": "Books",
+      "popularBooks": "Popular Books",
+      "downloads": "My Downloads",
+      "latestBooks": "Latest Books",
+      "details": "Book Details"
+    },
+    "public": {
+      "home": "Home",
+      "about": "About",
+      "news": "News",
+      "login": "Login",
+      "register": "Sign Up"
+    }
+  },
+  "dashboard": {
+    "admin": {
+      "title": "Admin Dashboard",
+      "userManagement": "User Management",
+      "faculty": "Faculty",
+      "department": "Department",
+      "branch": "Branch",
+      "bookUpload": "Book Upload"
+    },
+    "teacher": {
+      "title": "Teacher Dashboard",
+      "bookPage": "Book Page",
+      "upload": "Upload Book",
+      "ownBooks": "My Books",
+      "topDownloads": "Top Downloads"
+    },
+    "student": {
+      "title": "Student Dashboard",
+      "books": "Books",
+      "popularBooks": "Popular Books",
+      "downloads": "My Downloads",
+      "latestBooks": "Latest Books",
+      "welcomeMessage": "Welcome to Digital Library System",
+      "table": {
+        "title": "Title",
+        "author": "Author",
+        "date": "Date"
+      }
+    }
+  },
+  "home": {
+    "hero": {
+      "title": "Discover Your Next Favorite Book",
+      "subtitle": "Explore books from various Branches and authors"
+    },
+    "featured": {
+      "title": "Featured Books",
+      "viewDetails": "View Details",
+      "loading": "Loading...",
+      "noBooks": "No books available yet",
+      "bookTitle": "Title",
+      "author": "Author"
+    },
+    "footer": {
+      "about": "About Us",
+      "aboutText": "Your trusted source for quality books since 2025",
+      "contact": "Contact",
+      "email": "Email: souphanouvonguniversity@gmail.com",
+      "phone": "Phone: +856 20 78945632",
+      "copyright": "© 2025 Master-Library. All rights reserved."
+    }
+  },
+  "about": {
+    "title": "Digital Library Portal",
+    "subtitle": "About Our Online Library",
+    "description": "Experience unlimited access to our vast collection of digital resources, e-books, and academic materials. Our online library is designed to serve students, researchers, and knowledge seekers worldwide.",
+    "sections": {
+      "mission": {
+        "title": "Our Mission",
+        "text": "To provide accessible digital knowledge resources and promote global learning through our innovative online platform."
+      },
+      "services": {
+        "title": "Digital Services",
+        "items": {
+          "ebook": "📚 E-book Downloads",
+          "mobileApp": "📱 Mobile Reading App",
+          "searchTools": "🔍 Advanced Search Tools",
+          "studyRooms": "💻 Virtual Study Rooms",
+          "catalogs": "📖 Online Catalogs"
+        }
+      },
+      "availability": {
+        "title": "Available 24/7",
+        "text": "Access our services anytime:",
+        "items": {
+          "access": "✓ 24/7 Digital Access",
+          "support": "✓ Real-time Support",
+          "downloads": "✓ Instant Downloads",
+          "global": "✓ Global Availability"
+        }
+      },
+      "contact": {
+        "title": "Get in Touch",
+        "email": "📧 support@digitallibrary.com",
+        "chat": "💬 Live Chat Support",
+        "website": "🌐 help.digitallibrary.com",
+        "mobileApp": "📱 Mobile App Support"
+      }
+    },
+    "button": "Start Exploring"
+  },
+  "news": {
+    "title": "Title",
+    "description": "Description",
+    "date": "Date",
+    "viewDetails": "View Details",
+    "close": "Close"
+  },
+  "admin": {
+    "common": {
+      "loading": "Loading...",
+      "error": "Error",
+      "success": "Success",
+      "cancel": "Cancel",
+      "save": "Save",
+      "edit": "Edit",
+      "delete": "Delete",
+      "back": "Back",
+      "actions": "Actions",
+      "search": "Search",
+      "noData": "No data available",
+      "confirmDelete": "Are you sure you want to delete this?",
+      "deleteWarning": "Are you sure you want to delete this item?",
+      "yesDelete": "Yes, delete it",
+      "noCancel": "No, cancel"
+    },
+    "layout": {
+      "title": "Admin Panel",
+      "confirmLogout": "Are you sure?",
+      "logoutMessage": "You will be logged out of the system!",
+      "logoutButton": "Yes, logout!",
+      "cancelButton": "Cancel",
+      "logoutSuccess": "Logged Out!",
+      "logoutSuccessMessage": "You have been successfully logged out."
+    },
+    "dashboard": {
+      "title": "Admin Dashboard",
+      "welcome": "Welcome",
+      "totalUsers": "Total Users",
+      "totalBooks": "Total Books",
+      "totalDownloads": "Total Downloads",
+      "statistics": {
+        "totalBooks": "Total Books",
+        "totalDownloads": "All Downloads",
+        "totalBranches": "Total Branches",
+        "totalDepartments": "Total Departments",
+        "totalFaculties": "Total Faculties"
+      },
+      "trends": {
+        "title": "Download Trends",
+        "timeRanges": {
+          "daily": "Daily",
+          "weekly": "Weekly",
+          "monthly": "Monthly",
+          "yearly": "Yearly"
+        }
+      }
+    },
+    "books": {
+      "title": "Book Management",
+      "upload": "Upload Book",
+      "list": "Book List",
+      "edit": "Edit Book",
+      "delete": "Delete Book",
+      "bookFile": "Book File"
+    },
+    "bookManagement": {
+      "title": "Book Management",
+      "uploadBook": "Upload Book",
+      "bookList": "Book List",
+      "adminOwnBooks": "Admin Own Books",
+      "viewAsUser": "View as User",
+      "uploadSection": {
+        "dropzone": "Drop files here or click to upload",
+        "fileSelected": "File selected:",
+        "currentFile": "Current file:"
+      },
+      "upload": {
+        "title": "Upload Book",
+        "dropzone": "Drop files here or click to upload",
+        "titleLabel": "Title",
+        "authorLabel": "Author",
+        "branchLabel": "Branch",
+        "selectBranch": "Select Branch",
+        "yearLabel": "Year",
+        "abstractLabel": "Abstract",
+        "abstract": "Abstract",
+        "cancelButton": "Cancel",
+        "uploadButton": "Upload Book"
+      },
+      "list": {
+        "title": "Book List",
+        "search": "Search books...",
+        "totalBooks": "Total Books: {count}",
+        "noBooks": "No books available",
+        "titleColumn": "Title",
+        "authorColumn": "Author",
+        "branchColumn": "Branch",
+        "yearColumn": "Year",
+        "actionsColumn": "Actions",
+        "viewPdf": "View PDF"
+      },
+      "ownBooks": {
+        "title": "Admin Owner Books",
+        "noBooks": "No books found",
+        "search": "Search in my books..."
+      },
+      "bookAsUser": {
+        "title": "View as User",
+        "viewDescription": "View books as they appear to users"
+      },
+      "edit": {
+        "title": "Edit Book",
+        "success": "Book updated successfully",
+        "error": "Error updating book"
+      },
+      "adminOwnBooks": {
+        "title": "Admin Own Books",
+        "ownerBook": "Book Owner",
+        "yourBooks": "Your Books: {count}",
+        "myBooks": "My Books",
+        "searchPlaceholder": "Search in My Books",
+        "myUploadedBooks": "My Uploaded Books",
+        "noBooks": "You haven't uploaded any books yet"
+      }
+    },
+    "downloads": {
+      "title": "Downloads",
+      "allDownloads": "All Downloads",
+      "downloadDetails": "Download Details",
+      "downloadedBy": "Downloaded By",
+      "downloadDate": "Download Date",
+      "bookTitle": "Book Title",
+      "pageTitle": "Download History",
+      "loading": "Loading download details...",
+      "noRecords": "No download records found",
+      "previous": "Previous",
+      "next": "Next",
+      "showing": "Showing",
+      "of": "of",
+      "records": "records"
+    },
+    "users": {
+      "title": "User Management",
+      "addNew": "Add New User",
+      "name": "User Name",
+      "email": "Email",
+      "role": "Role",
+      "actions": "Actions",
+      "edit": "Edit",
+      "delete": "Delete",
+      "noUsers": "No users found",
+      "confirmDelete": "Are you sure you want to delete this user?",
+      "allUsers": "All Users",
+      "teacherAdminManagement": "Teacher-Admin Management"
+    },
+    "faculty": {
+      "title": "Faculty Management",
+      "addFaculty": "Add Faculty",
+      "editFaculty": "Edit Faculty",
+      "facultyName": "Faculty Name",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "pageTitle": "Faculty Page",
+      "welcome": "Welcome to the Faculty Page",
+      "name": "Name",
+      "actions": "Actions"
+    },
+    "department": {
+      "title": "Department Management",
+      "addDepartment": "Add Department",
+      "editDepartment": "Edit Department",
+      "departmentName": "Department Name",
+      "selectFaculty": "Select Faculty",
+      "pageTitle": "Department Page",
+      "welcome": "Welcome to the Department Page",
+      "totalDepartments": "Total Departments",
+      "name": "Department",
+      "faculty": "Faculty",
+      "createdAt": "Created At",
+      "updatedAt": "Updated At",
+      "actions": "Actions",
+      "departments": {
+        "animalScience": "Animal Science",
+        "forestResources": "Forest Resources",
+        "businessAdmin": "Business Administration",
+        "economics": "Economics",
+        "orgResourceMgmt": "Organizational Resource Management",
+        "educationDev": "Education and Development",
+        "computer": "Computer Science"
+      }
+    },
+    "branch": {
+      "title": "Branch Management",
+      "addBranch": "Add Branch",
+      "editBranch": "Edit Branch",
+      "name": "Branch Name",
+      "branchName": "Branch Name",
+      "department": "Department",
+      "actions": "Actions",
+      "branches": {
+        "animalScience": "Animal Science"
+      },
+      "update": "Update",
+      "cancel": "Cancel"
+    },
+    "news": {
+      "title": "News Management",
+      "addNews": "Add News",
+      "editNews": "Edit News",
+      "newsTitle": "Title",
+      "description": "Description",
+      "content": "Content",
+      "uploadImage": "Upload Image",
+      "success": "News saved successfully",
+      "error": "Error saving news",
+      "deleteConfirm": "Are you sure you want to delete this news item?",
+      "deleteSuccess": "News deleted successfully",
+      "deleteError": "Error deleting news"
+    },
+    "bookUpload": {
+      "title": "Upload Book",
+      "dropzone": "Drop files here or click to upload"
+    },
+    "bookList": {
+      "title": "Book List",
+      "searchPlaceholder": "Search books...",
+      "totalBooks": "Total Books: {count}",
+      "columns": {
+        "number": "#",
+        "pdf": "PDF",
+        "title": "Title",
+        "author": "Author",
+        "branch": "Branch",
+        "year": "Year",
+        "actions": "Actions"
+      },
+      "actions": {
+        "viewPdf": "View PDF",
+        "edit": "Edit",
+        "delete": "Delete",
+        "update": "Update",
+        "cancel": "Cancel"
+      },
+      "dialogs": {
+        "deleteConfirm": {
+          "title": "Are you sure?",
+          "text": "You won't be able to revert this!",
+          "confirmButton": "Yes, delete it!",
+          "cancelButton": "Cancel"
+        },
+        "deleteSuccess": {
+          "title": "Deleted!",
+          "text": "Your book has been deleted."
+        },
+        "updateBook": {
+          "title": "Update Book",
+          "success": "Book updated successfully",
+          "error": "Failed to update book"
+        }
+      },
+      "noBooks": "No books available"
+    },
+    "components": {
+      "bookEdit": {
+        "title": "Edit Book",
+        "editingAs": "Editing as:",
+        "dropFiles": "Drop files here or click to upload",
+        "currentFile": "Current file: Click to replace",
+        "fileSelected": "File selected:",
+        "currentFile": "Current file:",
+        "viewPDF": "View PDF",
+        "download": "Download",
+        "currentCover": "Current Cover Image:",
+        "fields": {
+          "title": "Title",
+          "author": "Author",
+          "branch": "Branch",
+          "selectBranch": "Select Branch",
+          "year": "Year",
+          "abstract": "Abstract"
+        },
+        "buttons": {
+          "cancel": "Cancel",
+          "update": "Update Book"
+        }
+      },
+      "downloads": {
+        "title": "All Book Downloaded",
+        "loading": "Loading...",
+        "error": "Error"
+      },
+      "cards": {
+        "books": "Books Info",
+        "branch": "Branch Info",
+        "department": "Department Info",
+        "faculty": "Faculty Info"
+      },
+      "trends": {
+        "title": "Download Trends",
+        "periods": {
+          "daily": "Daily",
+          "weekly": "Weekly",
+          "monthly": "Monthly",
+          "yearly": "Yearly"
+        },
+        "noData": "No download data available for this time period"
+      },
+      "news": {
+        "title": "Title",
+        "noImage": "News image"
+      },
+      "downloadDetail": {
+        "title": "Download Details",
+        "back": "Back",
+        "loading": "Loading download details...",
+        "bookInfo": {
+          "title": "Book Information",
+          "titleLabel": "Title",
+          "bookId": "Book ID",
+          "author": "Author",
+          "category": "Category",
+          "description": "Description",
+          "format": "Format"
+        },
+        "downloadInfo": {
+          "title": "Download Information",
+          "downloadedBy": "Downloaded By",
+          "userEmail": "User Email",
+          "userRole": "User Role",
+          "userName": "User Name",
+          "downloadDate": "Download Date",
+          "downloadCount": "Download Count"
+        }
+      }
+    }
+  },
+  "teacher": {
+    "dashboard": {
+      "title": "Teacher Dashboard",
+      "welcome": "Welcome",
+      "myBooks": "My Books",
+      "uploads": "My Uploads",
+      "downloads": "Downloads",
+      "feedbackActivity": "Feedback Activity",
+      "totalStudents": "Total Students",
+      "addCourse": "Add Course",
+      "schedule": "Schedule",
+      "scheduleItems": {
+        "penTool": "How to Use Pen Tool",
+        "shortCir": "Create Short CIR",
+        "masking": "Masking Technique"
+      },
+      "calendar": {
+        "nextMonth": "→",
+        "prevMonth": "←",
+        "month": "May 2025"
+      }
+    },
+    "books": {
+      "view": "View",
+      "download": "Download",
+      "edit": "Edit",
+      "delete": "Delete",
+      "downloading": "Downloading...",
+      "downloadFailed": "Download Failed",
+      "downloaded": "Downloaded!",
+      "noFileAvailable": "No file available",
+      "searchPlaceholder": "Search in My Library",
+      "searchResults": "Search Results for",
+      "availableBooks": "Available Books",
+      "searchingBooks": "Searching books...",
+      "loadingBooks": "Loading books...",
+      "noBooksFound": "No books found for",
+      "noBooksAvailable": "No books available",
+      "writtenBy": "Written by:",
+      "uploadedBy": "Uploaded by:",
+      "youCanEdit": "✓ You can edit this book",
+      "confirmDelete": "Are you sure you want to delete this book?",
+      "deleteSuccess": "Book deleted successfully!"
+    },
+    "teacherUpload": {
+      "title": "Upload Book",
+      "dropFiles": "Drop files here or click to upload",
+      "form": {
+        "title": "Title",
+        "author": "Author",
+        "branchId": "Branch",
+        "selectBranch": "Select Branch",
+        "year": "Year",
+        "abstract": "Abstract",
+        "cancel": "Cancel",
+        "uploadFiles": "Upload Files"
+      }
+    },
+    "debugPanel": {
+      "title": "Debug Panel",
+      "dragMe": "(drag me)",
+      "totalBooks": "Books:",
+      "yourBooks": "Your Books:"
+    },
+    "greetings": {
+      "morning": "Good Morning",
+      "afternoon": "Good Afternoon",
+      "evening": "Good Evening"
+    },
+    "layout": {
+      "portalTitle": "Teacher Portal",
+      "sidebar": {
+        "dashboard": "Dashboard",
+        "uploadBook": "Upload Book",
+        "bookPage": "Book Page",
+        "ownerBook": "My Books"
+      }
+    }
+  },
+  "student": {
+    "dashboard": {
+      "title": "Student Dashboard",
+      "welcome": "Welcome",
+      "recentBooks": "Recent Books",
+      "popularBooks": "Popular Books",
+      "welcomeMessage": "Welcome to Digital Library System",
+      "downloads": "My Downloads",
+      "table": {
+        "title": "Title",
+        "author": "Author",
+        "date": "Date"
+      }
+    },
+    "books": {
+      "title": "Books",
+      "view": "View Book",
+      "download": "Download Book",
+      "search": "Search Books",
+      "filter": "Filter Books",
+      "details": "Book Details",
+      "branchList": "Branches with Available Books",
+      "availableBooks": "Available Books",
+      "branches": {
+        "agriculture": "Agriculture and Forest Environment",
+        "business": "Business Administration",
+        "education": "Education and Development",
+        "economics": "Economics",
+        "animalScience": "Animal Science",
+        "computerScience": "Computer Engineering and IT"
+      },
+      "totalBooks": "Total Books: {count}"
+    },
+    "logout": {
+      "confirmTitle": "Are you sure?",
+      "confirmMessage": "You will be logged out of your account!",
+      "confirmButton": "Yes, logout!",
+      "cancelButton": "Cancel"
+    }
+  },
+  "login": {
+    "title": "Login to Your Account",
+    "email": "Email Address",
+    "emailPlaceholder": "Enter your email",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "forgotPassword": "Forgot password?",
+    "loginButton": "Login",
+    "loggingIn": "Logging in...",
+    "backToHome": "Back to Home",
+    "signUp": "Sign up for an account",
+    "footer": "Book Management System"
+  },
+  "register": {
+    "title": "Register",
+    "subtitle": "Join our digital library system",
+    "formTitle": "Sign Up",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "Enter your full name",
+    "email": "Email Address",
+    "emailPlaceholder": "Enter your email",
+    "password": "Password",
+    "passwordPlaceholder": "Enter password (min 8 characters)",
+    "phoneNumber": "Phone Number",
+    "phoneNumberPlaceholder": "207, 209, 205, 202 (10 digits)",
+    "branch": "Branch",
+    "branchPlaceholder": "Select a branch",
+    "year": "Year",
+    "yearPlaceholder": "1-5",
+    "studentCode": "Student Code",
+    "studentCodePlaceholder": "Enter 10-digit code",
+    "signUp": "Sign Up",
+    "backToHome": "Back to Home",
+    "backToLogin": "Back to Login",
+    "unnamedBranch": "Unnamed Branch",
+    "noBranches": "No branches available"
+  },
+  "sidebar": {
+    "adminPanel": "Admin Panel",
+    "dashboard": "Dashboard",
+    "userManagement": "User Management",
+    "facultyManagement": "Faculty Management",
+    "departmentManagement": "Department Management",
+    "branchManagement": "Branch Management",
+    "bookManagement": "Book Management",
+    "newsManagement": "News Management"
+  },
+  "homepage": {
+    "layout": {
+      "title": "Digital Library",
+      "menu": {
+        "home": "Home",
+        "about": "About",
+        "news": "News",
+        "login": "Login",
+        "register": "Sign Up"
+      },
+      "footer": {
+        "about": "About Us",
+        "contact": "Contact",
+        "copyright": "© 2024 SU Digital Library. All rights reserved."
+      }
+    },
+    "nav": {
+      "home": "Home",
+      "about": "About",
+      "news": "News",
+      "login": "Login",
+      "register": "Sign Up",
+      "language": "Language"
+    }
+  },
+  "calendar": {
+    "weekdays": {
+      "sun": "Sun",
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat"
+    },
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    },
+    "navigation": {
+      "previous": "Previous Month",
+      "next": "Next Month"
+    }
+  }
+}

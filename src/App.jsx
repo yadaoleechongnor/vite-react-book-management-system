@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import './i18n';
 import BookUpload from './admin/bookupload/page';
 import BranchPage from './admin/branch/page';
 import DepartmentPage from './admin/department/page';
@@ -44,6 +45,8 @@ import About from './homepage/About';
 import News from './homepage/News';
 import AdminNewsPage from './admin/news/AddminNewspage';
 import AddNews from './admin/news/AddNews';
+import TeacherTopDownloaded from './teacher/TeacherComponent/TopDownloaded';
+import { LanguageProvider } from './contexts/LanguageContext';
 
 // Simple NotFound component
 const NotFound = () => (
@@ -76,8 +79,9 @@ const PublicRoute = ({ children }) => {
 function App() {
   return (
     <AuthProvider>
-      <Router>
-        <Routes>
+      <LanguageProvider>
+        <Router>
+          <Routes>
 
  {/*------------------------------------Public routes - redirect to dashboard if already logged in------------------------------------------------------------------- */}
 
@@ -201,6 +205,8 @@ function App() {
             <Route path="/teacher/uploadbook" element={<TeacherUploadPage />} />
             <Route path="/teacher/bookpage/edit/:bookId" element={<TeacherBookEditePage />} />
             <Route path="/teacher/teacherownerbook" element={<TeacherOwnBookPage />} />
+            <Route path="/teacher/topdownload" element={<TeacherTopDownloaded />} />
+
            
           </Route>
           
@@ -229,6 +235,7 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
+      </LanguageProvider>
     </AuthProvider>
   );
 }

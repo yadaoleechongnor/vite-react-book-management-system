@@ -3,8 +3,10 @@ import TeacherLayout from "../TeacherComponent/TeacherLayout";
 import book_img from "../../../public/images/book_img.png";
 import { API_BASE_URL } from "../../utils/api";
 import { getAuthToken } from "../../utils/auth"; // Import the auth utility
+import { useTranslation } from "react-i18next";
 
 function BookPage() {
+  const { t } = useTranslation();
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -583,10 +585,9 @@ function BookPage() {
         
         <div className="w-full flex flex-col overflow-auto p-6 rounded-2xl">
           <div className="flex justify-between items-center mb-6">
-            <button className="px-4 py-2 bg-[#e4c99b] text-white rounded-lg hidden sm:block">Shelves</button>
             <input
               type="text"
-              placeholder="Search in My Library"
+              placeholder={t('teacher.books.searchPlaceholder')}
               className="p-2 border w-full border-gray-300 rounded-lg max-w-1/2"
               value={searchTerm}
               onChange={handleSearchChange}
@@ -594,12 +595,12 @@ function BookPage() {
           </div>
 
           <h3 className="text-lg font-semibold text-gray-700">
-            {searching ? `Search Results for "${searchTerm}"` : "Available Books"}
+            {searching ? `${t('teacher.books.searchResults')} "${searchTerm}"` : t('teacher.books.availableBooks')}
           </h3>
 
           {loading ? (
             <p className="text-center text-gray-500">
-              {searching ? "Searching books..." : "Loading books..."}
+              {searching ? t('teacher.books.searchingBooks') : t('teacher.books.loadingBooks')}
             </p>
           ) : error ? (
             <p className="text-center text-red-500">Error: {error}</p>
@@ -650,11 +651,11 @@ function BookPage() {
                         rel="noopener noreferrer"
                         className="px-3 py-1 bg-blue-500 text-white rounded-lg w-full text-center"
                       >
-                        View
+                        {t('teacher.books.view')}
                       </a>
                     ) : (
                       <span className="px-3 py-1 bg-gray-300 text-gray-600 rounded-lg w-full text-center">
-                        No file available
+                        {t('teacher.books.noFileAvailable')}
                       </span>
                     )}
                     
@@ -703,13 +704,13 @@ function BookPage() {
                           onClick={() => handleEditBook(book._id || book.id)}
                           className="px-3 py-1 bg-yellow-500 text-white rounded-lg w-full text-center"
                         >
-                          Edit
+                          {t('teacher.books.edit')}
                         </button>
                         <button 
                           onClick={() => handleDeleteBook(book._id || book.id)}
                           className="px-3 py-1 bg-red-500 text-white rounded-lg w-full text-center"
                         >
-                          Delete
+                          {t('teacher.books.delete')}
                         </button>
                       </>
                     )}
@@ -719,7 +720,7 @@ function BookPage() {
             </div>
           ) : (
             <p className="text-center text-gray-500">
-              {searching ? `No books found for "${searchTerm}"` : "No books available"}
+              {searching ? `${t('teacher.books.noBooksFound')} "${searchTerm}"` : t('teacher.books.noBooksAvailable')}
             </p>
           )}
         </div>

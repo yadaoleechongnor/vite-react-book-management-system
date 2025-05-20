@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from "../../utils/api";
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 function AllDownLoaded() {
   const [downloadCount, setDownloadCount] = useState("--");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchDownloads = async () => {
@@ -89,16 +91,16 @@ function AllDownLoaded() {
     >
       <h2 className="text-2xl font-semibold text-center">
         {loading ? (
-          <span className="inline-block animate-pulse">Loading...</span>
+          <span className="inline-block animate-pulse">...</span>
         ) : error ? (
-          <span title={error}>Error</span>
+          <span title={error}>{t('admin.components.downloads.error')}</span>
         ) : (
           downloadCount
         )}
       </h2>
-      <p className="text-sm text-center mt-1">All Book Downloaded</p>
+      <p className="text-sm text-center mt-1">{t('admin.components.downloads.title')}</p>
     </div>
-  )
+  );
 }
 
-export default AllDownLoaded
+export default AllDownLoaded;

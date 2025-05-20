@@ -404,12 +404,23 @@ function DownlaodedBookHistoryDetail() {
     );
   }
 
+  console.log('Book data received:', book);
+  console.log('API response successful. Book details:', {
+    id: book.id || book._id,
+    title: book.title,
+    author: book.author || book.writer,
+    branch: book.branch,
+    downloadUrl: book.book_file?.url || book.fileUrl || book.pdf || book.downloadUrl,
+    uploadDate: book.upload_date,
+    downloadDate: book.downloaded_at
+  });
+
   // Extract book properties with fallbacks
   const {
     title = "Untitled",
     author = book.writer || "Unknown author",
     description = book.summary || book.content || book.abstract || "No description available",
-    downloadDate = book.downloaded_at || book.createdAt || book.date || new Date().toISOString(),
+    downloadDate = book.downloaded_at,
     pages = book.pageCount || book.page_count || "Unknown",
     fileSize = book.size || book.file_size || "Unknown",
     fileType = book.format || book.file_type || "PDF",

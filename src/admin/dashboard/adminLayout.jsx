@@ -4,28 +4,32 @@ import Sidebar from "./sidebar"; // Import Sidebar
 import { FaBars } from "react-icons/fa"; // Import the menu icon directly
 import Swal from "sweetalert2"; // Import SweetAlert2
 import { IoMdLogOut } from "react-icons/io";
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const AdminLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { t, i18n } = useTranslation();
+  const { toggleLanguage } = useLanguage();
   
   // Handle logout with confirmation
   const handleLogout = () => {
     Swal.fire({
-      title: 'Are you sure?',
-      text: "You will be logged out of the system!",
+      title: t('admin.layout.confirmLogout'),
+      text: t('admin.layout.logoutMessage'),
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, logout!',
-      cancelButtonText: 'Cancel',
+      confirmButtonText: t('admin.layout.logoutButton'),
+      cancelButtonText: t('admin.layout.cancelButton'),
       reverseButtons: true // This makes the confirm button appear on the right
     }).then((result) => {
       if (result.isConfirmed) {
         localStorage.removeItem("token"); // Clear the token from localStorage
         Swal.fire({
-          title: 'Logged Out!',
-          text: 'You have been successfully logged out.',
+          title: t('admin.layout.logoutSuccess'),
+          text: t('admin.layout.logoutSuccessMessage'),
           icon: 'success',
           timer: 1000,
           timerProgressBar: true,
@@ -49,14 +53,20 @@ const AdminLayout = ({ children }) => {
           >
             <FaBars size={24} />
           </button>
-          <h1 className="text-xl">Admin Dashboard</h1>
+          <h1 className="text-xl">{t('admin.dashboard.title')}</h1>
         </div>
-        <div className="flex items-center">
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={toggleLanguage}
+            className="px-3 py-1 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-100"
+          >
+            {i18n.language === 'en' ? 'ພາສາລາວ' : 'English'}
+          </button>
           <button
             onClick={handleLogout}
             className="flex items-center text-red-500 hover:text-red-700"
           >
-           <IoMdLogOut /> out
+            <IoMdLogOut /> {t('navbar.common.logout')}
           </button>
         </div>
       </header>

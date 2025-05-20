@@ -5,10 +5,12 @@ import { SiBookstack } from 'react-icons/si'
 import { Link } from 'react-router-dom'
 import { API_BASE_URL } from "../../utils/api";
 import { getAuthToken } from "../../utils/auth";
+import { useTranslation } from 'react-i18next';
 
 function ClassSection() {
   const [mostDownloadedBook, setMostDownloadedBook] = useState("Loading...");
   const [latestBook, setLatestBook] = useState("Loading...");
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchMostPopularBook = async () => {
@@ -34,7 +36,6 @@ function ClassSection() {
 
         const result = await response.json();
         
-        // Extract books data based on response structure
         let booksData = [];
         
         if (result && result.data) {
@@ -58,18 +59,15 @@ function ClassSection() {
         }
 
         if (booksData.length > 0) {
-          // Find the book with the most downloads
           const topBook = booksData.reduce((max, book) => {
             const downloadCount = book.downloadCount || book.downloads || book.download_count || 0;
             const maxDownloads = max.downloadCount || max.downloads || max.download_count || 0;
             return downloadCount > maxDownloads ? book : max;
           }, booksData[0]);
           
-          // Get the book details
           const bookDetails = topBook.book || topBook;
           const title = bookDetails.title || "Untitled";
           
-          // Truncate title if it's too long
           const truncatedTitle = title.length > 30 ? `${title.substring(0, 27)}...` : title;
           
           setMostDownloadedBook(truncatedTitle);
@@ -105,7 +103,6 @@ function ClassSection() {
 
         const result = await response.json();
         
-        // Extract books data from response
         let booksData = [];
         
         if (Array.isArray(result)) {
@@ -123,18 +120,15 @@ function ClassSection() {
         }
         
         if (booksData.length > 0) {
-          // Sort books by created_at or createdAt date (newest first)
           booksData.sort((a, b) => {
             const dateA = new Date(a.created_at || a.createdAt || a.uploadDate || 0);
             const dateB = new Date(b.created_at || b.createdAt || b.uploadDate || 0);
             return dateB - dateA;
           });
           
-          // Get the latest book title
           const latestBookItem = booksData[0];
           const title = latestBookItem.title || "Untitled";
           
-          // Truncate title if it's too long
           const truncatedTitle = title.length > 30 ? `${title.substring(0, 27)}...` : title;
           
           setLatestBook(truncatedTitle);
@@ -153,30 +147,40 @@ function ClassSection() {
 
   return (
    <div className="mb-4 sm:mb-6 ">
-            <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-center sm:text-left">Popular</h3>
+            <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-center sm:text-left">
+              {t('dashboard.student.popularBooks')}
+            </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-2 sm:mb-3">
               <Link to="/student/popularbook" className="block">
                 <div className="bg-white p-3  border border-sky-500  sm:p-4 rounded-xl shadow-sm w-full hover:shadow-md transition-shadow">
-                  <h4 className="text-sm sm:text-base font-semibold mb-1 sm:mb-2">Popular Book</h4>
+                  <h4 className="text-sm sm:text-base font-semibold mb-1 sm:mb-2">
+                    {t('navbar.student.popularBooks')}
+                  </h4>
                   <p className="text-gray-500 text-xs sm:text-sm mb-1 sm:mb-2"><ImBooks /></p>
                   <div className="flex items-center text-gray-500 text-xs sm:text-sm">
-                    the Most download book: {mostDownloadedBook}
+                    {t('student.dashboard.popularBooks')}: {mostDownloadedBook}
                   </div>
                 </div>
               </Link>
               <Link to="/student/latestbook" className="block">
                 <div className="bg-white border border-sky-500  p-3 sm:p-4 rounded-xl shadow-sm w-full hover:shadow-md transition-shadow">
-                  <h4 className="text-sm sm:text-base font-semibold mb-1 sm:mb-2">Latest Book</h4>
+                  <h4 className="text-sm sm:text-base font-semibold mb-1 sm:mb-2">
+                    {t('navbar.student.latestBooks')}
+                  </h4>
                   <p className="text-gray-500 text-xs sm:text-sm mb-1 sm:mb-2"><SiBookstack /></p>
                   <div className="flex items-center text-gray-500 text-xs sm:text-sm">
-                   <p>Latest Book: {latestBook}</p>
+                   <p>{t('student.dashboard.latestBooks')}: {latestBook}</p>
                   </div>
                 </div>
               </Link>
               <Link to="/unit-one" className="block">
                 <div className="bg-white  border border-sky-500  p-3 sm:p-4 rounded-xl shadow-sm w-full hover:shadow-md transition-shadow">
-                  <h4 className="text-sm sm:text-base font-semibold mb-1 sm:mb-2">UNIT I</h4>
-                  <p className="text-gray-500 text-xs sm:text-sm mb-1 sm:mb-2">Teacher: Cole Chandler</p>
+                  <h4 className="text-sm sm:text-base font-semibold mb-1 sm:mb-2">
+                    {t('admin.department.title')} I
+                  </h4>
+                  <p className="text-gray-500 text-xs sm:text-sm mb-1 sm:mb-2">
+                    {t('teacher.dashboard.title')}: Cole Chandler
+                  </p>
                   <div className="flex items-center text-gray-500 text-xs sm:text-sm">
                     <FaUsers className="mr-1" /> 18
                   </div>

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import TeacherLayout from "../TeacherComponent/TeacherLayout";
 import book_img from "../../../public/images/book_img.png";
 import { API_BASE_URL } from "../../utils/api";
 import { getAuthToken } from "../../utils/auth"; // Import the auth utility
 
 function TeacherOwnBookPage() {
+  const { t } = useTranslation();
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -342,7 +344,7 @@ function TeacherOwnBookPage() {
 
   // Function to truncate title if longer than 50 characters
   const truncateTitle = (title) => {
-    if (!title) return "No title";
+    if (!title) return t("teacher.books.untitled");
     if (title.length > 50) {
       return title.substring(0, 47) + "...";
     }
@@ -351,7 +353,7 @@ function TeacherOwnBookPage() {
 
   // Function to handle book deletion
   const handleDeleteBook = async (bookId) => {
-    if (!window.confirm("Are you sure you want to delete this book?")) {
+    if (!window.confirm(t("teacher.books.confirmDelete"))) {
       return;
     }
     
@@ -375,7 +377,7 @@ function TeacherOwnBookPage() {
       setBooks(books.filter(book => (book._id !== bookId && book.id !== bookId)));
       
       // Show success message
-      setSuccessMessage("Book deleted successfully!");
+      setSuccessMessage(t("teacher.books.deleteSuccess"));
       
       // Hide the message after 2 seconds
       setTimeout(() => {
@@ -383,7 +385,7 @@ function TeacherOwnBookPage() {
       }, 2000);
       
     } catch (error) {
-      alert(`Failed to delete book: ${error.message}`);
+      alert(`${t("teacher.books.deleteFailed")}: ${error.message}`);
     }
   };
 
@@ -396,7 +398,7 @@ function TeacherOwnBookPage() {
   // Function to get uploader name from book
   const getUploaderName = (book) => {
     if (!book || !book.uploaded_by) {
-      return "Unknown User";
+      return t("teacher.books.unknownUser");
     }
     
     // Check if uploaded_by is an object with name properties
@@ -436,7 +438,7 @@ function TeacherOwnBookPage() {
     
     // Last resort: formatted display of ID
     const uploaderId = book.uploaded_by?._id || book.uploaded_by?.id || book.uploaded_by;
-    return uploaderId ? `User ${String(uploaderId).substring(0, 6)}` : "Unknown User";
+    return uploaderId ? `${t("teacher.books.user")} ${String(uploaderId).substring(0, 6)}` : t("teacher.books.unknownUser");
   };
 
   return (
@@ -445,16 +447,18 @@ function TeacherOwnBookPage() {
         {/* Success Message Alert */}
         {successMessage && (
           <div className="fixed top-24 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-fade-in-out">
-            {successMessage}
+            {t("teacher.books.deleteSuccess")}
           </div>
         )}
         
-        <div className="w-full flex flex-col overflow-auto p-6  rounded-2xl">
+        <div className="w-full flex flex-col overflow-auto p-6 rounded-2xl">
           <div className="flex justify-between items-center mb-6">
-            <button className="px-4 py-2 bg-[#e4c99b] text-white rounded-lg hidden sm:block">My Books</button>
+            <button className="px-4 py-2 bg-[#e4c99b] text-white rounded-lg hidden sm:block">
+              {t("teacher.dashboard.myBooks")}
+            </button>
             <input
               type="text"
-              placeholder="Search in My Books"
+              placeholder={t("teacher.books.searchPlaceholder")}
               className="p-2 border w-full border-gray-300 rounded-lg md:w-1/2"
               value={searchTerm}
               onChange={handleSearchChange}
@@ -462,76 +466,65 @@ function TeacherOwnBookPage() {
           </div>
 
           <h3 className="text-lg font-semibold text-gray-700">
-            {searching ? `Search Results for "${searchTerm}"` : "My Uploaded Books"}
+            {searching ? 
+              t("teacher.books.searchResults") + ` "${searchTerm}"` : 
+              t("admin.bookManagement.adminOwnBooks.myUploadedBooks")
+            }
           </h3>
 
           {!currentUserId ? (
-            <p className="text-center text-gray-500">Loading user information...</p>
+            <p className="text-center text-gray-500">{t("admin.common.loading")}</p>
           ) : loading ? (
             <p className="text-center text-gray-500">
-              {searching ? "Searching books..." : "Loading your books..."}
+              {searching ? t("teacher.books.searchingBooks") : t("teacher.books.loadingBooks")}
             </p>
           ) : error ? (
-            <p className="text-center text-red-500">Error: {error}</p>
+            <p className="text-center text-red-500">{t("admin.common.error")}: {error}</p>
           ) : books.length > 0 ? (
             <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {books.map((book, index) => {
                 const uploaderName = getUploaderName(book);
-                
                 return (
-                <div
-                  key={`${book._id || book.id || index}-${index}`}
-                  className="p-4 bg-white shadow-md rounded-lg flex flex-col items-center justify-between h-full ring-2 ring-yellow-400"
-                >
-                  <div className="mb-2 flex flex-col w-full">
-                    <img
-                      src={book.cover_image || book_img}
-                      alt={`Preview of ${book.title || "Book"}`}
-                      className="w-full h-48 object-cover mb-2"
-                      onError={(e) => { e.target.src = book_img; }}
-                    />
-                    <h4 className="text-sm font-bold text-left">{truncateTitle(book.title)}</h4>
-                    <p className="text-sm text-gray-600 text-left">ຂຽນໂດຍ:ທ່ານ {book.author || "Unknown"}</p>
-                    <p className="text-xs text-gray-500 text-left">Uploaded by: {uploaderName}</p>
-                  </div>
-                  
-                  <div className="w-full mt-auto flex flex-col gap-2">
-                    {/* View button */}
-                    {book.book_file?.url ? (
-                      <a
-                        href={book.book_file.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-3 py-1 bg-blue-500 text-white rounded-lg w-full text-center"
-                      >
-                        View
-                      </a>
-                    ) : (
-                      <span className="px-3 py-1 bg-gray-300 text-gray-600 rounded-lg w-full text-center">
-                        No file available
-                      </span>
-                    )}
+                  <div key={`${book._id || book.id || index}-${index}`} className="p-4 bg-white shadow-md rounded-lg flex flex-col items-center justify-between h-full ring-2 ring-yellow-400">
+                    <div className="mb-2 flex flex-col w-full">
+                      <img src={book.cover_image || book_img} alt={`${t("teacher.books.preview")} ${book.title || t("teacher.books.untitled")}`} 
+                           className="w-full h-48 object-cover mb-2"
+                           onError={(e) => { e.target.src = book_img; }} />
+                      <h4 className="text-sm font-bold text-left">{truncateTitle(book.title)}</h4>
+                      <p className="text-sm text-gray-600 text-left">{t("teacher.books.writtenBy")} {book.author || t("teacher.books.unknownAuthor")}</p>
+                      <p className="text-xs text-gray-500 text-left">{t("teacher.books.uploadedBy")} {uploaderName}</p>
+                    </div>
                     
-                    {/* Always show edit and delete buttons since all books are from the current user */}
-                    <button 
-                      onClick={() => handleEditBook(book._id || book.id)}
-                      className="px-3 py-1 bg-yellow-500 text-white rounded-lg w-full text-center"
-                    >
-                      Edit
-                    </button>
-                    <button 
-                      onClick={() => handleDeleteBook(book._id || book.id)}
-                      className="px-3 py-1 bg-red-500 text-white rounded-lg w-full text-center"
-                    >
-                      Delete
-                    </button>
+                    <div className="w-full mt-auto flex flex-col gap-2">
+                      {book.book_file?.url ? (
+                        <a href={book.book_file.url} target="_blank" rel="noopener noreferrer"
+                           className="px-3 py-1 bg-blue-500 text-white rounded-lg w-full text-center">
+                          {t("teacher.books.view")}
+                        </a>
+                      ) : (
+                        <span className="px-3 py-1 bg-gray-300 text-gray-600 rounded-lg w-full text-center">
+                          {t("teacher.books.noFileAvailable")}
+                        </span>
+                      )}
+                      
+                      <button onClick={() => handleEditBook(book._id || book.id)}
+                              className="px-3 py-1 bg-yellow-500 text-white rounded-lg w-full text-center">
+                        {t("teacher.books.edit")}
+                      </button>
+                      <button onClick={() => handleDeleteBook(book._id || book.id)}
+                              className="px-3 py-1 bg-red-500 text-white rounded-lg w-full text-center">
+                        {t("teacher.books.delete")}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              )})}
+                );
+              })}
             </div>
           ) : (
             <p className="text-center text-gray-500">
-              {searching ? `No books found for "${searchTerm}"` : "You haven't uploaded any books yet"}
+              {searching ? 
+                t("teacher.books.noBooksFound") + ` "${searchTerm}"` : 
+                t("admin.bookManagement.adminOwnBooks.noBooks")}
             </p>
           )}
         </div>

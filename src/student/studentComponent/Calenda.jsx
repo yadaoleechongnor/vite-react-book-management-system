@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react'
-import { FaBell, FaChevronLeft, FaChevronRight } from 'react-icons/fa'
+import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { FaBell, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 function Calenda() {
+  const { t } = useTranslation();
   const [date, setDate] = useState(new Date());
   
   // Get current month details
@@ -31,9 +33,17 @@ function Calenda() {
     setDate(new Date(date.getFullYear(), date.getMonth() + 1, 1));
   };
   
-  // Format date for display
+  // Format date for display with translations
   const formatMonth = (date) => {
-    return date.toLocaleString('default', { month: 'long', year: 'numeric' });
+    const monthIndex = date.getMonth();
+    const monthKeys = [
+      'january', 'february', 'march', 'april',
+      'may', 'june', 'july', 'august',
+      'september', 'october', 'november', 'december'
+    ];
+    const month = t(`calendar.months.${monthKeys[monthIndex]}`);
+    const year = date.getFullYear();
+    return `${month} ${year}`;
   };
   
   // Check if a day is today
@@ -60,13 +70,13 @@ function Calenda() {
         </div>
         
         <div className="grid grid-cols-7 text-center text-gray-500 text-2xs sm:text-xs mb-1 sm:mb-2">
-          <span>M</span>
-          <span>T</span>
-          <span>W</span>
-          <span>T</span>
-          <span>F</span>
-          <span>S</span>
-          <span>S</span>
+          <span>{t('calendar.weekdays.mon')}</span>
+          <span>{t('calendar.weekdays.tue')}</span>
+          <span>{t('calendar.weekdays.wed')}</span>
+          <span>{t('calendar.weekdays.thu')}</span>
+          <span>{t('calendar.weekdays.fri')}</span>
+          <span>{t('calendar.weekdays.sat')}</span>
+          <span>{t('calendar.weekdays.sun')}</span>
         </div>
         
         <div className="grid grid-cols-7 text-center text-2xs sm:text-sm">
@@ -85,24 +95,26 @@ function Calenda() {
       </div>
       
       <div className="bg-white p-3 sm:p-6 rounded-xl shadow-sm w-full">
-        <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-center sm:text-left">Reminders</h3>
+        <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-center sm:text-left">
+          {t('calendar.reminders')}
+        </h3>
         <div className="flex items-center mb-2 sm:mb-3">
           <FaBell className="text-gray-500 text-base sm:text-xl mr-2" />
           <div>
-            <p className="text-xs sm:text-sm">Eng - Vocabulary Test</p>
-            <span className="text-2xs sm:text-xs text-gray-500">12 Dec 2022, Friday</span>
+            <p className="text-xs sm:text-sm">{t('calendar.events.test')}</p>
+            <span className="text-2xs sm:text-xs text-gray-500">{t('calendar.events.date')}</span>
           </div>
         </div>
         <div className="flex items-center">
           <FaBell className="text-gray-500 text-base sm:text-xl mr-2" />
           <div>
-            <p className="text-xs sm:text-sm">Eng - Speaking Class</p>
-            <span className="text-2xs sm:text-xs text-gray-500">12 Dec 2022, Friday</span>
+            <p className="text-xs sm:text-sm">{t('calendar.events.class')}</p>
+            <span className="text-2xs sm:text-xs text-gray-500">{t('calendar.events.date')}</span>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Calenda
+export default Calenda;

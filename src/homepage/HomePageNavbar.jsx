@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '../contexts/LanguageContext';
 
 function HomePageNavbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { t, i18n } = useTranslation();
+  const { toggleLanguage } = useLanguage();
 
   const handleLogin = () => {
     navigate('/login');
@@ -25,21 +29,21 @@ function HomePageNavbar() {
       </div>
       
       {/* Desktop Menu */}
-      <div className="hidden md:flex flex-1 px-10">
-        <ul className="flex space-x-8 justify-center">
+      <div className="hidden md:flex flex-1 justify-center">
+        <ul className="flex space-x-8">
           <li>
             <Link to="/" className={`${isActive('/')} hover:text-blue-600 font-medium transition-colors`}>
-              Home
+              {t('homepage.nav.home')}
             </Link>
           </li>
           <li>
             <Link to="/about" className={`${isActive('/about')} hover:text-blue-600 font-medium transition-colors`}>
-              About
+              {t('homepage.nav.about')}
             </Link>
           </li>
           <li>
             <Link to="/news" className={`${isActive('/news')} hover:text-blue-600 font-medium transition-colors`}>
-              News
+              {t('homepage.nav.news')}
             </Link>
           </li>
         </ul>
@@ -47,11 +51,17 @@ function HomePageNavbar() {
       
       {/* Desktop Buttons */}
       <div className="hidden md:flex space-x-4">
+        <button
+          onClick={toggleLanguage}
+          className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors"
+        >
+          {i18n.language === 'en' ? 'ພາສາລາວ' : 'English'}
+        </button>
         <button onClick={handleLogin} className="px-4 py-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-600 hover:text-white transition-colors">
-          Login
+          {t('homepage.nav.login')}
         </button>
         <button onClick={handleSignUp} className="px-4 py-2 text-white bg-blue-600 border border-blue-600 rounded-md hover:bg-blue-700 transition-colors">
-          Sign Up
+          {t('homepage.nav.register')}
         </button>
       </div>
 
@@ -80,33 +90,39 @@ function HomePageNavbar() {
           <ul className="mt-8 space-y-4">
             <li>
               <Link to="/" className={`${isActive('/')} block hover:text-blue-600 font-medium transition-colors`}>
-                Home
+                {t('homepage.nav.home')}
               </Link>
             </li>
             <li>
               <Link to="/about" className={`${isActive('/about')} block hover:text-blue-600 font-medium transition-colors`}>
-                About
+                {t('homepage.nav.about')}
               </Link>
             </li>
             <li>
               <Link to="/news" className={`${isActive('/news')} block hover:text-blue-600 font-medium transition-colors`}>
-                News
+                {t('homepage.nav.news')}
               </Link>
             </li>
           </ul>
           
           <div className="mt-8 space-y-4">
+            <button
+              onClick={toggleLanguage}
+              className="w-full px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors"
+            >
+              {i18n.language === 'en' ? 'ພາສາລາວ' : 'English'}
+            </button>
             <button 
               onClick={handleLogin}
               className="w-full px-4 py-2 text-blue-600 border border-blue-600 rounded-md hover:bg-blue-600 hover:text-white transition-colors"
             >
-              Login
+              {t('homepage.nav.login')}
             </button>
             <button 
               onClick={handleSignUp}
               className="w-full px-4 py-2 text-white bg-blue-600 border border-blue-600 rounded-md hover:bg-blue-700 transition-colors"
             >
-              Sign Up
+              {t('homepage.nav.register')}
             </button>
           </div>
         </div>

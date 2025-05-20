@@ -1,22 +1,16 @@
-import React from 'react'
-import HomePageNavbar from './HomePageNavbar'
+import React from 'react';
+import HomePageNavbar from './HomePageNavbar';
+import { useTranslation } from 'react-i18next';
 
 function HomePageLayout({ children }) {
+  const { t } = useTranslation();
+
   return (
-    <div className="flex flex-col min-h-screen">
-
-       <HomePageNavbar/>
-      <main className="flex-1 p-8">
-        {children}
-      </main>
-
-      <footer className="py-6 px-8 bg-gray-100 border-t border-gray-200">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="text-gray-600">&copy; {new Date().getFullYear()} Master-library. All rights reserved.</p>
-        </div>
-      </footer>
+    <div className="min-h-screen bg-gray-50">
+      <HomePageNavbar />
+      {children}
     </div>
-  )
+  );
 }
 
-export default HomePageLayout
+export default HomePageLayout;

@@ -6,10 +6,12 @@ import { API_BASE_URL } from "../../utils/api";
 import { getAuthToken } from "../../utils/auth"; 
 import { useParams, useNavigate } from "react-router-dom";
 import StudentLayout from "./StudentLayout";
+import { useTranslation } from 'react-i18next';
 
 const StudentViewBookPage = () => {
   const { bookId } = useParams(); // Get bookId from URL params
   const navigate = useNavigate(); // For navigation
+  const { t } = useTranslation();
   
   // State declarations with initial values
   const [title, setTitle] = useState("");
@@ -246,18 +248,18 @@ const StudentViewBookPage = () => {
             onClick={handleGoBack} 
             className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
           >
-            Back to Books
+            {t('admin.common.back')}
           </button>
         </div>
       ) : (
         <div className="p-6 bg-white rounded-lg shadow-md w-full max-w-[95%] md:max-w-[85%] lg:max-w-[70%] mx-auto">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold text-gray-800">Book Details</h2>
+            <h2 className="text-2xl font-semibold text-gray-800">{t('student.books.details')}</h2>
             <button
               onClick={handleGoBack}
               className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition"
             >
-              Back to Books
+              {t('admin.common.back')}
             </button>
           </div>
           
@@ -267,10 +269,10 @@ const StudentViewBookPage = () => {
               {/* Cover image */}
               {coverImage && (
                 <div className="mb-6">
-                  <p className="text-sm font-medium text-gray-700 mb-2">Cover Image:</p>
+                  <p className="text-sm font-medium text-gray-700 mb-2">{t('admin.books.coverImage')}:</p>
                   <img 
                     src={coverImage} 
-                    alt="Book cover" 
+                    alt={t('admin.books.coverImageAlt')}
                     className="w-full h-auto max-h-[400px] object-contain border rounded shadow-sm"
                     onError={(e) => { e.target.style.display = 'none' }}
                   />
@@ -280,7 +282,7 @@ const StudentViewBookPage = () => {
               {/* PDF viewer or link */}
               {fileUrl && (
                 <div className="space-y-4">
-                  <p className="text-sm font-medium text-gray-700">Book File:</p>
+                  <p className="text-sm font-medium text-gray-700">{t('admin.books.bookFile')}:</p>
                   <div className="flex flex-col space-y-3">
                     <button
                       onClick={handleDownload}
@@ -298,18 +300,18 @@ const StudentViewBookPage = () => {
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
-                          Downloading...
+                          {t('teacher.books.downloading')}
                         </>
                       ) : downloadStatus === 'error' ? (
-                        'Download Failed'
+                        t('teacher.books.downloadFailed')
                       ) : downloadStatus === 'success' ? (
-                        'Downloaded!'
+                        t('teacher.books.downloaded')
                       ) : (
                         <>
                           <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                           </svg>
-                          Download PDF
+                          {t('student.books.download')}
                         </>
                       )}
                     </button>
@@ -325,22 +327,22 @@ const StudentViewBookPage = () => {
                 
                 <div className="space-y-4">
                   <div>
-                    <p className="text-sm font-medium text-gray-500">Author</p>
-                    <p className="text-base text-gray-800">{author || "ທ້າວ ບຸນເລ ີ່ອນ ພົງສະຫວັນ"}</p>
+                    <p className="text-sm font-medium text-gray-500">{t('home.featured.author')}</p>
+                    <p className="text-base text-gray-800">{author || t('admin.common.noData')}</p>
                   </div>
                   
                   <div>
-                    <p className="text-sm font-medium text-gray-500">Branch</p>
+                    <p className="text-sm font-medium text-gray-500">{t('admin.branch.title')}</p>
                     <p className="text-base text-gray-800">{branchName}</p>
                   </div>
                   
                   <div>
-                    <p className="text-sm font-medium text-gray-500">Year</p>
+                    <p className="text-sm font-medium text-gray-500">{t('admin.bookList.columns.year')}</p>
                     <p className="text-base text-gray-800">{year}</p>
                   </div>
                   
                   <div>
-                    <p className="text-sm font-medium text-gray-500">Uploaded By</p>
+                    <p className="text-sm font-medium text-gray-500">{t('teacher.books.uploadedBy')}</p>
                     <p className="text-base text-gray-800">{uploadedByName}</p>
                   </div>
                 </div>
@@ -348,7 +350,7 @@ const StudentViewBookPage = () => {
               
               {abstract && (
                 <div className="mt-6">
-                  <p className="text-sm font-medium text-gray-700 mb-2">Abstract:</p>
+                  <p className="text-sm font-medium text-gray-700 mb-2">{t('admin.bookManagement.upload.abstract')}:</p>
                   <div className="p-4 bg-gray-50 rounded-md border border-gray-200 flex h-96 overflow-hidden">
                     <div className="overflow-y-auto">
                       <p className="text-gray-700 whitespace-pre-wrap">{abstract}</p>

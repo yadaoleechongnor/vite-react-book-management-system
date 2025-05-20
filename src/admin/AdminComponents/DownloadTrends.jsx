@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { API_BASE_URL } from "../../utils/api";
 import { Line } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
@@ -7,6 +8,7 @@ import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
 
 function DownloadTrends() {
+  const { t } = useTranslation();
   const [trendData, setTrendData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -405,32 +407,32 @@ function DownloadTrends() {
 
   return (
     <div className="bg-white p-6 rounded-lg border border-sky-500 shadow-lg w-full mx-auto max-w-none xl:w-full 2xl:w-full">
-      <h2 className="text-xl font-semibold mb-4">Download Trends</h2>
+      <h2 className="text-xl font-semibold mb-4">{t('admin.components.trends.title')}</h2>
       
       <div className="flex flex-wrap mb-5 gap-2 justify-end">
         <button 
           className={`px-4 py-2 rounded-md transition-colors duration-200 ${timeRange === 'daily' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
           onClick={() => setTimeRange('daily')}
         >
-          Daily
+          {t('admin.components.trends.periods.daily')}
         </button>
         <button 
           className={`px-4 py-2 rounded-md transition-colors duration-200 ${timeRange === 'weekly' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
           onClick={() => setTimeRange('weekly')}
         >
-          Weekly
+          {t('admin.components.trends.periods.weekly')}
         </button>
         <button 
           className={`px-4 py-2 rounded-md transition-colors duration-200 ${timeRange === 'monthly' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
           onClick={() => setTimeRange('monthly')}
         >
-          Monthly
+          {t('admin.components.trends.periods.monthly')}
         </button>
         <button 
           className={`px-4 py-2 rounded-md transition-colors duration-200 ${timeRange === 'yearly' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
           onClick={() => setTimeRange('yearly')}
         >
-          Yearly
+          {t('admin.components.trends.periods.yearly')}
         </button>
       </div>
       
