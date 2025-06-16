@@ -5,8 +5,10 @@ import { FaTrashAlt } from 'react-icons/fa'; // Import React Icon
 import Swal from 'sweetalert2'; // Import SweetAlert
 import { API_BASE_URL } from '../../../utils/api'; // Import API base URL
 import { getAuthToken } from '../../../utils/auth'; // Import the auth utility
+import { useTranslation } from 'react-i18next'; // Import translation hook
 
 function AdminTable() {
+  const { t } = useTranslation(); // Initialize translation hook
   const [adminUsers, setAdminUsers] = useState([]);
 
   useEffect(() => {
@@ -52,9 +54,9 @@ function AdminTable() {
   }, []);
 
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+    if (!dateString) return t('admin.users.noDataAvailable');
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -63,8 +65,8 @@ function AdminTable() {
     });
   };
 
-  const formatPhoneNumber = (phone) => {
-    return phone || 'N/A';
+  const formatValue = (value) => {
+    return value || t('admin.users.noDataAvailable');
   };
 
   const handleDelete = (userId) => {
@@ -136,7 +138,7 @@ function AdminTable() {
         <div style="text-align: left;">
           <p><strong>User Name:</strong> ${user.name || 'N/A'}</p>
           <p><strong>Email:</strong> ${user.email || 'N/A'}</p>
-          <p><strong>Phone Number:</strong> ${formatPhoneNumber(user.phone_number)}</p>
+          <p><strong>Phone Number:</strong> ${formatValue(user.phone_number)}</p>
           <p><strong>Role:</strong> ${user.role || 'N/A'}</p>
           <p><strong>Created At:</strong> ${formatDate(user.createdAt)}</p>
           <p><strong>Updated At:</strong> ${formatDate(user.updatedAt)}</p>
@@ -150,52 +152,61 @@ function AdminTable() {
 
   return (
     <div className="mt-10">
-      <h2 className="text-xl font-semibold mb-4">Admin Users</h2>
-      <div className="overflow-x-auto border rounded-lg bg-white shadow-2xl p-6">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-blue-600">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">#</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">User Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider md:table-cell hidden">Email</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider md:table-cell hidden">Phone</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider lg:table-cell hidden">Role</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider lg:table-cell hidden">Created</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {adminUsers.map((user, index) => (
-              <tr key={`${user._id || index}-${index}`} 
-                  className={index % 2 === 0 ? "bg-gray-50 cursor-pointer hover:bg-gray-100" : "cursor-pointer hover:bg-gray-100"} 
-                  onClick={() => handleRowClick(user)}>
-                <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
-                <td className="px-6 py-4 whitespace-nowrap font-medium">{user.name || 'N/A'}</td>
-                <td className="px-6 py-4 whitespace-nowrap md:table-cell hidden">{user.email || 'N/A'}</td>
-                <td className="px-6 py-4 whitespace-nowrap md:table-cell hidden">{formatPhoneNumber(user.phone_number)}</td>
-                <td className="px-6 py-4 whitespace-nowrap lg:table-cell hidden">{user.role || 'N/A'}</td>
-                <td className="px-6 py-4 whitespace-nowrap lg:table-cell hidden">{formatDate(user.createdAt)}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {isAdmin && index !== 0 && (
-                    <button onClick={(e) => { 
-                      e.stopPropagation(); 
-                      handleDelete(user._id); 
-                    }} className='text-red-600 hover:text-red-900'>
-                      <FaTrashAlt className="inline-block w-5 h-5" />
-                    </button>
-                  )}
-                </td>
-              </tr>
-            ))}
-            {adminUsers.length === 0 && (
-              <tr>
-                <td colSpan="7" className="px-6 py-4 text-center text-gray-500">
-                  No admin users found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+      <h2 className="text-xl font-semibold mb-4">{t('admin.users.adminUsers')}</h2>
+      <div className="overflow-x-auto border rounded-lg bg-white shadow-2xl p-2 sm:p-4 md:p-6">
+        <div className="min-w-full inline-block align-middle">
+          <div className="overflow-hidden">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-blue-600">
+                <tr>
+                  <th className="px-3 py-2 sm:px-4 sm:py-3 lg:px-6 text-left text-xs font-medium text-white uppercase tracking-wider">{t('admin.users.tableHeaders.number')}</th>
+                  <th className="px-3 py-2 sm:px-4 sm:py-3 lg:px-6 text-left text-xs font-medium text-white uppercase tracking-wider">{t('admin.users.tableHeaders.userName')}</th>
+                  <th className="hidden md:table-cell px-3 py-2 sm:px-4 sm:py-3 lg:px-6 text-left text-xs font-medium text-white uppercase tracking-wider">{t('admin.users.tableHeaders.email')}</th>
+                  <th className="hidden lg:table-cell px-3 py-2 sm:px-4 sm:py-3 lg:px-6 text-left text-xs font-medium text-white uppercase tracking-wider">{t('admin.users.tableHeaders.phone')}</th>
+                  <th className="hidden xl:table-cell px-3 py-2 sm:px-4 sm:py-3 lg:px-6 text-left text-xs font-medium text-white uppercase tracking-wider">{t('admin.users.tableHeaders.role')}</th>
+                  <th className="hidden 2xl:table-cell px-3 py-2 sm:px-4 sm:py-3 lg:px-6 text-left text-xs font-medium text-white uppercase tracking-wider">{t('admin.users.tableHeaders.created')}</th>
+                  <th className="px-3 py-2 sm:px-4 sm:py-3 lg:px-6 text-left text-xs font-medium text-white uppercase tracking-wider">{t('admin.users.tableHeaders.actions')}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {adminUsers.map((user, index) => (
+                  <tr 
+                    key={user._id || index}
+                    className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-gray-100 transition-colors duration-200`}
+                    onClick={() => handleRowClick(user)}
+                  >
+                    <td className="px-3 py-2 sm:px-4 sm:py-3 lg:px-6 whitespace-nowrap text-sm">{index + 1}</td>
+                    <td className="px-3 py-2 sm:px-4 sm:py-3 lg:px-6 whitespace-nowrap text-sm font-medium">{formatValue(user.name)}</td>
+                    <td className="hidden md:table-cell px-3 py-2 sm:px-4 sm:py-3 lg:px-6 whitespace-nowrap text-sm">{formatValue(user.email)}</td>
+                    <td className="hidden lg:table-cell px-3 py-2 sm:px-4 sm:py-3 lg:px-6 whitespace-nowrap text-sm">{formatValue(user.phone_number)}</td>
+                    <td className="hidden xl:table-cell px-3 py-2 sm:px-4 sm:py-3 lg:px-6 whitespace-nowrap text-sm">{formatValue(user.role)}</td>
+                    <td className="hidden 2xl:table-cell px-3 py-2 sm:px-4 sm:py-3 lg:px-6 whitespace-nowrap text-sm">{formatDate(user.createdAt)}</td>
+                    <td className="px-3 py-2 sm:px-4 sm:py-3 lg:px-6 whitespace-nowrap text-sm">
+                      {isAdmin && index !== 0 && (
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(user._id);
+                          }}
+                          className="text-red-600 hover:text-red-900 transition-colors duration-200"
+                        >
+                          <FaTrashAlt className="w-4 h-4 sm:w-5 sm:h-5" />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {adminUsers.length === 0 && (
+                  <tr>
+                    <td colSpan="7" className="px-6 py-4 text-center text-gray-500">
+                      {t('admin.users.noAdminUsersFound')}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   );

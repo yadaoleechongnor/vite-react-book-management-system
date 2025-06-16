@@ -185,8 +185,8 @@ const TeacherBookEditePage = () => {
 
     if (!token) {
       Swal.fire({
-        title: "Authentication Error",
-        text: "You need to be logged in to update files",
+        title: t('admin.common.error'),
+        text: t('admin.bookManagement.authRequired'),
         icon: "error",
       }).then(() => {
         window.location.href = "/login";
@@ -194,16 +194,9 @@ const TeacherBookEditePage = () => {
       return;
     }
 
-    if (!bookId) {
-      Swal.fire({
-        title: "Error",
-        text: "Book ID is missing. Cannot update book.",
-        icon: "error",
-      });
-      return;
-    }
-
     try {
+      setLoading(true);
+
       const formData = new FormData();
       formData.append("title", title);
       formData.append("author", author);
@@ -215,58 +208,64 @@ const TeacherBookEditePage = () => {
         formData.append("file", file);
       }
 
-      let response = await fetch(`${API_BASE_URL}/v1/books/${bookId}`, {
-        method: "PUT",
+      const response = await fetch(`${API_BASE_URL}/v1/books/${bookId}`, {
+        method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
 
-      if (response.status === 404) {
-        Swal.fire({
-          title: "Trying Alternative Methods",
-          text: "First attempt failed. Trying alternative update methods...",
-          icon: "info",
-          timer: 2000,
-          showConfirmButton: false,
-        });
+      const data = await response.json();
 
-        response = await fetch(`${API_BASE_URL}/books/${bookId}`, {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        });
+      // Check if the update was actually successful
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || t('admin.bookList.dialogs.updateBook.error'));
       }
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        console.error("Error details:", errorData);
-        throw new Error(
-          errorData?.message ||
-            `Update failed with status ${response.status}. Please check server logs for correct API endpoint.`
-        );
+      // Verify the returned data
+      const updatedBook = data.data?.book || data.data;
+      if (!updatedBook) {
+        throw new Error(t('admin.bookList.dialogs.updateBook.error'));
       }
 
-      Swal.fire({
-        title: "Update Success",
-        text: "Your book has been updated successfully!",
+      // Verify if the data was actually updated
+      const isUpdateSuccessful = 
+        updatedBook.title === title &&
+        updatedBook.author === author &&
+        (updatedBook.branch_id === branchId || updatedBook.branch_id?._id === branchId) &&
+        updatedBook.year === year &&
+        updatedBook.abstract === abstract;
+
+      if (!isUpdateSuccessful) {
+        throw new Error(t('admin.bookList.dialogs.updateBook.error'));
+      }
+
+      // Success alert
+      await Swal.fire({
+        title: t('admin.common.success'),
+        text: t('admin.bookList.dialogs.updateBook.success'),
         icon: "success",
-        timer: 2000,
+        timer: 1500,
         showConfirmButton: false,
-      }).then(() => {
-        navigate("/teacher/bookpage");
+        timerProgressBar: true,
       });
+
+      navigate("/teacher/bookpage");
+
     } catch (error) {
       console.error("Update error:", error);
-      Swal.fire({
-        title: "Update Failed",
-        text: error.message || "There was an issue updating your book. Please try again.",
+      
+      await Swal.fire({
+        title: t('admin.common.error'),
+        text: error.message || t('admin.bookList.dialogs.updateBook.error'),
         icon: "error",
-        showConfirmButton: true,
+        confirmButtonText: t('admin.common.retry'),
+        showCancelButton: true,
+        cancelButtonText: t('admin.common.cancel'),
       });
+    } finally {
+      setLoading(false);
     }
   };
 

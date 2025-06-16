@@ -93,7 +93,7 @@ const TeacherLayout = ({ children }) => {
               label={t("teacher.layout.sidebar.dashboard")}
               path="/teacher/dashboard"
               isMobileSidebarOpen={isMobileSidebarOpen}
-              isActive={activeItem === "Dashboard"}
+              isActive={activeItem === t("teacher.layout.sidebar.dashboard")}
               onClick={handleSidebarItemClick}
             />
             <SidebarItem
@@ -101,7 +101,7 @@ const TeacherLayout = ({ children }) => {
               label={t("teacher.layout.sidebar.uploadBook")}
               path="/teacher/uploadbook"
               isMobileSidebarOpen={isMobileSidebarOpen}
-              isActive={activeItem === "Upload-Book"}
+              isActive={activeItem === t("teacher.layout.sidebar.uploadBook")}
               onClick={handleSidebarItemClick}
             />
             <SidebarItem
@@ -109,7 +109,7 @@ const TeacherLayout = ({ children }) => {
               label={t("teacher.layout.sidebar.bookPage")}
               path="/teacher/bookpage"
               isMobileSidebarOpen={isMobileSidebarOpen}
-              isActive={activeItem === "Book-Page"}
+              isActive={activeItem === t("teacher.layout.sidebar.bookPage")}
               onClick={handleSidebarItemClick}
             />
             <SidebarItem
@@ -117,7 +117,7 @@ const TeacherLayout = ({ children }) => {
               label={t("teacher.layout.sidebar.ownerBook")}
               path="/teacher/teacherownerbook"
               isMobileSidebarOpen={isMobileSidebarOpen}
-              isActive={activeItem === "Teacher-Owner-Book"}
+              isActive={activeItem === t("teacher.layout.sidebar.ownerBook")}
               onClick={handleSidebarItemClick}
             />
           </div>

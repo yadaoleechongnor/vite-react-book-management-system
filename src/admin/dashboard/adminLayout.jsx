@@ -6,6 +6,7 @@ import Swal from "sweetalert2"; // Import SweetAlert2
 import { IoMdLogOut } from "react-icons/io";
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '../../contexts/LanguageContext';
+import ThemeButton from "../../components/theme/ThemeButton";
 
 const AdminLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -44,6 +45,7 @@ const AdminLayout = ({ children }) => {
   return (
     <div className="admin-layout">
       <header className="text-sky-400 p-4 flex justify-between shadow-2xl shadow-sky-100 bg-white">
+     
         <div className="flex items-center">
           {/* Inline toggle button instead of NavbarToggle component */}
           <button 
@@ -56,6 +58,7 @@ const AdminLayout = ({ children }) => {
           <h1 className="text-xl">{t('admin.dashboard.title')}</h1>
         </div>
         <div className="flex items-center space-x-4">
+             <ThemeButton />
           <button
             onClick={toggleLanguage}
             className="px-3 py-1 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-100"

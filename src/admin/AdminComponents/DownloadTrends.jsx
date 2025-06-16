@@ -324,6 +324,7 @@ function DownloadTrends() {
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    aspectRatio: 3, // Makes chart wider
     plugins: {
       legend: {
         position: 'top',
@@ -357,6 +358,14 @@ function DownloadTrends() {
         }
       }
     },
+    layout: {
+      padding: {
+        left: 10,
+        right: 20,
+        top: 0,
+        bottom: 10
+      }
+    },
     scales: {
       y: {
         beginAtZero: true,
@@ -368,8 +377,9 @@ function DownloadTrends() {
             size: 12
           }
         },
+        position: 'left',
         grid: {
-          display: true,
+          drawBorder: false,
           color: 'rgba(0, 0, 0, 0.05)'
         },
         ticks: {
@@ -389,8 +399,10 @@ function DownloadTrends() {
           display: false
         },
         ticks: {
-          maxRotation: 45,
-          minRotation: 0
+          maxRotation: 0,
+          minRotation: 0,
+          autoSkip: true,
+          maxTicksLimit: 10
         }
       }
     },
@@ -406,52 +418,61 @@ function DownloadTrends() {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg border border-sky-500 shadow-lg w-full mx-auto max-w-none xl:w-full 2xl:w-full">
-      <h2 className="text-xl font-semibold mb-4">{t('admin.components.trends.title')}</h2>
-      
-      <div className="flex flex-wrap mb-5 gap-2 justify-end">
-        <button 
-          className={`px-4 py-2 rounded-md transition-colors duration-200 ${timeRange === 'daily' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
-          onClick={() => setTimeRange('daily')}
-        >
-          {t('admin.components.trends.periods.daily')}
-        </button>
-        <button 
-          className={`px-4 py-2 rounded-md transition-colors duration-200 ${timeRange === 'weekly' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
-          onClick={() => setTimeRange('weekly')}
-        >
-          {t('admin.components.trends.periods.weekly')}
-        </button>
-        <button 
-          className={`px-4 py-2 rounded-md transition-colors duration-200 ${timeRange === 'monthly' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
-          onClick={() => setTimeRange('monthly')}
-        >
-          {t('admin.components.trends.periods.monthly')}
-        </button>
-        <button 
-          className={`px-4 py-2 rounded-md transition-colors duration-200 ${timeRange === 'yearly' ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
-          onClick={() => setTimeRange('yearly')}
-        >
-          {t('admin.components.trends.periods.yearly')}
-        </button>
+    <div className="bg-white rounded-xl shadow-2xl p-3 w-full mx-auto mb-6">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-3 gap-2">
+        <div className="w-full sm:w-auto">
+          <h2 className="text-lg font-bold text-gray-800">
+            {t('admin.components.trends.title')}
+          </h2>
+          <p className="text-xs text-gray-600">Track your download statistics over time</p>
+        </div>
+        
+        <div className="flex flex-wrap gap-1">
+          {['daily', 'weekly', 'monthly', 'yearly'].map((range) => (
+            <button
+              key={range}
+              onClick={() => setTimeRange(range)}
+              className={`px-3 py-1 rounded text-xs font-medium transition-all duration-200
+                ${timeRange === range 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+            >
+              {t(`admin.components.trends.periods.${range}`)}
+            </button>
+          ))}
+        </div>
       </div>
-      
-      <div className="relative w-full h-64 sm:h-80 md:h-96 lg:h-[400px]">
-        {loading ? (
-          <div className="flex w-full items-center justify-center h-full">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-          </div>
-        ) : error ? (
-          <div className="flex items-center justify-center h-full text-red-500">
-            {error}
-          </div>
-        ) : chartData && chartData.datasets[0].data.length > 0 ? (
-          <Line data={chartData} options={chartOptions} />
-        ) : (
-          <div className="flex items-center justify-center h-full text-gray-500">
-            No download data available for this time period
-          </div>
-        )}
+
+      {/* Chart Container - Adjusted for wider appearance */}
+      <div className="relative w-full bg-white rounded-xl">
+        <div className="h-[16rem] lg:h-[18rem]">
+          {loading ? (
+            <div className="flex w-full h-full items-center justify-center">
+              <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-500 border-t-transparent"></div>
+            </div>
+          ) : error ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-red-500 text-center">
+                <svg className="w-16 h-16 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                <p className="text-lg font-semibold">{error}</p>
+              </div>
+            </div>
+          ) : chartData && chartData.datasets[0].data.length > 0 ? (
+            <Line data={chartData} options={chartOptions} />
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-gray-500 text-center">
+                <svg className="w-16 h-16 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+                <p className="text-lg font-semibold">No download data available for this time period</p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

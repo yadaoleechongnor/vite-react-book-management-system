@@ -104,12 +104,12 @@ export default function DepartmentPage() {
 
     const handleDeleteDepartment = (id) => {
         Swal.fire({
-            title: t('admin.common.areYouSure'),
-            text: t('admin.common.cannotRevert'),
+            title: t('admin.department.deleteConfirm'),
+            text: t('admin.department.deleteWarning'),
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: t('admin.common.yesDelete'),
-            cancelButtonText: t('admin.common.noCancel'),
+            confirmButtonText: t('admin.department.confirm'),
+            cancelButtonText: t('admin.department.cancel'),
             customClass: {
                 popup: 'bg-white rounded-lg p-6 shadow-lg',
                 title: 'text-xl font-semibold text-gray-900',

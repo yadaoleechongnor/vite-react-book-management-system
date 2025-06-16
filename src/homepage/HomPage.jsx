@@ -122,25 +122,33 @@ function HomPage() {
         <footer className="bg-gray-800 text-white p-10 rounded-lg">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
             <div>
-              <h3 className="font-bold text-lg mb-4">{t('home.footer.about')}</h3>
-              <p>{t('home.footer.aboutText')}</p>
+              <h3 className="font-bold text-lg mb-4">ກ່ຽວກັບພວກເຮົາ</h3>
+              <p>ແຫຼ່ງປຶ້ມທີ່ໜ້າເຊື່ອຖືຕັ້ງແຕ່ປີ 2025</p>
             </div>
             <div>
               <ul>
-                <li className="mb-2"><a href="/" className="text-gray-300 hover:text-white transition">{t('home.footer.home')}</a></li>
-                <li className="mb-2"><a href="/about" className="text-gray-300 hover:text-white transition">{t('home.footer.books')}</a></li>
-                <li className="mb-2"><a href="#" className="text-gray-300 hover:text-white transition">{t('home.footer.categories')}</a></li>
-                <li className="mb-2"><a href="#" className="text-gray-300 hover:text-white transition">{t('home.footer.contact')}</a></li>
+                <li className="mb-2">
+                  <a href="/" className="text-gray-300 hover:text-white transition">ໜ້າຫຼັກ</a>
+                </li>
+                <li className="mb-2">
+                  <a href="/about" className="text-gray-300 hover:text-white transition">ປຶ້ມ</a>
+                </li>
+                <li className="mb-2">
+                  <a href="#" className="text-gray-300 hover:text-white transition">ໝວດໝູ່</a>
+                </li>
+                <li className="mb-2">
+                  <a href="#" className="text-gray-300 hover:text-white transition">ຕິດຕໍ່</a>
+                </li>
               </ul>
             </div>
             <div>
-              <h3 className="font-bold text-lg mb-4">{t('home.footer.contact')}</h3>
-              <p className="mb-2">{t('home.footer.email')}</p>
-              <p>{t('home.footer.phone')}</p>
+              <h3 className="font-bold text-lg mb-4">ຕິດຕໍ່</h3>
+              <p className="mb-2">ອີເມວ: souphanouvonguniversity@gmail.com</p>
+              <p>ໂທ: +856 20 78945632</p>
             </div>
           </div>
           <div className="border-t border-gray-700 pt-6 text-center">
-            <p>{t('home.footer.copyright')}</p>
+            <p>© 2025 Master-Library. ສະຫງວນລິຂະສິດ.</p>
           </div>
         </footer>
       </div>

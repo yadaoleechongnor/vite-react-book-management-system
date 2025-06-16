@@ -1,22 +1,59 @@
 import React, { useState, useEffect } from 'react';
-import { API_BASE_URL } from '../../../src/utils/api';  // Updated import path
+import { API_BASE_URL } from '../../utils/api';
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { getAuthToken } from '../../utils/auth';
 
 function NewsCard() {
   const [news, setNews] = useState([]);
   const navigate = useNavigate();
   const { t } = useTranslation();
 
+  const getImageUrl = (imageUrl) => {
+    if (!imageUrl) return null;
+    
+    try {
+      // Handle relative paths for API_BASE_URL
+      if (imageUrl.startsWith('/uploads/')) {
+        return `${API_BASE_URL}${imageUrl}`;
+      }
+      
+      // Handle absolute paths
+      if (imageUrl.startsWith('http')) {
+        return imageUrl;
+      }
+      
+      // Handle other cases
+      return `${API_BASE_URL}/uploads/${imageUrl}`;
+    } catch (error) {
+      console.error('Error processing image URL:', error);
+      return null;
+    }
+  };
+
   useEffect(() => {
     const fetchNews = async () => {
       try {
+        const token = getAuthToken();
         const response = await fetch(`${API_BASE_URL}/news/`, {
-          credentials: 'include' // Add credentials
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch news');
+        }
+        
         const data = await response.json();
-        setNews(data);
+        const newsData = Array.isArray(data) ? data : data.data || [];
+        setNews(newsData.map(item => ({
+          ...item,
+          imageUrl: getImageUrl(item.imageUrl || item.image || item.image_url)
+        })));
       } catch (error) {
         console.error('Error fetching news:', error);
       }
@@ -24,15 +61,6 @@ function NewsCard() {
 
     fetchNews();
   }, []);
-
-  const getImageUrl = (imageUrl) => {
-    if (!imageUrl) return '/no-image.png';
-    // For absolute URLs, return as is
-    if (imageUrl.startsWith('http')) return imageUrl;
-    // For relative URLs, ensure they work with CORS
-    const url = `${API_BASE_URL}${imageUrl}`;
-    return url.replace(/([^:]\/)\/+/g, "$1"); // Clean up any double slashes
-  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
@@ -55,16 +83,17 @@ function NewsCard() {
               </button>
             </div>
           </div>
-          <div className="mb-4">
+          <div className="mb-4 relative" style={{ minHeight: '200px' }}>
             <img
-              src={getImageUrl(item.imageUrl)}
+              src={getImageUrl(item.imageUrl) || '/placeholder.png'}
               alt={item.title || 'News image'}
-              className="w-full border h-48 object-cover rounded-lg"
-              crossOrigin="anonymous"
-              loading="lazy"
+              className="w-full h-48 object-cover rounded-lg"
               onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = '/no-image.png';
+                e.target.onerror = null; // Prevent infinite loop
+                e.target.src = '/placeholder.png';
+                e.target.style.objectFit = 'contain';
+                e.target.style.padding = '1rem';
+                e.target.style.background = '#f3f4f6';
               }}
             />
           </div>

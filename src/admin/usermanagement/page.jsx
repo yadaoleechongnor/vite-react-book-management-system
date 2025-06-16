@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 
 function UserMagementPage() {
   const [users, setUsers] = useState([]);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation(); // Add i18n
 
   useEffect(() => {
     const myHeaders = new Headers();
@@ -37,28 +37,45 @@ function UserMagementPage() {
         return response.json();
       })
       .then((result) => {
-        if (result.success && Array.isArray(result.data.users)) {
-          setUsers(result.data.users);
+        console.log("API Response:", result); // Debug log
+        // Handle different response formats
+        let usersData = [];
+        
+        if (result.data?.users) {
+          // Format: { data: { users: [...] } }
+          usersData = result.data.users;
+        } else if (result.users) {
+          // Format: { users: [...] }
+          usersData = result.users;
+        } else if (result.data && Array.isArray(result.data)) {
+          // Format: { data: [...] }
+          usersData = result.data;
+        } else if (Array.isArray(result)) {
+          // Format: [...] (direct array)
+          usersData = result;
         } else {
           console.error("Unexpected response format:", result);
-          setUsers([]);
+          usersData = [];
         }
+
+        // Filter out any invalid user objects and ensure required fields
+        const validUsers = usersData.filter(user => 
+          user && typeof user === 'object' && (user._id || user.id)
+        );
+
+        setUsers(validUsers);
       })
       .catch((error) => {
-        if (error.message === 'Unauthorized') {
-          console.error("Unauthorized access - invalid token");
-          Swal.fire({
-            title: 'Authentication Error',
-            text: 'Your session has expired or you do not have permission to access this resource.',
-            icon: 'error',
-            confirmButtonText: 'Login Again'
-          }).then(() => {
-            window.location.href = "/login";
-          });
-        } else {
-          console.error("Error fetching users:", error);
-        }
+        console.error("Error fetching users:", error);
         setUsers([]);
+        // Show error message to user
+        Swal.fire({
+          title: 'Error!',
+          text: 'Failed to fetch users. Please try again later.',
+          icon: 'error',
+          timer: 3000,
+          showConfirmButton: false
+        });
       });
   }, []);
 
@@ -68,13 +85,14 @@ function UserMagementPage() {
       return;
     }
     Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
+      title: i18n.language === 'lo' ? 'ທ່ານແນ່ໃຈບໍ່?' : 'Are you sure?',
+      text: i18n.language === 'lo' ? 'ການກະທຳນີ້ບໍ່ສາມາດຍົກເລີກໄດ້!' : 'This action cannot be undone!',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: i18n.language === 'lo' ? 'ແມ່ນແລ້ວ, ລຶບອອກ' : 'Yes, delete it!',
+      cancelButtonText: i18n.language === 'lo' ? 'ບໍ່, ຍົກເລີກ' : 'No, cancel'
     }).then((result) => {
       if (result.isConfirmed) {
         const myHeaders = new Headers();
@@ -92,8 +110,8 @@ function UserMagementPage() {
           .then(() => {
             setUsers(users.filter(user => user._id !== userId));
             Swal.fire({
-              title: 'Deleted!',
-              text: 'The user has been deleted.',
+              title: t('admin.common.success'),
+              text: t('admin.users.deleteSuccess'),
               icon: 'success',
               timer: 3000,
               showConfirmButton: false
@@ -102,8 +120,8 @@ function UserMagementPage() {
           .catch((error) => {
             console.error(error);
             Swal.fire({
-              title: 'Error!',
-              text: 'An error occurred while deleting the user.',
+              title: t('admin.common.error'),
+              text: t('admin.users.deleteError'),
               icon: 'error',
               timer: 3000,
               showConfirmButton: false
@@ -137,12 +155,7 @@ function UserMagementPage() {
     <UserManagementLayout>
       <div className="p-6">
         <h1 className="text-2xl font-bold mb-6">{t('admin.users.title')}</h1>
-        <button 
-          onClick={() => {}}
-          className="mb-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          {t('admin.users.addNew')}
-        </button>
+       
 
         <div className="overflow-x-auto shadow-2xl bg-white rounded-lg p-6">
           <table className="min-w-full divide-y divide-gray-200">
@@ -164,24 +177,45 @@ function UserMagementPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {users.map((user, index) => (
-                <tr key={`${user._id}-${index}`} className={index % 2 === 0 ? "bg-gray-50 cursor-pointer" : "cursor-pointer"} onClick={() => handleRowClick(user)}>
-                  <td className="px-2 sm:px-4 py-3 whitespace-nowrap">{index + 1}</td>
-                  <td className="px-3 sm:px-6 py-3 break-words">{user.user_name}</td>
-                  <td className="hidden md:table-cell px-6 py-3 whitespace-nowrap">{user.email}</td>
-                  <td className="hidden lg:table-cell px-6 py-3 whitespace-nowrap">{user.role}</td>
-                  <td className="px-2 sm:px-4 py-3 whitespace-nowrap">
-                    {user.role !== 'admin' && (
-                      <button onClick={(e) => { 
-                        e.stopPropagation();
-                        handleDelete(user._id); 
-                      }} className='text-red-600 hover:text-red-900'>
-                        <FaTrashAlt className="inline-block w-4 h-4 sm:w-5 sm:h-5" />
-                      </button>
-                    )}
+              {users.length > 0 ? (
+                users.map((user, index) => (
+                  <tr 
+                    key={user._id || index} 
+                    className={index % 2 === 0 ? "bg-gray-50 hover:bg-gray-100 cursor-pointer" : "hover:bg-gray-100 cursor-pointer"} 
+                    onClick={() => handleRowClick(user)}
+                  >
+                    <td className="px-2 sm:px-4 py-3 whitespace-nowrap">{index + 1}</td>
+                    <td className="px-3 sm:px-6 py-3 break-words">
+                      {user.user_name || user.username || user.name || 'N/A'}
+                    </td>
+                    <td className="hidden md:table-cell px-6 py-3 whitespace-nowrap">
+                      {user.email || 'N/A'}
+                    </td>
+                    <td className="hidden lg:table-cell px-6 py-3 whitespace-nowrap">
+                      {user.role || 'N/A'}
+                    </td>
+                    <td className="px-2 sm:px-4 py-3 whitespace-nowrap">
+                      {user.role !== 'admin' && (
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(user._id);
+                          }} 
+                          className='text-red-600 hover:text-red-900'
+                        >
+                          <FaTrashAlt className="inline-block w-4 h-4 sm:w-5 sm:h-5" />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="px-6 py-4 text-center">
+                    {t('admin.users.noUsers')}
                   </td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>

@@ -25,9 +25,11 @@ const DashboardPage = () => {
             <CardDeparmentInform />
             <CardFacultyInform />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 w-full lg:grid-cols-3 gap-4 mb-6">
-            <DownloadTrends />
-            <div className="bg-white p-4 rounded-lg shadow">
+          <div className="flex flex-col lg:flex-row w-full gap-4 mb-6">
+            <div className="w-full lg:w-[70%]">
+              <DownloadTrends />
+            </div>
+            <div className="w-full lg:w-[30%] bg-white p-4 rounded-lg shadow-lg">
               <TimeCalendar />
             </div>
           </div>

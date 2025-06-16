@@ -11,6 +11,33 @@ import {
 import { API_BASE_URL } from '../../utils/api';
 import { useTranslation } from 'react-i18next';
 
+const uploadFile = async (url, formData, onProgress) => {
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST", url);
+
+  xhr.setRequestHeader('Authorization', `Bearer ${getAuthToken()}`);
+
+  xhr.upload.onprogress = (event) => {
+    if (event.lengthComputable && onProgress) {
+      const progress = (event.loaded / event.total) * 100;
+      onProgress(progress);
+    }
+  };
+
+  return new Promise((resolve, reject) => {
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(JSON.parse(xhr.responseText));
+      } else {
+        reject(new Error(xhr.statusText));
+      }
+    };
+
+    xhr.onerror = () => reject(new Error("Network error"));
+    xhr.send(formData);
+  });
+};
+
 const BookUpload = () => {
   const { t } = useTranslation();
   const [file, setFile] = useState(null);
@@ -136,62 +163,102 @@ const BookUpload = () => {
     e.preventDefault();
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!isAuthenticated) {
+    if (!file || !title || !author || !branchId || !year || !abstract) {
       Swal.fire({
-        title: 'Authentication Required',
-        text: 'Please login to upload files',
-        icon: 'warning',
-        showConfirmButton: true
+        icon: 'error',
+        title: 'Validation Error',
+        text: 'Please fill all required fields and select a PDF file',
+        confirmButtonText: 'OK'
       });
       return;
     }
-    
-    const formData = new FormData();
-    formData.append("title", title);
-    formData.append("author", author);
-    formData.append("branch_id", branchId);
-    formData.append("year", year);
-    formData.append("abstract", abstract);
-    formData.append("file", file);
-    formData.append("uploaded_by", uploadedBy);
 
-    Swal.fire({
-      title: 'Uploading...',
-      text: 'Please wait while your file is being uploaded.',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      }
-    });
+    let retries = 3;
+    let lastError = null;
 
-    authenticatedFetch(`${API_BASE_URL}/v1/books/`, {
-      method: "POST",
-      body: formData
-    })
-      .then((response) => response.text())
-      .then((result) => {
-        Swal.fire({
-          title: 'Upload Success',
-          text: 'Your file has been uploaded successfully!',
+    const attemptUpload = async () => {
+      try {
+        const formData = new FormData();
+        formData.append("title", title.trim());
+        formData.append("author", author.trim());
+        formData.append("branch_id", branchId);
+        formData.append("year", year.trim());
+        formData.append("abstract", abstract.trim());
+        formData.append("file", file);
+        formData.append("uploaded_by", uploadedBy);
+
+        const response = await fetch(`${API_BASE_URL}/v1/books/`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${getAuthToken()}`
+          },
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || `Server error: ${response.status}`);
+        }
+
+        await Swal.fire({
           icon: 'success',
+          title: 'Success!',
+          text: 'Book uploaded successfully',
           timer: 2000,
           showConfirmButton: false
-        }).then(() => {
-          window.location.reload();
         });
-      })
-      .catch((error) => {
-        console.error(error);
-        Swal.fire({
-          title: 'Upload Failed',
-          text: 'There was an issue uploading your file. Please try again.',
-          icon: 'error',
-          showConfirmButton: true
-        });
+
+        window.location.reload();
+        return;
+
+      } catch (error) {
+        console.error('Upload attempt failed:', error);
+        lastError = error;
+        
+        if (retries > 1) {
+          retries--;
+          console.log(`Upload failed, retrying... (${retries} attempts left)`);
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          return attemptUpload();
+        }
+        
+        throw error;
+      }
+    };
+
+    try {
+      Swal.fire({
+        title: 'Uploading...',
+        text: 'Please wait while your file is being uploaded.',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
       });
+
+      await attemptUpload();
+
+    } catch (error) {
+      console.error('Upload error:', error);
+      
+      let errorMessage = 'Failed to upload book. ';
+      if (error.message.includes('500')) {
+        errorMessage += 'The server encountered an error. Please check your file and try again.';
+      } else {
+        errorMessage += error.message;
+      }
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Upload Failed',
+        text: errorMessage,
+        confirmButtonText: 'OK'
+      });
+    }
   };
 
   if (isLoading) {
@@ -242,93 +309,129 @@ const BookUpload = () => {
 
   return (
     <AdminBookLayout>
-      <div className="container mx-auto p-6">
-        <h2 className="text-2xl font-bold mb-6">{t('admin.bookUpload.title')}</h2>
-        <div 
-          className="drop-zone"
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-        >
-          <p>{t('admin.bookUpload.dropzone')}</p>
-          <div className="flex flex-col justify-center items-center border-4 border-dashed border-gray-300 rounded-lg p-4 sm:p-6 text-center cursor-pointer bg-gray-50 w-full h-48 sm:h-64">
-            <input
-              type="file"
-              accept="application/pdf"
-              onChange={handleFileChange}
-              required
-              className="hidden"
-              id="fileInput"
-            />
-            <label htmlFor="fileInput" className="block text-base sm:text-lg font-medium text-gray-700">
-              {file ? file.name : t('admin.bookUpload.dropzone')}
-            </label>
-          </div>
-          {preview && (
-            <div className="mt-4">
-              <embed src={preview} type="application/pdf" width="100%" height="300px" className="rounded-md shadow" />
+      <div className="h-[calc(100vh-80px)] p-6">
+        <h2 className="text-2xl font-bold mb-4">{t('admin.bookUpload.title')}</h2>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100%-60px)]">
+          {/* Left Column - File Upload Area */}
+          <div className="bg-white rounded-lg shadow-md p-6 flex flex-col">
+            <div 
+              className="flex-1 flex flex-col"
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+            >
+              <div className="flex-1 flex flex-col justify-center items-center border-2 border-dashed border-blue-300 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors duration-200 cursor-pointer relative">
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handleFileChange}
+                  required
+                  className="hidden"
+                  id="fileInput"
+                />
+                <label htmlFor="fileInput" className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer">
+                  <svg className="w-12 h-12 text-blue-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                  </svg>
+                  <span className="text-lg font-medium text-blue-600">
+                    {file ? file.name : t('admin.bookUpload.dropzone')}
+                  </span>
+                  <p className="text-sm text-blue-500 mt-2">PDF files only</p>
+                </label>
+              </div>
+              
+              {preview && (
+                <div className="mt-4 flex-1">
+                  <embed src={preview} type="application/pdf" width="100%" height="100%" className="rounded-md shadow" />
+                </div>
+              )}
             </div>
-          )}
-        </div>
+          </div>
 
-        <div className="form-section">
-          <label>{t('admin.components.bookEdit.fields.title')}</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            className="mt-1 block w-full h-10 sm:h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
-          />
+          {/* Right Column - Form Fields */}
+          <div className="bg-white rounded-lg shadow-md p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">{t('admin.components.bookEdit.fields.title')}</label>
+                  <input
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                    className="mt-1 block w-full rounded-md border-2 border-sky-500 shadow-sm focus:border-sky-600 focus:ring-sky-500 sm:text-sm h-10"
+                  />
+                </div>
 
-          <label>{t('admin.components.bookEdit.fields.author')}</label>
-          <input
-            type="text"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-            required
-            className="mt-1 block w-full h-10 sm:h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
-          />
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">{t('admin.components.bookEdit.fields.author')}</label>
+                  <input
+                    type="text"
+                    value={author}
+                    onChange={(e) => setAuthor(e.target.value)}
+                    required
+                    className="mt-1 block w-full rounded-md border-2 border-sky-500 shadow-sm focus:border-sky-600 focus:ring-sky-500 sm:text-sm h-10"
+                  />
+                </div>
 
-          <label>{t('admin.components.bookEdit.fields.branch')}</label>
-          <select
-            value={branchId}
-            onChange={(e) => setBranchId(e.target.value)}
-            required
-            className="mt-1 block w-full h-10 sm:h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
-          >
-            <option value="">{t('admin.components.bookEdit.fields.selectBranch')}</option>
-            {branches.map(branch => (
-              <option key={branch._id} value={branch._id}>
-                {branch.branch_name}
-              </option>
-            ))}
-          </select>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">{t('admin.components.bookEdit.fields.year')}</label>
+                  <input
+                    type="text"
+                    value={year}
+                    onChange={(e) => setYear(e.target.value)}
+                    required
+                    className="mt-1 block w-full rounded-md border-2 border-sky-500 shadow-sm focus:border-sky-600 focus:ring-sky-500 sm:text-sm h-10"
+                  />
+                </div>
+              </div>
 
-          <label>{t('admin.components.bookEdit.fields.year')}</label>
-          <input
-            type="text"
-            value={year}
-            onChange={(e) => setYear(e.target.value)}
-            required
-            className="mt-1 block w-full h-10 sm:h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
-          />
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">{t('admin.components.bookEdit.fields.branch')}</label>
+                  <select
+                    value={branchId}
+                    onChange={(e) => setBranchId(e.target.value)}
+                    required
+                    className="mt-1 block w-full rounded-md border-2 border-sky-500 shadow-sm focus:border-sky-600 focus:ring-sky-500 sm:text-sm h-10"
+                  >
+                    <option value="">{t('admin.components.bookEdit.fields.selectBranch')}</option>
+                    {branches.map(branch => (
+                      <option key={branch._id} value={branch._id}>
+                        {branch.branch_name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-          <label>{t('admin.components.bookEdit.fields.abstract')}</label>
-          <textarea
-            value={abstract}
-            onChange={(e) => setAbstract(e.target.value)}
-            required
-            className="mt-1 block w-full h-24 sm:h-32 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
-          />
-        </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">{t('admin.components.bookEdit.fields.abstract')}</label>
+                  <textarea
+                    value={abstract}
+                    onChange={(e) => setAbstract(e.target.value)}
+                    required
+                    className="mt-1 block w-full rounded-md border-2 border-sky-500 shadow-sm focus:border-sky-600 focus:ring-sky-500 sm:text-sm"
+                    rows="4"
+                  />
+                </div>
 
-        <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2 mt-4">
-          <button type="button" className="bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300">
-            {t('admin.components.bookEdit.buttons.cancel')}
-          </button>
-          <button type="submit" className="bg-gradient-to-tr from-blue-400 to-blue-600 hover:from-blue-300 hover:to-blue-500 text-white py-2 px-4 rounded-md shadow-md">
-            {t('admin.bookUpload.title')}
-          </button>
+                <div className="flex justify-end space-x-2 pt-4">
+                  <button 
+                    type="button" 
+                    className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    {t('admin.components.bookEdit.buttons.cancel')}
+                  </button>
+                  <button 
+                    onClick={handleSubmit}
+                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    {t('admin.bookUpload.title')}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </AdminBookLayout>

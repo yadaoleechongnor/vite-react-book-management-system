@@ -138,8 +138,8 @@
   "admin": {
     "common": {
       "loading": "Loading...",
-      "error": "Error",
-      "success": "Success",
+      "error": "Error!",
+      "success": "Success!",
       "cancel": "Cancel",
       "save": "Save",
       "edit": "Edit",
@@ -151,7 +151,12 @@
       "confirmDelete": "Are you sure you want to delete this?",
       "deleteWarning": "Are you sure you want to delete this item?",
       "yesDelete": "Yes, delete it",
-      "noCancel": "No, cancel"
+      "noCancel": "No, cancel",
+      "retry": "Try Again",
+      "add": "Add",
+      "update": "Update",
+      "areYouSure": "Are you sure?",
+      "cannotRevert": "This action cannot be undone!"
     },
     "layout": {
       "title": "Admin Panel",
@@ -197,7 +202,7 @@
       "title": "Book Management",
       "uploadBook": "Upload Book",
       "bookList": "Book List",
-      "adminOwnBooks": "Admin Own Books",
+      "adminOwnBook": "Admin Own Book",
       "viewAsUser": "View as User",
       "uploadSection": {
         "dropzone": "Drop files here or click to upload",
@@ -251,23 +256,33 @@
         "searchPlaceholder": "Search in My Books",
         "myUploadedBooks": "My Uploaded Books",
         "noBooks": "You haven't uploaded any books yet"
-      }
+      },
+      "authRequired": "You need to be logged in to update books"
     },
     "downloads": {
-      "title": "Downloads",
-      "allDownloads": "All Downloads",
-      "downloadDetails": "Download Details",
+      "pageTitle": "Download History",
+      "title": "All Downloads",
+      "bookTitle": "Book Title",
       "downloadedBy": "Downloaded By",
       "downloadDate": "Download Date",
-      "bookTitle": "Book Title",
-      "pageTitle": "Download History",
-      "loading": "Loading download details...",
+      "loading": "Loading...",
+      "error": "Error: {error}",
       "noRecords": "No download records found",
+      "showingRecords": "Showing {start} to {end} of {total} records",
       "previous": "Previous",
       "next": "Next",
-      "showing": "Showing",
-      "of": "of",
-      "records": "records"
+      "unauthorized": "Unauthorized access",
+      "sessionExpired": "Your session has expired. Please login again.",
+      "goToLogin": "Go to Login",
+      "apiError": "Error connecting to server",
+      "invalidDate": "Invalid Date",
+      "invalidJson": "Invalid server response",
+      "bookFallback": "Book {bookId}",
+      "userFallback": "User {userId}",
+      "systemUser": "System",
+      "unknownBook": "Unknown Book",
+      "anonymous": "Anonymous User",
+      "dateNotAvailable": "Date not available"
     },
     "users": {
       "title": "User Management",
@@ -281,7 +296,27 @@
       "noUsers": "No users found",
       "confirmDelete": "Are you sure you want to delete this user?",
       "allUsers": "All Users",
-      "teacherAdminManagement": "Teacher-Admin Management"
+      "teacherAdminManagement": "Teacher-Admin Management",
+      "addTeacherAdmin": "Add Teacher/Admin",
+      "teacher": "Teacher",
+      "admin": "Admin",
+      "submit": "Submit",
+      "username": "Username",
+      "email": "Email",
+      "password": "Password",
+      "teacherManagement": "Teacher Management",
+      "teacherTable": "Teacher Table",
+      "adminUsers": "Admin Users",
+      "tableHeaders": {
+        "number": "#",
+        "userName": "User Name",
+        "email": "Email",
+        "phone": "Phone Number",
+        "role": "Role",
+        "created": "Created Date",
+        "actions": "Actions"
+      },
+      "noDataAvailable": "N/A"
     },
     "faculty": {
       "title": "Faculty Management",
@@ -293,7 +328,21 @@
       "pageTitle": "Faculty Page",
       "welcome": "Welcome to the Faculty Page",
       "name": "Name",
-      "actions": "Actions"
+      "actions": "Actions",
+      "enterFacultyName": "Enter faculty name",
+      "add": "Add",
+      "update": "Update",
+      "confirmDelete": "Confirm Delete",
+      "deleteWarning": "This action cannot be undone. Are you sure you want to delete this faculty?",
+      "confirm": "Yes, I'm sure",
+      "cancel": "No, cancel",
+      "addSuccess": "Faculty added successfully",
+      "addError": "Error adding faculty",
+      "updateSuccess": "Faculty updated successfully",
+      "updateError": "Error updating faculty",
+      "deleteSuccess": "Faculty deleted successfully",
+      "deleteError": "Error deleting faculty",
+      "deleted": "Deleted!"
     },
     "department": {
       "title": "Department Management",
@@ -317,7 +366,21 @@
         "orgResourceMgmt": "Organizational Resource Management",
         "educationDev": "Education and Development",
         "computer": "Computer Science"
-      }
+      },
+      "enterDepartmentName": "Enter department name",
+      "faculties": {
+        "agricultureForestry": "Faculty of Agriculture and Forest Resources"
+      },
+      "departmentAdded": "Department added successfully",
+      "failedToAdd": "Failed to add department",
+      "departmentUpdated": "Department updated successfully",
+      "failedToUpdate": "Failed to update department",
+      "departmentDeleted": "Department deleted successfully",
+      "failedToDelete": "Failed to delete department",
+      "deleteConfirm": "Delete Department",
+      "deleteWarning": "Are you sure you want to delete this department?",
+      "confirm": "Yes, delete it",
+      "cancel": "No, cancel"
     },
     "branch": {
       "title": "Branch Management",
@@ -331,7 +394,8 @@
         "animalScience": "Animal Science"
       },
       "update": "Update",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "enterName": "Enter branch name"
     },
     "news": {
       "title": "News Management",
@@ -385,7 +449,7 @@
         "updateBook": {
           "title": "Update Book",
           "success": "Book updated successfully",
-          "error": "Failed to update book"
+          "error": "Failed to update book. Please try again"
         }
       },
       "noBooks": "No books available"

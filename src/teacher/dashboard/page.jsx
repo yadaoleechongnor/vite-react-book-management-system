@@ -4,6 +4,9 @@ import TeacherLayout from "../TeacherComponent/TeacherLayout";
 import Greeting from "../TeacherComponent/Greeting";
 import CalendarT from "../TeacherComponent/CalendarT";
 import TopDownloadCard from "../TeacherComponent/TopDownloadCard";
+import TeacherFamouseBookpage from "../TeacherComponent/TeacherFamouseBookpage";
+import TeacherBookcard from "../TeacherComponent/TeacherAllbookCard"; // Fix this import
+import Teacherownerbook from "../TeacherComponent/Teacherownerbook";
 
 export default function TeacherDashboard() {
   const { t } = useTranslation();
@@ -15,34 +18,16 @@ export default function TeacherDashboard() {
           <Greeting />
 
           {/* Feedback Activity Chart */}
-          <div className="col-span-1 sm:col-span-2 bg-white p-4 md:p-6 rounded-2xl shadow-lg">
-            <h3 className="text-base md:text-lg font-semibold text-gray-700">
-              {t("teacher.dashboard.feedbackActivity")}
-            </h3>
-            <div className="mt-3 md:mt-4 h-32 md:h-40 bg-gray-200 rounded-lg"></div>
-          </div>
+        <TeacherFamouseBookpage />
 
           <CalendarT />
           
-          <TopDownloadCard />
+          <TeacherBookcard />
 
-          <div className="bg-white p-4 md:p-6 rounded-2xl shadow-lg flex justify-center items-center">
-            <button className="px-4 py-1.5 md:px-6 md:py-2 bg-purple-500 text-white rounded-lg text-sm md:text-base">
-              {t("teacher.dashboard.addCourse")}
-            </button>
-          </div>
+         <Teacherownerbook />
 
           {/* Schedule Section */}
-          <div className="bg-white p-4 md:p-6 rounded-2xl shadow-lg">
-            <h3 className="text-base md:text-lg font-semibold text-gray-700">
-              {t("teacher.dashboard.schedule")}
-            </h3>
-            <ul className="mt-3 md:mt-4 text-xs md:text-sm text-gray-600">
-              <li>{t("teacher.dashboard.scheduleItems.penTool")}</li>
-              <li>{t("teacher.dashboard.scheduleItems.shortCir")}</li>
-              <li>{t("teacher.dashboard.scheduleItems.masking")}</li>
-            </ul>
-          </div>
+          
         </div>
       </div>
     </TeacherLayout>

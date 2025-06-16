@@ -8,6 +8,7 @@ import { FiMenu, FiX } from "react-icons/fi";
 import { IoMdLogOut } from "react-icons/io";
 import { FaBars } from "react-icons/fa";
 import Swal from "sweetalert2";
+import ThemeButton from "../../components/theme/ThemeButton";
 
 const NavbarForTeacher = ({ toggleMobileSidebar, isMobileSidebarOpen }) => {
   const [isNavMenuOpen, setIsNavMenuOpen] = useState(false);
@@ -68,6 +69,8 @@ const NavbarForTeacher = ({ toggleMobileSidebar, isMobileSidebarOpen }) => {
 
         {/* Right side */}
         <div className="flex items-center space-x-4">
+           <ThemeButton />
+            <TeacherProfile />
           {/* Language Toggle */}
           <button
             onClick={toggleLanguage}
@@ -77,7 +80,8 @@ const NavbarForTeacher = ({ toggleMobileSidebar, isMobileSidebarOpen }) => {
           </button>
 
           {/* Profile */}
-          <TeacherProfile />
+         
+         
 
           {/* Logout Button */}
           <button
@@ -88,40 +92,6 @@ const NavbarForTeacher = ({ toggleMobileSidebar, isMobileSidebarOpen }) => {
           </button>
         </div>
       </div>
-
-      {/* Mobile menu button */}
-      <div className="md:hidden">
-        <button
-          onClick={toggleNavMenu}
-          className="text-gray-600 hover:text-gray-800"
-        >
-          {isNavMenuOpen ? (
-            <FiX className="h-6 w-6" />
-          ) : (
-            <FaBars className="h-6 w-6" />
-          )}
-        </button>
-      </div>
-
-      {/* Mobile navigation menu */}
-      {isNavMenuOpen && (
-        <div className="md:hidden mt-3 pt-3 border-t border-gray-200">
-          <ul className="flex flex-col space-y-3">
-            <li>
-              <TeacherProfile />
-            </li>
-            <li>
-              <button
-                onClick={handleLogout}
-                className="text-sky-500 font-semibold hover:text-red-500 transition-all flex items-center"
-              >
-                <IoMdLogOut className="w-6 h-6" />
-                <span className="ml-2">{t("navbar.common.logout")}</span>
-              </button>
-            </li>
-          </ul>
-        </div>
-      )}
     </nav>
   );
 };

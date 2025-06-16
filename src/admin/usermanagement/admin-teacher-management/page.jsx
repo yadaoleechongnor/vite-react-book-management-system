@@ -2,24 +2,23 @@
 
 import React, { useEffect, useState } from 'react';
 import UserManagementLayout from '../UserManagementLayout';
-import { FaTrashAlt } from 'react-icons/fa'; // Import React Icon
-import Swal from 'sweetalert2'; // Import SweetAlert
-import AdminTable from "./AdminTable"
-import AddTeacherAdmin from "./AddTeacher-Admin"
+import { FaTrashAlt } from 'react-icons/fa';
+import Swal from 'sweetalert2';
+import AdminTable from "./AdminTable";
+import AddTeacherAdmin from "./AddTeacher-Admin";
 import { API_BASE_URL } from '../../../utils/api';
-import { getAuthToken } from '../../../utils/auth'; // Import the auth utility
+import { getAuthToken } from '../../../utils/auth';
 import { useTranslation } from 'react-i18next';
 
 function AddminTeacherManagement() {
   const [users, setUsers] = useState([]);
-  const [branches, setBranches] = useState([]); // Add state for branches
-  const [showForm, setShowForm] = useState(false);
+  const [branches, setBranches] = useState([]);
   const { t } = useTranslation();
 
   useEffect(() => {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-    const token = getAuthToken(); // Use the imported function
+    const token = getAuthToken();
     
     if (token) {
       myHeaders.append("Authorization", `Bearer ${token}`);
@@ -51,7 +50,6 @@ function AddminTeacherManagement() {
       .catch((error) => {
         if (error.message === 'Unauthorized') {
           console.error("Unauthorized access - invalid token for teachers");
-          // Show error message and redirect
           Swal.fire({
             title: 'Authentication Error',
             text: 'Your session has expired or you do not have permission to access this resource.',
@@ -66,7 +64,6 @@ function AddminTeacherManagement() {
         setUsers([]);
       });
 
-    // Fetch branches
     const myHeadersBranches = new Headers();
     myHeadersBranches.append("Content-Type", "application/json");
     if (token) {
@@ -90,7 +87,6 @@ function AddminTeacherManagement() {
       });
   }, []);
 
-
   const handleDelete = (userId) => {
     if (!userId) {
       console.error("User ID is undefined");
@@ -108,7 +104,7 @@ function AddminTeacherManagement() {
       if (result.isConfirmed) {
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
-        const token = getAuthToken(); // Use the imported function
+        const token = getAuthToken();
         if (token) {
           myHeaders.append("Authorization", `Bearer ${token}`);
         }
@@ -153,9 +149,8 @@ function AddminTeacherManagement() {
           <p><strong>User Name:</strong> ${user.name}</p>
           <p><strong>Email:</strong> ${user.email}</p>
           <p><strong>Phone Number:</strong> ${user.phone_number}</p>
-          <p><strong>Branch Name:</strong> ${user.branch ? user.branch_name: 'N/A'}</p>
+          <p><strong>Branch Name:</strong> ${user.branch ? user.branch_name : 'N/A'}</p>
           <p><strong>Year:</strong> ${user.year}</p>
-          
           <p><strong>Role:</strong> ${user.role}</p>
           <p><strong>Create Date:</strong> ${user.createdAt}</p>
           <p><strong>Update Date:</strong> ${user.updatedAt}</p>
@@ -165,90 +160,94 @@ function AddminTeacherManagement() {
     });
   };
 
- 
-
-  const isAdmin = true; // Replace with actual logic to determine if the user is an admin
+  const isAdmin = true;
 
   return (
     <UserManagementLayout>
-      <div className="p-6">
-        <h1 className="text-2xl font-bold mb-6">{t('admin.users.teacherManagement')}</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label>{t('admin.users.teacherName')}</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={t('admin.users.enterTeacherName')}
-            />
-          </div>
-          {/* ...existing form fields... */}
-        </form>
-      </div>
-      <div className="flex justify-end ">  <AddTeacherAdmin/></div>
-      {showForm && (
-        <div className="form-popup">
-          <h2>Add New User</h2>
-          <form>
-            <label>User Name:</label>
-            <input type="text" name="user_name" value={formData.user_name} onChange={handleInputChange} />
-            <label>Email:</label>
-            <input type="email" name="email" value={formData.email} onChange={handleInputChange} />
-            <label>Password:</label>
-            <input type="password" name="password" value={formData.password} onChange={handleInputChange} />
-            <label>Phone Number:</label>
-            <input type="text" name="phone_number" value={formData.phone_number} onChange={handleInputChange} />
-            <label>Branch ID:</label>
-            <input type="text" name="branch_id" value={formData.branch_id} onChange={handleInputChange} />
-            <label>Year:</label>
-            <input type="text" name="year" value={formData.year} onChange={handleInputChange} />
-            <label>Role:</label>
-            <select name="role" value={formData.role} onChange={handleInputChange}>
-              <option value="teacher">Teacher</option>
-              <option value="admin">Admin</option>
-            </select>
-            <button type="button" onClick={handleFormSubmit}>Submit</button>
-            <button type="button" onClick={() => setShowForm(false)}>Cancel</button>
-          </form>
+      <div className="p-4 sm:p-6">
+        <h1 className="text-xl sm:text-2xl font-bold mb-6">{t('admin.users.teacherManagement')}</h1>
+        <div className="flex justify-end mb-4">
+          <AddTeacherAdmin />
         </div>
-      )}
-      <div className=' font-bold text-lg '>Teacher Table</div>
-      <div className='border rounded-lg shadow-2xl p-6 bg-white mt-2 '>
-      <table className="min-w-full divide-y w-full divide-gray-200">
-        <thead className="bg-green-600">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">#</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">User Name</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider md:table-cell hidden">Email</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider lg:table-cell hidden">Role</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {users.map((user, index) => (
-            <tr key={`${user._id}-${index}`} className={index % 2 === 0 ? "bg-gray-50 cursor-pointer" : "cursor-pointer"} onClick={() => handleRowClick(user)}>
-              <td className="px-6 py-4 whitespace-nowrap">{index + 1}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{user.name}</td>
-              <td className="px-6 py-4 whitespace-nowrap md:table-cell hidden">{user.email}</td>
-              <td className="px-6 py-4 whitespace-nowrap lg:table-cell hidden">{user.role}</td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {isAdmin && (
-                  <button onClick={(e) => { 
-                    e.stopPropagation(); 
-                    handleDelete(user._id); 
-                  }} className='text-red-600 hover:text-red-900'>
-                    <FaTrashAlt className="inline-block w-5 h-5" />
-                  </button>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      </div>
-      <div>
-        <AdminTable/>
+        
+        {/* Teacher Table Section */}
+        <div className="bg-white rounded-lg shadow-xl overflow-hidden">
+          <div className="p-4 border-b border-gray-200">
+            <h2 className="font-bold text-lg">{t('admin.users.teacherTable')}</h2>
+          </div>
+          
+          <div className="overflow-x-auto">
+            <div className="inline-block min-w-full align-middle">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-green-600">
+                  <tr>
+                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider w-14">
+                      {t('admin.users.tableHeaders.number')}
+                    </th>
+                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                      {t('admin.users.tableHeaders.userName')}
+                    </th>
+                    <th scope="col" className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                      {t('admin.users.tableHeaders.email')}
+                    </th>
+                    <th scope="col" className="hidden lg:table-cell px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                      {t('admin.users.tableHeaders.role')}
+                    </th>
+                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider w-20">
+                      {t('admin.users.tableHeaders.actions')}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {users.map((user, index) => (
+                    <tr 
+                      key={`${user._id}-${index}`}
+                      className="hover:bg-gray-50 transition-colors cursor-pointer"
+                      onClick={() => handleRowClick(user)}
+                    >
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+                        {index + 1}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {user.name}
+                      </td>
+                      <td className="hidden md:table-cell px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                        {user.email}
+                      </td>
+                      <td className="hidden lg:table-cell px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                        {user.role}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                        {isAdmin && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(user._id);
+                            }}
+                            className="text-red-600 hover:text-red-900 transition-colors duration-200"
+                          >
+                            <FaTrashAlt className="w-5 h-5" />
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                  {users.length === 0 && (
+                    <tr>
+                      <td colSpan="5" className="px-4 py-3 text-center text-gray-500">
+                        {t('admin.users.noTeachersFound')}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-8">
+          <AdminTable />
+        </div>
       </div>
     </UserManagementLayout>
   );

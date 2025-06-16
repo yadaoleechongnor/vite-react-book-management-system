@@ -47,6 +47,8 @@ import AdminNewsPage from './admin/news/AddminNewspage';
 import AddNews from './admin/news/AddNews';
 import TeacherTopDownloaded from './teacher/TeacherComponent/TopDownloaded';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { ThemeProvider } from './contexts/ThemeContext';
+import TeacherFamousebookDetail from './teacher/TeacherComponent/TeacherFamousebookDetail';
 
 // Simple NotFound component
 const NotFound = () => (
@@ -80,65 +82,66 @@ function App() {
   return (
     <AuthProvider>
       <LanguageProvider>
-        <Router>
-          <Routes>
+        <ThemeProvider>
+          <Router>
+            <Routes>
 
  {/*------------------------------------Public routes - redirect to dashboard if already logged in------------------------------------------------------------------- */}
 
-          {/* Public routes - redirect to dashboard if already logged in */}
-        
-          <Route path="/" element={
-            <PublicRoute>
-              < HomPage/>
-            </PublicRoute>
-          } />
-          <Route path="/about" element={
-            <PublicRoute>
-              < About/>
-            </PublicRoute>
-          } />
-          <Route path="/news" element={
-            <PublicRoute>
-              < News/>
-            </PublicRoute>
-          } />
-          <Route path="/login" element={
-            <PublicRoute>
-              <LoginPage />
-            </PublicRoute>
-          } />
-          <Route path="/register" element={
-            <PublicRoute>
-              <RegisterPage />
-            </PublicRoute>
-          } />
-          <Route path="/forgotpassword" element={
-            <PublicRoute>
-              <ForgotPasswordPage/>
-            </PublicRoute>
-          } />
-          <Route path="/resetpassword/:token" element={
-            <PublicRoute>
-              <ResetPasswordPage/>
-            </PublicRoute>
-          } />
+            {/* Public routes - redirect to dashboard if already logged in */}
           
+            <Route path="/" element={
+              <PublicRoute>
+                < HomPage/>
+              </PublicRoute>
+            } />
+            <Route path="/about" element={
+              <PublicRoute>
+                < About/>
+              </PublicRoute>
+            } />
+            <Route path="/news" element={
+              <PublicRoute>
+                < News/>
+              </PublicRoute>
+            } />
+            <Route path="/login" element={
+              <PublicRoute>
+                <LoginPage />
+              </PublicRoute>
+            } />
+            <Route path="/register" element={
+              <PublicRoute>
+                <RegisterPage />
+              </PublicRoute>
+            } />
+            <Route path="/forgotpassword" element={
+              <PublicRoute>
+                <ForgotPasswordPage/>
+              </PublicRoute>
+            } />
+            <Route path="/resetpassword/:token" element={
+              <PublicRoute>
+                <ResetPasswordPage/>
+              </PublicRoute>
+            } />
+            
  {/*------------------------------------Public routes - redirect to dashboard if already logged in------------------------------------------------------------------ */}
 
 
  {/*------------------------------------adminResetPassword Routes------------------------------------------------------------------- */}
 
-          {/* adminResetPassword Routes  */}
-          <Route path="/admin-forgot-password" element={
-            <PublicRoute>
-              <AdminForgotPassword/>
-            </PublicRoute>
-          } />
-          <Route path="/admin-reset-password/:token" element={
-            <PublicRoute>
-              <AdminResetPasswordPage/>
-            </PublicRoute>
-          } />
+            {/* adminResetPassword Routes  */}
+            <Route path="/admin-forgot-password" element={
+              <PublicRoute>
+                <AdminForgotPassword/>
+              </PublicRoute>
+            } />
+            <Route path="/admin-reset-password/:token" element={
+              <PublicRoute>
+                <AdminResetPasswordPage/>
+              </PublicRoute>
+            } />
 
  {/*-------------------------------------- adminResetPassword Routes----------------------------------------------------------------- */}
 
@@ -148,93 +151,103 @@ function App() {
 
 
 
-          <Route path="/requestotp" element={
-            <PublicRoute>
-              <OTPForgotPassword/>
-            </PublicRoute>
-          } />
+            <Route>
+              <Route
+                path="/requestotp"
+                element={
+                  <PublicRoute>
+                    <OTPForgotPassword/>
+                  </PublicRoute>
+                }
+              />
+              <Route
+                path="/verifyotp"
+                element={
+                  <PublicRoute>
+                    <OTPVerifyEmail/>
+                  </PublicRoute>
+                }
+              />
+              <Route
+                path="/resetpassword"
+                element={
+                  <PublicRoute>
+                    <OTPResetPassword/>
+                  </PublicRoute>
+                }
+              />
+            </Route>
 
-          <Route path="/verifyotp" element={
-            <PublicRoute>
-              <OTPVerifyEmail/>
-            </PublicRoute>
-          } />
+        
 
-          <Route path="/resetpassword" element={
-            <PublicRoute>
-              <OTPResetPassword/>
-            </PublicRoute>
-          } />
-
-      
-
- {/*-------------------------------------- OTP Routes---------------------------------------------------------------------- */}
 
 
 
  {/*--------------------------------------Admin Routes ------------------------------------------------------------------- */}
 
-          <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-            <Route path="/admin/dashboard" element={<Dashboard />} />
-            <Route path="/admin/usermanagement" element={<UserMagementPage />} />
-            <Route path="/admin/faculty" element={<FacultyPage />} />
-            <Route path="/admin/department" element={<DepartmentPage />} />
-            <Route path="/admin/alldownloadeddetail" element={<AllDownLoadedDetail/>} />
-            <Route path="/admin/branch" element={<BranchPage />} />
-            <Route path="/admin/bookupload" element={<BookUpload />} />
-            <Route path="/admin/addteacheraddmin" element={<AddminTeacherManagement />} />
-            <Route path="/admin/bookmanagement" element={<BookList />} />
-            <Route path="/admin/bookasuser" element={<BookAsUser />} />
-            <Route path="/admin/adminnews" element={< AdminNewsPage />} />
-            <Route path="/admin/news/add" element={<AddNews />} />
-            <Route path="/admin/news/edit/:id" element={<AddNews />} />
-            <Route path="/admin/ownbookpage" element={<AdminOwnBookPage />} />
-            <Route path="/admin/bookupdate/:bookId" element={<AdminBookUpdate/>} />
-            <Route path="/admin/viewdownloadeddetail/:downloadId" element={<ViewDownLoadDetail/>} />
-          </Route>
-          
+            <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+              <Route path="/admin/dashboard" element={<Dashboard />} />
+              <Route path="/admin/usermanagement" element={<UserMagementPage />} />
+              <Route path="/admin/faculty" element={<FacultyPage />} />
+              <Route path="/admin/department" element={<DepartmentPage />} />
+              <Route path="/admin/alldownloadeddetail" element={<AllDownLoadedDetail/>} />
+              <Route path="/admin/branch" element={<BranchPage />} />
+              <Route path="/admin/bookupload" element={<BookUpload />} />
+              <Route path="/admin/addteacheraddmin" element={<AddminTeacherManagement />} />
+              <Route path="/admin/bookmanagement" element={<BookList />} />
+              <Route path="/admin/bookasuser" element={<BookAsUser />} />
+              <Route path="/admin/adminnews" element={< AdminNewsPage />} />
+              <Route path="/admin/news/add" element={<AddNews />} />
+              <Route path="/admin/news/edit/:id" element={<AddNews />} />
+              <Route path="/admin/ownbookpage" element={<AdminOwnBookPage />} />
+              <Route path="/admin/bookupdate/:bookId" element={<AdminBookUpdate/>} />
+              <Route path="/admin/viewdownloadeddetail/:downloadId" element={<ViewDownLoadDetail/>} />
+            </Route>
+            
  {/*--------------------------------------Admin Routes ------------------------------------------------------------------- */}
 
  {/*--------------------------------------Teacher Routes----------------------------------------------------------------- */}
 
-          
-          {/* Teacher Routes */}
-          <Route element={<ProtectedRoute allowedRoles={['teacher']} />}>
-            <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
-            <Route path="/teacher/bookpage" element={<BookPage />} />
-            <Route path="/teacher/uploadbook" element={<TeacherUploadPage />} />
-            <Route path="/teacher/bookpage/edit/:bookId" element={<TeacherBookEditePage />} />
-            <Route path="/teacher/teacherownerbook" element={<TeacherOwnBookPage />} />
-            <Route path="/teacher/topdownload" element={<TeacherTopDownloaded />} />
+            
+            {/* Teacher Routes */}
+            <Route element={<ProtectedRoute allowedRoles={['teacher']} />}>
+              <Route path="/teacher/dashboard" element={<TeacherDashboard />} />
+              <Route path="/teacher/bookpage" element={<BookPage />} />
+              <Route path="/teacher/uploadbook" element={<TeacherUploadPage />} />
+              <Route path="/teacher/bookpage/edit/:bookId" element={<TeacherBookEditePage />} />
+              <Route path="/teacher/bookdownloadeddetail/:bookId" element={<TeacherFamousebookDetail/>} />
+              <Route path="/teacher/teacherownerbook" element={<TeacherOwnBookPage />} />
+              <Route path="/teacher/topdownload" element={<TeacherTopDownloaded />} />
 
-           
-          </Route>
-          
+            
+            </Route>
+            
  {/*--------------------------------------Teacher Routes------------------------------------------------------------------- */}
 
  {/*-------------------------------------Student routes----------------------------------------------------------------- */}
 
+            
+            {/* Student routes */}
+            <Route element={<ProtectedRoute allowedRoles={['student']} />}>
+              <Route path="/student/dashboard" element={<StudentDashboard />} />
+              <Route path="/student/bookpage" element={<StudentBookPage />} />
+              <Route path="/student/viewbookpage/:bookId" element={<StudentViewBookPage />} />
+              <Route path="/student/popularbook" element={<PopularBook />} />
+              <Route path="/student/downloadeddetail" element={<DownlaodedBookHistoryDetail />} />
+              <Route path="/student/latestbook" element={< DashboardLatestBookPage />} />
+              <Route path="/student/getbookwithbranch/:branchId" element={<ShowBookWithEachBranch />} />
+            
+            </Route>
           
-          {/* Student routes */}
-          <Route element={<ProtectedRoute allowedRoles={['student']} />}>
-            <Route path="/student/dashboard" element={<StudentDashboard />} />
-            <Route path="/student/bookpage" element={<StudentBookPage />} />
-            <Route path="/student/viewbookpage/:bookId" element={<StudentViewBookPage />} />
-            <Route path="/student/popularbook" element={<PopularBook />} />
-            <Route path="/student/downloadeddetail" element={<DownlaodedBookHistoryDetail />} />
-            <Route path="/student/latestbook" element={< DashboardLatestBookPage />} />
-            <Route path="/student/getbookwithbranch/:branchId" element={<ShowBookWithEachBranch />} />
-           
-          </Route>
-         
-          
+            
  {/*--------------------------------------Student routes------------------------------------------------------------------- */}
 
 
-          {/* Optional: Add a catch-all route for 404 pages */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Router>
+            {/* Optional: Add a catch-all route for 404 pages */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Router>
+      </ThemeProvider>
       </LanguageProvider>
     </AuthProvider>
   );

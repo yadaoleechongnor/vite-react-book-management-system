@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '../contexts/LanguageContext';
+import ThemeButton from '../components/theme/ThemeButton';
 
 function HomePageNavbar() {
   const navigate = useNavigate();
@@ -51,6 +52,7 @@ function HomePageNavbar() {
       
       {/* Desktop Buttons */}
       <div className="hidden md:flex space-x-4">
+        <ThemeButton />
         <button
           onClick={toggleLanguage}
           className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-100 transition-colors"

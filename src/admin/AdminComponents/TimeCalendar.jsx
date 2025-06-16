@@ -120,7 +120,7 @@ function TimeCalendar() {
   const calendarDays = generateCalendarDays();
 
   return (
-    <div className="flex flex-col mb-6 items-center justify-center w-full">
+    <div className="flex flex-col py-2 items-center justify-center w-full">
       <div className="bg-white rounded-lg w-full overflow-hidden">
         <div className="flex justify-between items-center p-3 border-b">
           <button 
@@ -163,7 +163,7 @@ function TimeCalendar() {
         </div>
       </div>
       
-      <div className="bg-sky-500 text-white mt-2 px-3 py-1 rounded text-base font-mono flex items-end">
+      <div className="bg-sky-500 text-white px-3 py-1 rounded text-base font-mono flex items-end">
         {formatTime(currentTime)}
       </div>
     </div>

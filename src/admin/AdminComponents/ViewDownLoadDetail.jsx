@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import AdminLayout from '../dashboard/adminLayout'
 import { API_BASE_URL } from "../../utils/api";
+import { useTranslation } from 'react-i18next';
 
 function ViewDownLoadDetail() {
   const { downloadId } = useParams();
@@ -10,6 +11,7 @@ function ViewDownLoadDetail() {
   const [error, setError] = useState(null);
   const [authError, setAuthError] = useState(false);
   const navigate = useNavigate();
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     const fetchDownloadDetail = async () => {
@@ -338,15 +340,17 @@ function ViewDownLoadDetail() {
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            Back
+            {i18n.language === 'lo' ? 'ກັບຄືນ' : 'Back'}
           </button>
-          <h1 className="text-2xl font-bold">Download Details</h1>
+          <h1 className="text-2xl font-bold">
+            {i18n.language === 'lo' ? 'ລາຍລະອຽດການດາວໂຫຼດ' : 'Download Details'}
+          </h1>
         </div>
         
         {loading ? (
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500 mx-auto"></div>
-            <p className="mt-2">Loading download details...</p>
+            <p className="mt-2">{i18n.language === 'lo' ? 'ກຳລັງໂຫຼດລາຍລະອຽດການດາວໂຫຼດ...' : 'Loading download details...'}</p>
           </div>
         ) : authError ? (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -355,111 +359,105 @@ function ViewDownLoadDetail() {
               onClick={() => navigate('/login')} 
               className="mt-3 bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded"
             >
-              Go to Login
+              {i18n.language === 'lo' ? 'ໄປທີ່ໜ້າເຂົ້າສູ່ລະບົບ' : 'Go to Login'}
             </button>
           </div>
         ) : error ? (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            <p>Error loading download details: {error}</p>
-            <p className="mt-2">Please check your API configuration or try again later.</p>
+            <p>{i18n.language === 'lo' ? 'ເກີດຂໍ້ຜິດພາດ: ' : 'Error loading download details: '}{error}</p>
+            <p className="mt-2">{i18n.language === 'lo' ? 'ກະລຸນາກວດສອບການຕັ້ງຄ່າ API ຫຼື ລອງໃໝ່ອີກຄັ້ງ.' : 'Please check your API configuration or try again later.'}</p>
           </div>
         ) : downloadDetail ? (
           <div className="bg-white shadow-md rounded-lg p-6">
-            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-blue-50 p-5 rounded-lg">
-                <h2 className="text-xl font-semibold mb-4 text-blue-700">Book Information</h2>
+                <h2 className="text-xl font-semibold mb-4 text-blue-700">
+                  {i18n.language === 'lo' ? 'ຂໍ້ມູນປຶ້ມ' : 'Book Information'}
+                </h2>
                 <div className="space-y-3">
                   <div>
-                    <span className="font-medium">Title:</span>
+                    <span className="font-medium">{i18n.language === 'lo' ? 'ຫົວຂໍ້:' : 'Title:'}</span>
                     <p className="mt-1">{downloadDetail.title || "Unknown"}</p>
                   </div>
                   
                   <div>
-                    <span className="font-medium">Book ID:</span>
+                    <span className="font-medium">{i18n.language === 'lo' ? 'ລະຫັດປຶ້ມ:' : 'Book ID:'}</span>
                     <p className="mt-1 break-words">{downloadDetail.bookId || "Not available"}</p>
                   </div>
                   
                   <div>
-                    <span className="font-medium">Author:</span>
+                    <span className="font-medium">{i18n.language === 'lo' ? 'ຜູ້ຂຽນ:' : 'Author:'}</span>
                     <p className="mt-1">{downloadDetail.author || "Unknown author"}</p>
                   </div>
                   
                   {downloadDetail.category && (
                     <div>
-                      <span className="font-medium">Category:</span>
+                      <span className="font-medium">{i18n.language === 'lo' ? 'ໝວດໝູ່:' : 'Category:'}</span>
                       <p className="mt-1">{downloadDetail.category}</p>
                     </div>
                   )}
                   
                   {downloadDetail.description && (
                     <div>
-                      <span className="font-medium">Description:</span>
+                      <span className="font-medium">{i18n.language === 'lo' ? 'ລາຍລະອຽດ:' : 'Description:'}</span>
                       <p className="mt-1 text-gray-600">{downloadDetail.description}</p>
                     </div>
                   )}
                   
                   {downloadDetail.format && (
                     <div>
-                      <span className="font-medium">Format:</span>
+                      <span className="font-medium">{i18n.language === 'lo' ? 'ຮູບແບບ:' : 'Format:'}</span>
                       <p className="mt-1">{downloadDetail.format}</p>
                     </div>
                   )}
                 </div>
               </div>
-              
+
               <div className="bg-green-50 p-5 rounded-lg">
-                <h2 className="text-xl font-semibold mb-4 text-green-700">Download Information</h2>
+                <h2 className="text-xl font-semibold mb-4 text-green-700">
+                  {i18n.language === 'lo' ? 'ຂໍ້ມູນການດາວໂຫຼດ' : 'Download Information'}
+                </h2>
                 <div className="space-y-3">
                   <div>
-                    <span className="font-medium">Downloaded By:</span>
+                    <span className="font-medium">{i18n.language === 'lo' ? 'ດາວໂຫຼດໂດຍ:' : 'Downloaded By:'}</span>
                     <p className="mt-1">{getUserDisplayName(downloadDetail.userId)}</p>
                   </div>
                   
                   <div>
-                    <span className="font-medium">User Email:</span>
-                    <p className="mt-1">
-                      {downloadDetail.userEmail || 
-                       (downloadDetail.rawData && downloadDetail.rawData.user_id && downloadDetail.rawData.user_id.email) || 
-                       "Not provided"}
-                    </p>
+                    <span className="font-medium">{i18n.language === 'lo' ? 'ອີເມວຜູ້ໃຊ້:' : 'User Email:'}</span>
+                    <p className="mt-1">{downloadDetail.userEmail || "Not provided"}</p>
                   </div>
                   
                   <div>
-                    <span className="font-medium">User Role:</span>
-                    <p className="mt-1">
-                      {downloadDetail.userRole || 
-                       (downloadDetail.rawData && downloadDetail.rawData.user_id && downloadDetail.rawData.user_id.role) || 
-                       "Not specified"}
-                    </p>
+                    <span className="font-medium">{i18n.language === 'lo' ? 'ບົດບາດຜູ້ໃຊ້:' : 'User Role:'}</span>
+                    <p className="mt-1">{downloadDetail.userRole || "Not specified"}</p>
                   </div>
                   
                   {downloadDetail.userId && (
                     <div>
-                      <span className="font-medium">User Name:</span>
+                      <span className="font-medium">{i18n.language === 'lo' ? 'ຊື່ຜູ້ໃຊ້:' : 'User Name:'}</span>
                       <p className="mt-1 break-words">{downloadDetail.userName}</p>
                     </div>
                   )}
                   
                   <div>
-                    <span className="font-medium">Download Date:</span>
+                    <span className="font-medium">{i18n.language === 'lo' ? 'ວັນທີດາວໂຫຼດ:' : 'Download Date:'}</span>
                     <p className="mt-1">{formatDate(downloadDetail.downloadedAt)}</p>
                   </div>
                   
                   {downloadDetail.downloadCount && downloadDetail.downloadCount > 1 && (
                     <div>
-                      <span className="font-medium">Download Count:</span>
+                      <span className="font-medium">{i18n.language === 'lo' ? 'ຈຳນວນດາວໂຫຼດ:' : 'Download Count:'}</span>
                       <p className="mt-1">{downloadDetail.downloadCount}</p>
                     </div>
                   )}
                 </div>
               </div>
             </div>
-            
           </div>
         ) : (
           <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded">
-            <p>No download record found with ID: {downloadId}</p>
+            <p>{i18n.language === 'lo' ? 'ບໍ່ພົບບັນທຶກການດາວໂຫຼດທີ່ມີ ID: ' : 'No download record found with ID: '}{downloadId}</p>
           </div>
         )}
       </div>

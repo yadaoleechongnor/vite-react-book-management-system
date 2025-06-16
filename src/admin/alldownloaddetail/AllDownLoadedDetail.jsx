@@ -241,6 +241,7 @@ function AllDownLoadedDetail() {
       const date = new Date(dateString);
       if (isNaN(date)) return t('admin.downloads.invalidDate');
       
+      // Use Lao locale when language is Lao
       const options = { 
         year: 'numeric', 
         month: 'short', 
@@ -250,7 +251,11 @@ function AllDownLoadedDetail() {
         hour12: true
       };
       
-      return date.toLocaleString('en-US', options);
+      // Get current language
+      const currentLanguage = localStorage.getItem('i18nextLng') || 'en';
+      const locale = currentLanguage === 'lo' ? 'lo-LA' : 'en-US';
+      
+      return date.toLocaleString(locale, options);
     } catch (e) {
       return t('admin.downloads.invalidDate');
     }

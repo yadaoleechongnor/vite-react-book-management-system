@@ -7,6 +7,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import GetbookBybranch from './GetbookBybranch';
 import { API_BASE_URL } from '../../utils/api';
 import Swal from 'sweetalert2';
+import ThemeButton from '../../components/theme/ThemeButton';
 
 const StudentLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -170,6 +171,7 @@ const StudentLayout = ({ children }) => {
           <h1 className="text-xl font-semibold text-gray-800">{t('student.dashboard.title')}</h1>
         </div>
         <div className="flex gap-2">
+          <ThemeButton />
           <div className="flex items-center space-x-4 relative" ref={dropdownRef}>
             <div 
               className="w-8 h-8 rounded-full bg-blue-400 flex items-center justify-center cursor-pointer hover:bg-blue-500"

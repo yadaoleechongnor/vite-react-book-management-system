@@ -182,8 +182,8 @@ const AdminBookUpdate = () => {
 
     if (!token) {
       Swal.fire({
-        title: "Authentication Error",
-        text: "You need to be logged in to update files",
+        title: t('admin.common.error'),
+        text: t('admin.bookManagement.authRequired'),
         icon: "error",
       }).then(() => {
         window.location.href = "/login";
@@ -191,16 +191,9 @@ const AdminBookUpdate = () => {
       return;
     }
 
-    if (!bookId) {
-      Swal.fire({
-        title: "Error",
-        text: "Book ID is missing. Cannot update book.",
-        icon: "error",
-      });
-      return;
-    }
-
     try {
+      setLoading(true);
+
       const formData = new FormData();
       formData.append("title", title);
       formData.append("author", author);
@@ -212,56 +205,65 @@ const AdminBookUpdate = () => {
         formData.append("file", file);
       }
 
-      let response = await fetch(`${API_BASE_URL}/v1/books/${bookId}`, {
-        method: "PUT",
+      const response = await fetch(`${API_BASE_URL}/v1/books/${bookId}`, {
+        method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
         },
         body: formData,
       });
 
-      if (response.status === 404) {
-        Swal.fire({
-          title: "Trying Alternative Methods",
-          text: "First attempt failed. Trying alternative update methods...",
-          icon: "info",
-          timer: 2000,
-          showConfirmButton: false,
-        });
+      const data = await response.json();
 
-        response = await fetch(`${API_BASE_URL}/books/${bookId}`, {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        });
+      // Check if the update was actually successful
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || t('admin.bookList.dialogs.updateBook.error'));
       }
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(
-          errorData?.message ||
-            `Update failed with status ${response.status}. Please check server logs for correct API endpoint.`
-        );
+      // Verify the returned data
+      const updatedBook = data.data?.book || data.data;
+      if (!updatedBook) {
+        throw new Error(t('admin.bookList.dialogs.updateBook.error'));
       }
 
-      Swal.fire({
-        title: "Update Success",
-        text: "Your book has been updated successfully!",
+      // Verify if the data was actually updated
+      const isUpdateSuccessful = 
+        updatedBook.title === title &&
+        updatedBook.author === author &&
+        (updatedBook.branch_id === branchId || updatedBook.branch_id?._id === branchId) &&
+        updatedBook.year === year &&
+        updatedBook.abstract === abstract;
+
+      if (!isUpdateSuccessful) {
+        throw new Error(t('admin.bookList.dialogs.updateBook.error'));
+      }
+
+      // Success alert
+      await Swal.fire({
+        title: t('admin.common.success'),
+        text: t('admin.bookList.dialogs.updateBook.success'),
         icon: "success",
-        timer: 2000,
+        timer: 1500,
         showConfirmButton: false,
-      }).then(() => {
-        navigate("/teacher/bookpage");
+        timerProgressBar: true,
       });
+
+      navigate("/admin/ownbookpage");
+
     } catch (error) {
-      Swal.fire({
-        title: "Update Failed",
-        text: error.message || "There was an issue updating your book. Please try again.",
+      console.error("Update error:", error);
+      
+      // Error alert with more specific message
+      await Swal.fire({
+        title: t('admin.common.error'),
+        text: error.message || t('admin.bookList.dialogs.updateBook.error'),
         icon: "error",
-        showConfirmButton: true,
+        confirmButtonText: t('admin.common.retry'),
+        showCancelButton: true,
+        cancelButtonText: t('admin.common.cancel'),
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -377,7 +379,7 @@ const AdminBookUpdate = () => {
             <div className="md:col-span-1 lg:col-span-2 space-y-4">
               <div>
                 <label className="block text-base md:text-lg font-medium text-gray-700">
-                  {t('admin.components.bookEdit.titleLabel')}
+                  {t('admin.components.bookEdit.fields.title')}
                 </label>
                 <input
                   type="text"
@@ -389,7 +391,7 @@ const AdminBookUpdate = () => {
               </div>
               <div>
                 <label className="block text-base md:text-lg font-medium text-gray-700">
-                  {t('admin.components.bookEdit.authorLabel')}
+                  {t('admin.components.bookEdit.fields.author')}
                 </label>
                 <input
                   type="text"
@@ -401,7 +403,7 @@ const AdminBookUpdate = () => {
               </div>
               <div>
                 <label className="block text-base md:text-lg font-medium text-gray-700">
-                  {t('admin.components.bookEdit.branchLabel')}
+                  {t('admin.components.bookEdit.fields.branch')}
                 </label>
                 <select
                   value={branchId}
@@ -409,7 +411,7 @@ const AdminBookUpdate = () => {
                   required
                   className="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2"
                 >
-                  <option value="">{t('admin.components.bookEdit.selectBranch')}</option>
+                  <option value="">{t('admin.components.bookEdit.fields.selectBranch')}</option>
                   {branches.map((branch) => (
                     <option key={branch._id} value={branch._id}>
                       {branch.branch_name}
@@ -419,7 +421,7 @@ const AdminBookUpdate = () => {
               </div>
               <div>
                 <label className="block text-base md:text-lg font-medium text-gray-700">
-                  {t('admin.components.bookEdit.yearLabel')}
+                  {t('admin.components.bookEdit.fields.year')}
                 </label>
                 <input
                   type="text"
@@ -431,7 +433,7 @@ const AdminBookUpdate = () => {
               </div>
               <div>
                 <label className="block text-base md:text-lg font-medium text-gray-700">
-                  {t('admin.components.bookEdit.abstractLabel')}
+                  {t('admin.components.bookEdit.fields.abstract')}
                 </label>
                 <textarea
                   value={abstract}
@@ -449,13 +451,13 @@ const AdminBookUpdate = () => {
               onClick={handleCancel}
               className="bg-gray-200 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-300"
             >
-              {t('admin.components.bookEdit.cancelButton')}
+              {t('admin.components.bookEdit.buttons.cancel')}
             </button>
             <button
               type="submit"
               className="bg-gradient-to-tr from-yellow-400 to-yellow-600 hover:from-yellow-300 hover:to-yellow-500 text-white py-2 px-4 rounded-md shadow-md"
             >
-              {t('admin.components.bookEdit.updateButton')}
+              {t('admin.components.bookEdit.buttons.update')}
             </button>
           </div>
         </form>

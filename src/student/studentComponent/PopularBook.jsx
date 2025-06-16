@@ -120,21 +120,20 @@ function PopularBook() {
           <div className="w-full flex flex-col gap-2">
             {(bookDetails.book_file?.url || bookDetails.fileUrl || bookDetails.pdf || bookDetails.download_url) ? (
               <a
-                href={`/student/viewbookpage/${bookId}`}
+                href={bookDetails.book_file?.url || bookDetails.fileUrl || bookDetails.pdf || bookDetails.download_url}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="mt-auto px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded-lg w-full text-center"
               >
-                {t('home.featured.viewDetails')}
+                {t('home.featured.viewPDF') || 'View PDF'}
               </a>
             ) : (
-              <a
-                href={`/student/viewbookpage/${bookId}`}
-                className="mt-auto px-3 py-1 bg-sky-400 text-white rounded-lg w-full text-center flex items-center justify-center"
-              >
+              <span className="mt-auto px-3 py-1 bg-gray-300 text-gray-600 rounded-lg w-full text-center flex items-center justify-center">
                 <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                {t('home.featured.viewDetails')}
-              </a>
+                No PDF Available
+              </span>
             )}
           </div>
         </div>
