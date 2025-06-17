@@ -97,62 +97,62 @@ function ShowBookWithEachBranch() {
 
   // Handle search input changes
   const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
+    const sanitizedValue = e.target.value.replace(/[^\w\s\u0E80-\u0EFF\d.,()-]/g, '');
+    setSearchQuery(sanitizedValue);
   };
 
   // Search functionality
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
     
     if (!searchQuery.trim()) {
-      // If search is empty, reset to original books
       setBooks(originalBooks);
       setIsSearching(false);
       return;
     }
-
+    
     setLoading(true);
     setIsSearching(true);
+    setError(null);
+    
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("No authentication token found");
 
-    const token = localStorage.getItem("token");
-    const myHeaders = new Headers();
-    myHeaders.append("Authorization", `Bearer ${token}`);
+      // First try to get current branch books and do client-side search
+      const searchTermLower = searchQuery.trim().toLowerCase();
+      const searchResults = originalBooks.filter(book => {
+        const searchFields = {
+          title: (book.title || '').toLowerCase(),
+          author: (book.author || book.writer || '').toLowerCase(),
+          year: String(book.year || ''),
+          branch: (book.branch || '').toLowerCase(),
+          branch_name: (book.branch_name || '').toLowerCase()
+        };
 
-    const requestOptions = {
-      method: "GET",
-      headers: myHeaders,
-      redirect: "follow"
-    };
-
-    fetch(`${API_BASE_URL}/v1/books/searchbook?title=${encodeURIComponent(searchQuery)}`, requestOptions)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((result) => {
-        if (result && result.success) {
-          setBooks(result.data || []);
-        } else {
-          setBooks([]);
-        }
-      })
-      .catch((error) => {
-        console.error("Error searching books:", error);
-        setError(`Search failed: ${error.message}`);
-        setBooks([]);
-      })
-      .finally(() => {
-        setLoading(false);
+        return Object.values(searchFields).some(field => 
+          field.includes(searchTermLower)
+        );
       });
+
+      setBooks(searchResults);
+      
+    } catch (error) {
+      console.error("Error searching books:", error);
+      setError("Failed to search books. Please try again.");
+      setBooks([]);
+    } finally {
+      setLoading(false);
+      setIsSearching(false);
+    }
   };
 
-  // Clear search and return to original book list
+  // Clear search function
   const clearSearch = () => {
     setSearchQuery("");
     setBooks(originalBooks);
     setIsSearching(false);
+    setError(null);
   };
 
   const handleGoBack = () => {
@@ -364,23 +364,36 @@ function ShowBookWithEachBranch() {
               <input
                 type="text"
                 placeholder="Search books..."
-                className="p-2 border border-gray-300 rounded-lg flex-grow text-sm sm:text-base"
+                className="p-2 border border-sky-500 rounded-l-lg flex-grow"
                 value={searchQuery}
                 onChange={handleSearchChange}
               />
               <button 
-                type="submit" 
-                className="px-2 sm:px-4 py-2 bg-blue-500 text-white rounded-lg text-xs sm:text-base"
+                type="submit"
+                disabled={loading}
+                className="px-3 bg-blue-500 text-white rounded-r-lg hover:bg-blue-600 flex items-center justify-center"
               >
-                Search
+                {loading ? (
+                  <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                ) : (
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                )}
               </button>
-              {isSearching && (
-                <button 
+              {searchQuery && (
+                <button
                   type="button"
                   onClick={clearSearch}
-                  className="px-2 sm:px-4 py-2 bg-gray-400 text-white rounded-lg text-xs sm:text-base"
+                  className="ml-2 px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-600 rounded-lg flex items-center"
+                  title="Clear search and show all books"
                 >
-                  Clear
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
                 </button>
               )}
             </form>

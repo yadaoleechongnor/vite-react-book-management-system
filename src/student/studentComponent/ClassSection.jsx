@@ -173,19 +173,7 @@ function ClassSection() {
                   </div>
                 </div>
               </Link>
-              <Link to="/unit-one" className="block">
-                <div className="bg-white  border border-sky-500  p-3 sm:p-4 rounded-xl shadow-sm w-full hover:shadow-md transition-shadow">
-                  <h4 className="text-sm sm:text-base font-semibold mb-1 sm:mb-2">
-                    {t('admin.department.title')} I
-                  </h4>
-                  <p className="text-gray-500 text-xs sm:text-sm mb-1 sm:mb-2">
-                    {t('teacher.dashboard.title')}: Cole Chandler
-                  </p>
-                  <div className="flex items-center text-gray-500 text-xs sm:text-sm">
-                    <FaUsers className="mr-1" /> 18
-                  </div>
-                </div>
-              </Link>
+             
             </div>
           </div>
   )

@@ -10,8 +10,8 @@ function AdminOwnBookPage() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searching, setSearching] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -180,15 +180,105 @@ function AdminOwnBookPage() {
     }
   }, [currentUserId]);
 
+  const searchBooks = async () => {
+    if (!searchQuery.trim()) {
+      // If search is empty, show all user's books
+      if (currentUserId) {
+        fetchBooks();
+      }
+      return;
+    }
+    
+    setIsSearching(true);
+    setError(null);
+    
+    try {
+      const token = getAuthToken();
+      if (!token) throw new Error("No authentication token found");
+
+      // Get all books first for client-side search
+      const response = await fetch(`${API_BASE_URL}/v1/books`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Accept': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch books for search');
+      }
+
+      const result = await response.json();
+      let allBooks = [];
+
+      if (result.success) {
+        if (Array.isArray(result.data)) {
+          allBooks = result.data;
+        } else if (result.data?.books) {
+          allBooks = result.data.books;
+        }
+      }
+
+      // Filter books by current user and search terms
+      const searchResults = allBooks.filter(book => {
+        // First filter by user
+        let isUsersBook = false;
+        let uploaderId;
+        
+        if (typeof book.uploaded_by === 'object' && book.uploaded_by !== null) {
+          uploaderId = book.uploaded_by._id || book.uploaded_by.id;
+        } else {
+          uploaderId = book.uploaded_by;
+        }
+
+        const currentUserIdStr = String(currentUserId).trim().replace(/['"]/g, '');
+        const uploaderIdStr = String(uploaderId).trim().replace(/['"]/g, '');
+        isUsersBook = currentUserIdStr === uploaderIdStr;
+
+        if (!isUsersBook) return false;
+
+        // Then search across multiple fields
+        const searchFields = {
+          title: (book.title || '').toLowerCase(),
+          author: (book.author || '').toLowerCase(),
+          year: String(book.year || ''),
+          abstract: (book.abstract || '').toLowerCase()
+        };
+
+        const searchTermLower = searchQuery.trim().toLowerCase();
+        return Object.values(searchFields).some(field => 
+          field.includes(searchTermLower)
+        );
+      });
+
+      setBooks(searchResults);
+      
+    } catch (error) {
+      console.error("Error searching books:", error);
+      setError("Failed to search books. Please try again.");
+      setBooks([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
   const handleSearchChange = (e) => {
-    const value = e.target.value;
-    setSearchTerm(value);
+    const sanitizedValue = e.target.value.replace(/[^\w\s\u0E80-\u0EFF\d.,()-]/g, '');
+    setSearchQuery(sanitizedValue);
+    searchBooks(sanitizedValue);
+  };
 
-    const timeoutId = setTimeout(() => {
-      searchBooks(value);
-    }, 500);
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      searchBooks();
+    }
+  };
 
-    return () => clearTimeout(timeoutId);
+  const resetSearch = async () => {
+    setSearchQuery('');
+    if (currentUserId) {
+      fetchBooks();
+    }
   };
 
   const truncateTitle = (title) => {
@@ -288,18 +378,48 @@ function AdminOwnBookPage() {
             <button className="px-4 py-2 bg-[#e4c99b] text-white rounded-lg hidden sm:block">
               {t('admin.bookManagement.adminOwnBooks.myBooks')}
             </button>
-            <input
-              type="text"
-              placeholder={t('admin.bookManagement.adminOwnBooks.searchPlaceholder')}
-              className="p-2 border w-full border-gray-300 rounded-lg md:w-1/2"
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
+            <div className="relative w-full md:w-1/2 flex">
+              <input
+                type="text"
+                placeholder={t('admin.bookManagement.adminOwnBooks.searchPlaceholder')}
+                className="p-2 pr-10 outline-none border border-sky-500 rounded-l-lg w-full"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                onKeyPress={handleKeyPress}
+              />
+              <button
+                onClick={searchBooks}
+                disabled={isSearching || !searchQuery.trim()}
+                className="px-3 bg-blue-500 text-white rounded-r-lg hover:bg-blue-600 flex items-center justify-center"
+              >
+                {isSearching ? (
+                  <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                ) : (
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                )}
+              </button>
+              {searchQuery && (
+                <button
+                  onClick={resetSearch}
+                  className="ml-2 px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-600 rounded-lg flex items-center"
+                  title="Clear search"
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              )}
+            </div>
           </div>
 
           <h3 className="text-lg font-semibold text-gray-700">
-            {searching ?
-              `${t('admin.common.searchResults')} "${searchTerm}"` :
+            {isSearching ?
+              `${t('admin.common.searchResults')} "${searchQuery}"` :
               t('admin.bookManagement.adminOwnBooks.myUploadedBooks')}
           </h3>
 
@@ -307,7 +427,7 @@ function AdminOwnBookPage() {
             <p className="text-center text-gray-500">{t('admin.common.loading')}</p>
           ) : loading ? (
             <p className="text-center text-gray-500">
-              {searching ? t('admin.common.searching') : t('admin.common.loading')}
+              {isSearching ? t('admin.common.searching') : t('admin.common.loading')}
             </p>
           ) : error ? (
             <p className="text-center text-red-500">{t('admin.common.error')}: {error}</p>
@@ -367,8 +487,8 @@ function AdminOwnBookPage() {
             </div>
           ) : (
             <p className="text-center text-gray-500">
-              {searching ?
-                t('admin.common.noSearchResults', { term: searchTerm }) :
+              {isSearching ?
+                t('admin.common.noSearchResults', { term: searchQuery }) :
                 t('admin.bookManagement.adminOwnBooks.noBooks')}
             </p>
           )}

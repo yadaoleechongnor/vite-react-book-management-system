@@ -241,12 +241,14 @@ export default function BranchPage() {
         <AdminLayout>
             <div className="p-6 w-full">
                 <h1 className="text-2xl font-bold mb-4">{t('admin.branch.title')}</h1>
-                <button 
-                    className="mb-4 hover:shadow-2xl p-4 border rounded-full bg-gradient-to-tr from-sky-300 to-sky-500"
-                    onClick={handleAddBranch}
-                >
-                    {t('admin.branch.addBranch')}
-                </button>
+                <div className="flex justify-end">
+                    <button 
+                        className="hover:shadow-2xl p-4 border rounded-full bg-gradient-to-tr from-sky-300 to-sky-500 text-white font-bold hover:bg-gradient-to-tl hover:from-sky-300 hover:to-sky-500 cursor-pointer"
+                        onClick={handleAddBranch}
+                    >
+                        {t('admin.branch.addBranch')}
+                    </button>
+                </div>
                 <table className="min-w-full bg-white">
                     <thead>
                         <tr>

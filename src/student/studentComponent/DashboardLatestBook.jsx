@@ -188,7 +188,6 @@ function DashboardLatestBookPage() {
       <div className="border p-6 min-h-screen bg-white rounded-lg">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-800">{t('student.dashboard.latestBooks')}</h2>
-          <p className="text-gray-600">{t('dashboard.student.showingLatest', { count: 10 })}</p>
         </div>
         
         {loading ? (

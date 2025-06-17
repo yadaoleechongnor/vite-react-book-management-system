@@ -7,7 +7,6 @@ function News() {
   const { t } = useTranslation();
   const [news, setNews] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [showDetails, setShowDetails] = useState(null);
 
   useEffect(() => {
     const fetchNews = async () => {
@@ -34,14 +33,8 @@ function News() {
     return url.replace(/([^:]\/)\/+/g, "$1"); // Clean up any double slashes
   };
 
-  const handleImageClick = (imageUrl, id) => {
-    setSelectedImage(imageUrl);
-    setShowDetails(id);
-  };
-
-  const closeModal = () => {
-    setSelectedImage(null);
-    setShowDetails(null);
+  const handleImageClick = (imageUrl) => {
+    setSelectedImage(getImageUrl(imageUrl));
   };
 
   return (
@@ -57,9 +50,10 @@ function News() {
             <img 
               src={getImageUrl(item.imageUrl)} 
               alt={item.title} 
-              className="w-full h-48 object-cover hover:opacity-90 transition-opacity"
+              className="w-full h-48 object-cover cursor-pointer hover:opacity-90 transition-opacity"
               crossOrigin="anonymous"
               loading="lazy"
+              onClick={() => handleImageClick(item.imageUrl)}
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src = '/no-image.png';
@@ -80,23 +74,23 @@ function News() {
       {/* Image Modal */}
       {selectedImage && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-          onClick={closeModal}
+          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 cursor-pointer"
+          onClick={() => setSelectedImage(null)}
         >
           <div 
-            className="relative max-w-4xl max-h-[90vh] overflow-hidden"
+            className="relative bg-white p-2 rounded-lg max-w-4xl max-h-[90vh] overflow-hidden"
             onClick={e => e.stopPropagation()}
           >
             <button 
-              className="absolute top-4 right-4 text-white bg-black bg-opacity-50 rounded-full p-2"
-              onClick={closeModal}
+              className="absolute top-2 right-2 text-gray-600 hover:text-gray-800 bg-white rounded-full p-2 shadow-md"
+              onClick={() => setSelectedImage(null)}
             >
-              ✕
+              <span className="text-xl">×</span>
             </button>
             <img
               src={selectedImage}
               alt="Enlarged view"
-              className="max-h-[90vh] w-auto object-contain rounded-lg"
+              className="max-h-[85vh] w-auto mx-auto"
               crossOrigin="anonymous"
             />
           </div>

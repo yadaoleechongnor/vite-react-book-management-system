@@ -23,8 +23,6 @@ function StudentDashboard() {
           {/* Lessons Table */}
           <DashBoardTable/>
 
-          {/* Calendar and Reminders */}
-          <Calenda/>
         </div>
       </div>
     </StudentLayout>

@@ -4,7 +4,8 @@ import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import AdminLayout from "../dashboard/adminLayout";
-import { API_BASE_URL } from "../../utils/api";
+import { authenticatedFetch } from '../../utils/auth';
+import { API_BASE_URL } from '../../utils/api';
 import { useTranslation } from 'react-i18next';
 
 export default function FacultyPage() {
@@ -23,7 +24,7 @@ export default function FacultyPage() {
             .catch((error) => console.error(error));
     }, []);
 
-    const handleAddFaculty = () => {
+    const handleAddFaculty = async () => {
         Swal.fire({
             title: t('admin.faculty.addFaculty'),
             input: 'text',
@@ -31,36 +32,26 @@ export default function FacultyPage() {
             inputPlaceholder: t('admin.faculty.enterFacultyName'),
             showCancelButton: true,
             confirmButtonText: t('admin.faculty.add'),
-            preConfirm: (name) => {
-                const token = localStorage.getItem('authToken');
-                const myHeaders = new Headers();
-                myHeaders.append("Content-Type", "application/json");
-                myHeaders.append("Authorization", `Bearer ${token}`);
-
-                const raw = JSON.stringify({
-                    "faculties_name": name
-                });
-
-                const requestOptions = {
-                    method: "POST",
-                    headers: myHeaders,
-                    body: raw,
-                    redirect: "follow"
-                };
-
-                return fetch(`${API_BASE_URL}/faculties/`, requestOptions)
-                    .then((response) => response.json())
-                    .then((result) => {
-                        if (result.success) {
-                            setFaculties([...faculties, result.data.faculty]);
-                            Swal.fire(t('admin.success'), t('admin.faculty.addSuccess'), 'success');
-                        } else {
-                            Swal.fire(t('admin.error'), t('admin.faculty.addError'), 'error');
-                        }
-                    })
-                    .catch((error) => {
-                        Swal.fire(t('admin.error'), t('admin.faculty.addError'), 'error');
+            preConfirm: async (name) => {
+                try {
+                    const response = await authenticatedFetch(`${API_BASE_URL}/faculties/`, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            faculties_name: name
+                        })
                     });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        setFaculties([...faculties, result.data.faculty]);
+                        Swal.fire(t('admin.success'), t('admin.faculty.addSuccess'), 'success');
+                    } else {
+                        Swal.fire(t('admin.error'), t('admin.faculty.addError'), 'error');
+                    }
+                } catch (error) {
+                    Swal.fire(t('admin.error'), t('admin.faculty.addError'), 'error');
+                }
             }
         });
     };
@@ -75,10 +66,9 @@ export default function FacultyPage() {
             cancelButtonText: t('admin.faculty.cancel')
         }).then((result) => {
             if (result.isConfirmed) {
-                const token = localStorage.getItem('authToken');
                 const myHeaders = new Headers();
                 myHeaders.append("Content-Type", "application/json");
-                myHeaders.append("Authorization", `Bearer ${token}`);
+                myHeaders.append("Authorization", "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YzE3MmU4OWQ5Njc5MWI5OTRmMTFmNyIsImlhdCI6MTc1MDE0ODYxOCwiZXhwIjoxNzUyNzQwNjE4fQ.UT6Q_1YDhR8TItJVxVD2eIvZM3SGpxlrPNwxCv-jABU");
 
                 const requestOptions = {
                     method: "DELETE",
@@ -87,9 +77,10 @@ export default function FacultyPage() {
                 };
 
                 fetch(`${API_BASE_URL}/faculties/${id}`, requestOptions)
-                    .then((response) => response.json())
+                    .then((response) => response.text())
                     .then((result) => {
-                        if (result.success) {
+                        const parsedResult = JSON.parse(result);
+                        if (parsedResult.success) {
                             setFaculties(faculties.filter(faculty => faculty._id !== id));
                             Swal.fire({
                                 title: t('admin.faculty.deleted'),
@@ -97,14 +88,13 @@ export default function FacultyPage() {
                                 icon: 'success',
                                 timer: 2000,
                                 showConfirmButton: false
-                            }).then(() => {
-                                window.location.reload();
                             });
                         } else {
-                            Swal.fire(t('admin.error'), t('admin.faculty.deleteError'), 'error');
+                            throw new Error(parsedResult.message || 'Delete failed');
                         }
                     })
                     .catch((error) => {
+                        console.error(error);
                         Swal.fire(t('admin.error'), t('admin.faculty.deleteError'), 'error');
                     });
             }
@@ -119,36 +109,29 @@ export default function FacultyPage() {
             inputValue: currentName,
             showCancelButton: true,
             confirmButtonText: t('admin.faculty.update'),
-            preConfirm: (name) => {
-                const token = localStorage.getItem('authToken');
-                const myHeaders = new Headers();
-                myHeaders.append("Content-Type", "application/json");
-                myHeaders.append("Authorization", `Bearer ${token}`);
-
-                const raw = JSON.stringify({
-                    "faculties_name": name
-                });
-
-                const requestOptions = {
-                    method: "PATCH",
-                    headers: myHeaders,
-                    body: raw,
-                    redirect: "follow"
-                };
-
-                return fetch(`${API_BASE_URL}/faculties/${id}`, requestOptions)
-                    .then((response) => response.json())
-                    .then((result) => {
-                        if (result.success) {
-                            setFaculties(faculties.map(faculty => faculty._id === id ? result.data.faculty : faculty));
-                            Swal.fire(t('admin.success'), t('admin.faculty.updateSuccess'), 'success');
-                        } else {
-                            Swal.fire(t('admin.error'), t('admin.faculty.updateError'), 'error');
-                        }
-                    })
-                    .catch((error) => {
-                        Swal.fire(t('admin.error'), t('admin.faculty.updateError'), 'error');
+            preConfirm: async (name) => {
+                try {
+                    const response = await authenticatedFetch(`${API_BASE_URL}/faculties/${id}`, {
+                        method: 'PATCH',
+                        body: JSON.stringify({
+                            faculties_name: name
+                        })
                     });
+
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        setFaculties(faculties.map(faculty => 
+                            faculty._id === id ? {...faculty, faculties_name: name} : faculty
+                        ));
+                        Swal.fire(t('admin.success'), t('admin.faculty.updateSuccess'), 'success');
+                    } else {
+                        throw new Error(result.message || 'Update failed');
+                    }
+                } catch (error) {
+                    console.error(error);
+                    Swal.fire(t('admin.error'), t('admin.faculty.updateError'), 'error');
+                }
             }
         });
     };

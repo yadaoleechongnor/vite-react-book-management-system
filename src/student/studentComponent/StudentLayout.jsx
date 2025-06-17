@@ -152,7 +152,13 @@ const StudentLayout = ({ children }) => {
       cancelButtonColor: '#d33',
       confirmButtonText: t('student.logout.confirmButton'),
       cancelButtonText: t('student.logout.cancelButton'),
-      reverseButtons: true
+      reverseButtons: true,
+      buttonsStyling: true,
+      customClass: {
+        popup: 'text-xs sm:text-sm',
+        confirmButton: 'text-xs sm:text-sm px-2 py-1',
+        cancelButton: 'text-xs sm:text-sm px-2 py-1'
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         localStorage.clear();
@@ -180,7 +186,9 @@ const StudentLayout = ({ children }) => {
               <FaUser className="text-white" />
             </div>
             {isDropdownOpen && (
-              <div className="absolute right-0 top-10 mt-2 w-80 bg-white rounded-md shadow-lg z-10">
+              <div className="absolute right-0 top-10 mt-2 w-[90vw] sm:w-80 bg-white rounded-md shadow-lg z-10 
+                transform -translate-x-1/2 left-1/2 sm:transform-none sm:left-auto sm:right-0
+                max-h-[80vh] overflow-y-auto">
                 <div className="p-4">
                   {isLoading ? (
                     <div className="flex justify-center">
@@ -229,8 +237,31 @@ const StudentLayout = ({ children }) => {
             {i18n.language === 'en' ? 'ພາສາລາວ' : 'English'}
           </button>
           <button 
-            className="flex items-center space-x-1 bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded"
-            onClick={handleLogoutClick}
+            className="flex items-center justify-center bg-red-500 hover:bg-red-600 text-white p-1 sm:p-1.5 md:p-2 rounded"
+            onClick={() => {
+              Swal.fire({
+                title: t('student.logout.confirmTitle'),
+                text: t('student.logout.confirmMessage'),
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: t('student.logout.confirmButton'),
+                cancelButtonText: t('student.logout.cancelButton'),
+                reverseButtons: true,
+                buttonsStyling: true,
+                customClass: {
+                  popup: 'text-xs sm:text-sm',
+                  confirmButton: 'text-xs sm:text-sm px-2 py-1',
+                  cancelButton: 'text-xs sm:text-sm px-2 py-1'
+                }
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  localStorage.clear();
+                  window.location.href = '/';
+                }
+              });
+            }}
           >
             <IoMdLogOut />
           </button>

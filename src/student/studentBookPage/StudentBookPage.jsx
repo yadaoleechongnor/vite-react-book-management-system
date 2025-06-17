@@ -73,62 +73,53 @@ function StudentBookPage() {
   // Function to search books
   const searchBooks = async () => {
     if (!searchTerm.trim()) {
-      return; // Don't search if the search term is empty
+      return;
     }
     
     setIsSearching(true);
     setError(null);
     
     try {
-      const token = getAuthToken(); // Use the imported auth utility
+      const token = getAuthToken();
       if (!token) throw new Error("No authentication token found");
-      
-      const searchUrl = `${API_BASE_URL}/v1/books/searchbook?title=${encodeURIComponent(searchTerm)}`;
-      
-      const response = await fetch(searchUrl, {
-        method: "GET",
+
+      // First try to get all books and do client-side search
+      const allBooksResponse = await fetch(`${API_BASE_URL}/v1/books`, {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Search failed: ${response.status} ${response.statusText}`);
-      }
-      
-      const result = await response.json();
-      
-      // Process search results with more flexible handling for similar matches
-      let searchedBooks = [];
-      
-      // Handle various response structures that might contain book matches
-      if (Array.isArray(result)) {
-        searchedBooks = result;
-      } else if (result.data && Array.isArray(result.data)) {
-        searchedBooks = result.data;
-      } else if (result.books && Array.isArray(result.books)) {
-        searchedBooks = result.books;
-      } else if (result.results && Array.isArray(result.results)) {
-        searchedBooks = result.results;
-      } else if (result.matches && Array.isArray(result.matches)) {
-        searchedBooks = result.matches;
-      } else if (result && typeof result === 'object' && (result.title || result.id)) {
-        // Single book result
-        searchedBooks = [result];
-      } else if (result.data && typeof result.data === 'object') {
-        if (Array.isArray(result.data.books)) {
-          searchedBooks = result.data.books;
-        } else if (result.data.title || result.data.id) {
-          searchedBooks = [result.data];
+          'Accept': 'application/json'
         }
+      });
+
+      if (!allBooksResponse.ok) {
+        throw new Error('Failed to fetch books for search');
       }
-      
-      setBooks(searchedBooks);
+
+      const allBooks = await allBooksResponse.json();
+      const booksData = Array.isArray(allBooks) ? allBooks : 
+                       allBooks.data ? allBooks.data : [];
+
+      // Client-side search across multiple fields
+      const searchResults = booksData.filter(book => {
+        const searchFields = {
+          title: (book.title || '').toLowerCase(),
+          author: (book.author || book.writer || '').toLowerCase(),
+          year: String(book.year || ''),
+          branch: (book.branch || '').toLowerCase()
+        };
+
+        const searchTermLower = searchTerm.trim().toLowerCase();
+        return Object.values(searchFields).some(field => 
+          field.includes(searchTermLower)
+        );
+      });
+
+      setBooks(searchResults);
       
     } catch (error) {
       console.error("Error searching books:", error);
-      setError(`Search failed: ${error.message}`);
+      setError("Failed to search books. Please try again.");
+      setBooks([]);
     } finally {
       setIsSearching(false);
     }
@@ -185,9 +176,11 @@ function StudentBookPage() {
     }
   };
 
-  // Handle search input changes
+  // Update handleSearchChange to allow more characters
   const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
+    // Allow more characters including Lao script, numbers, and basic punctuation
+    const sanitizedValue = e.target.value.replace(/[^\w\s\u0E80-\u0EFF\d.,()-]/g, '');
+    setSearchTerm(sanitizedValue);
   };
 
   // Handle Enter key press in search input
@@ -437,15 +430,11 @@ function StudentBookPage() {
           </div>
 
           <h3 className="text-lg font-semibold text-gray-700 flex items-center">
-            {searchTerm.trim() ? (
-              <>
-                <span>Similar Books to "{searchTerm}"</span>
-                <span className="ml-2 text-sm font-normal text-gray-500">
-                  ({books.length} results)
-                </span>
-              </>
-            ) : (
-              "Available Books"
+            <span>Available Books</span>
+            {searchTerm.trim() && (
+              <span className="ml-2 text-sm font-normal text-gray-500">
+                ({books.length} results)
+              </span>
             )}
           </h3>
 

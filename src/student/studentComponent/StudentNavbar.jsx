@@ -100,81 +100,85 @@ export default function StudentNavbar({ toggleSidebar, sidebarOpen }) {
 
   return (
     <header className="bg-gradient-to-b from-sky-300 to-sky-500 text-white shadow-md">
-        <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-3 flex justify-between items-center">
-          <div className="flex items-center">
-            <button 
-              className="md:hidden mr-2 sm:mr-4 text-xl"
-              onClick={toggleSidebar}
-              aria-label="Toggle sidebar"
-            >
-              {sidebarOpen ? <FaTimes /> : <FaBars />}
-            </button>
-            <h1 className="text-lg sm:text-xl font-bold truncate">Student Portal</h1>
-          </div>
-          <div className='flex gap-1 sm:gap-2'>
-            <div className="flex items-center space-x-2 sm:space-x-4 relative" ref={dropdownRef}>
-              <div 
-                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-blue-400 flex items-center justify-center cursor-pointer hover:bg-blue-500"
-                onClick={toggleDropdown}
-              >
-                <FaUser className="text-sm sm:text-base" />
-              </div>
-              {isDropdownOpen && (
-                <div className="absolute right-0 top-10 mt-1 sm:mt-2 w-64 sm:w-80 max-w-[90vw] bg-white rounded-md shadow-lg z-10 text-gray-800">
-                  <div className="p-3 sm:p-4 border-b">
-                    <h3 className="font-medium text-gray-800 text-sm sm:text-base">User Profile</h3>
-                  </div>
-                  <div className="p-3 sm:p-4">
-                    {isLoading && <p className="text-gray-600 text-sm sm:text-base">Loading user data...</p>}
-                    {error && <p className="text-red-500 text-sm sm:text-base">{error}</p>}
-                    {userData && (
-                      <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm">
-                        <p><span className="font-semibold">Name:</span> {userData.name || 'N/A'}</p>
-                        <p><span className="font-semibold">Email:</span> {userData.email || 'N/A'}</p>
-                        <p><span className="font-semibold">Role:</span> {userData.role || 'N/A'}</p>
-                        <p><span className="font-semibold">Student Code:</span> {userData.student_code || 'N/A'}</p>
-                        <p><span className="font-semibold">Year:</span> {userData.year || 'N/A'}</p>
-                        <p><span className="font-semibold">Phone:</span> {userData.phone_number || 'N/A'}</p>
-                        <p><span className="font-semibold">Branch:</span> {branchName}</p>
-                        <p><span className="font-semibold">Created:</span> {
-                          userData.createdAt ? new Date(userData.createdAt).toLocaleDateString() : 'N/A'
-                        }</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div> 
+      <div className="container mx-auto px-1 sm:px-4 py-1 sm:py-2 flex justify-between items-center">
+        <div className="flex items-center">
           <button 
-            className="flex items-center space-x-1 bg-red-500 hover:bg-red-600 text-white px-1 sm:px-3 py-1 sm:py-2 rounded text-sm sm:text-base"
+            className="md:hidden mr-1 text-base sm:text-lg p-0.5 sm:p-1 hover:bg-sky-400 rounded"
+            onClick={toggleSidebar}
+            aria-label="Toggle sidebar"
+          >
+            {sidebarOpen ? <FaTimes /> : <FaBars />}
+          </button>
+          <h1 className="text-sm sm:text-base md:text-xl font-bold truncate">Student Portal</h1>
+        </div>
+        
+        <div className='flex items-center gap-1 sm:gap-2'>
+          <div className="relative" ref={dropdownRef}>
+            <button 
+              className="w-5 h-5 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full bg-blue-400 flex items-center justify-center cursor-pointer hover:bg-blue-500"
+              onClick={toggleDropdown}
+            >
+              <FaUser className="text-[10px] sm:text-xs md:text-sm" />
+            </button>
+            
+            {isDropdownOpen && (
+              <div className="absolute right-0 top-6 sm:top-8 mt-1 w-44 sm:w-64 md:w-80 max-w-[90vw] bg-white rounded-md shadow-lg z-10 text-gray-800">
+                <div className="p-2 sm:p-4 border-b">
+                  <h3 className="font-medium text-gray-800 text-xs sm:text-base">User Profile</h3>
+                </div>
+                <div className="p-2 sm:p-4">
+                  {isLoading && <p className="text-gray-600 text-xs sm:text-sm">Loading...</p>}
+                  {error && <p className="text-red-500 text-xs sm:text-sm">{error}</p>}
+                  {userData && (
+                    <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm">
+                      <p><span className="font-semibold">Name:</span> {userData.name || 'N/A'}</p>
+                      <p><span className="font-semibold">Email:</span> {userData.email || 'N/A'}</p>
+                      <p><span className="font-semibold">Role:</span> {userData.role || 'N/A'}</p>
+                      <p><span className="font-semibold">Student Code:</span> {userData.student_code || 'N/A'}</p>
+                      <p><span className="font-semibold">Year:</span> {userData.year || 'N/A'}</p>
+                      <p><span className="font-semibold">Phone:</span> {userData.phone_number || 'N/A'}</p>
+                      <p><span className="font-semibold">Branch:</span> {branchName}</p>
+                      <p><span className="font-semibold">Created:</span> {
+                        userData.createdAt ? new Date(userData.createdAt).toLocaleDateString() : 'N/A'
+                      }</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <button 
+            className="flex items-center justify-center bg-red-500 hover:bg-red-600 text-white p-1 sm:p-1.5 md:p-2 rounded"
             onClick={() => {
               Swal.fire({
-                title: 'Are you sure?',
-                text: "You will be logged out of your account!",
+                title: 'Logout?',
+                text: "You will be logged out!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, logout!',
-                reverseButtons: true, // This will put the confirm button on the right and cancel on the left
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'No',
+                reverseButtons: true,
                 buttonsStyling: true,
                 customClass: {
-                  confirmButton: 'swal2-confirm swal2-styled',
-                  cancelButton: 'swal2-cancel swal2-styled'
+                  popup: 'text-xs sm:text-sm',
+                  confirmButton: 'text-xs sm:text-sm px-2 py-1',
+                  cancelButton: 'text-xs sm:text-sm px-2 py-1'
                 }
               }).then((result) => {
                 if (result.isConfirmed) {
-                  localStorage.clear(); // Clear all tokens or user data
-                  window.location.href = '/'; // Redirect to the login or home page
+                  localStorage.clear();
+                  window.location.href = '/';
                 }
               });
             }}
           >
-           <IoMdLogOut />
-            {/* <span>Logout</span> */}
+            <IoMdLogOut className="text-base sm:text-lg md:text-xl" />
           </button>
-          </div>
         </div>
-      </header>
+      </div>
+    </header>
   )
 }

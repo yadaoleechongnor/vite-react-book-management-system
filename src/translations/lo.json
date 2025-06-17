@@ -7,7 +7,7 @@
       "language": "ພາສາ"
     },
     "admin": {
-      "userManagement": "ຈັດການຜູ້ໃຊ້",
+      "userManagement": "ຈັດການຜູ່ໃຊ້",
       "faculty": "ຄະນະ",
       "department": "ພາກວິຊາ",
       "branch": "ສາຂາ",
@@ -99,7 +99,7 @@
       "bookUpload": "ອັບໂຫຼດປຶ້ມ"
     },
     "teacher": {
-      "title": "ໜ້າຫຼັກອາຈານ",
+      "title": "ໜ້າອາຈານ: ໂຄລ ແຊນເລີ",
       "bookPage": "ໜ້າປຶ້ມ",
       "upload": "ອັບໂຫຼດປຶ້ມ",
       "ownBooks": "ປຶ້ມຂອງຂ້ອຍ",
@@ -122,9 +122,664 @@
     "student": {
       "title": "ໜ້າຫຼັກນັກສຶກສາ", 
       "books": "ປຶ້ມ",
-      "popularBooks": "ປຶ້ມຍອດນິຍົມ",
+      "popularBooks": "ປຶ້ມຍອດນິຍົມ: ທົດສອບ",
       "downloads": "ການດາວໂຫຼດຂອງຂ້ອຍ",
-      "latestBooks": "ປຶ້ມໃໝ່"
+      "latestBooks": "ປຶ້ມອັບເດດໃໝ່ຈາກອາຈານ",
+      "showingLatest": "ສະແດງ {count} ປຶ້ມຫຼ້າສຸດ",
+      "dashboard": {
+        "title": "ໜ້າຫຼັກນັກສຶກສາ",
+        "welcome": "ຍິນດີຕ້ອນຮັບ",
+        "welcomeMessage": "ຍິນດີຕ້ອນຮັບສູ່ລະບົບຫ້ອງສະໝຸດດິຈິຕອນ",
+        "recentBooks": "ປຶ້ມໃໝ່",
+        "popularBooks": "ປຶ້ມຍອດນິຍົມ",
+        "downloads": "ການດາວໂຫຼດຂອງຂ້ອຍ",
+        "latestBooks": "ປຶ້ມໃໝ່",
+        "table": {
+          "title": "ຫົວຂໍ້",
+          "author": "ຜູ້ຂຽນ",
+          "date": "ວັນທີ"
+        }
+      },
+      "books": {
+        "view": "ເບິ່ງປຶ້ມ",
+        "download": "ດາວໂຫຼດປຶ້ມ",
+        "search": "ຄົ້ນຫາປຶ້ມ",
+        "filter": "ກັ່ນຕອງປຶ້ມ",
+        "branchList": "ສາຂາທີ່ມີປື້ມໃນລະບົບ",
+        "availableBooks": "ປຶ້ມທີ່ມີໃຫ້",
+        "branches": {
+          "agriculture": "ກະສິກຳ ແລະ ສີ່ງແວດລ້ອມປ່າໄມ້",
+          "business": "ການບໍລິຫານທຸລະກິດ",
+          "education": "ການສືກສາ ແລະ ການພັັດທະນາ",
+          "economics": "ເສດຖະສາດ",
+          "animalScience": "ວິທະຍາສາດການລ້ຽງສັດ",
+          "computerScience": "ວິສະວະກຳຄອມພິວເຕີ ແລະ ເຕັກໂນໂລຊີຂໍ໡ູນຂ່າວສານ"
+        },
+        "totalBooks": "ຈຳນວນປຶ້ມທັງໝົດ: {count}"
+      }
+    },
+    "public": {
+      "home": "ໜ້າຫຼັກ",
+      "about": "ກ່ຽວກັບ",
+      "news": "ຂ່າວສານ",
+      "login": "ເຂົ້າສູ່ລະບົບ",
+      "register": "ລົງທະບຽນ"
+    }
+  },
+  "dashboard": {
+    "admin": {
+      "title": "ໜ້າຫຼັກຜູ້ຄວບຄຸມລະບົບ",
+      "userManagement": "ການຈັດການຜູ້ໃຊ້",
+      "faculty": "ຄະນະ",
+      "department": "ພາກວິຊາ", 
+      "branch": "ສາຂາ",
+      "bookUpload": "ອັບໂຫຼດປຶ້ມ"
+    },
+    "teacher": {
+      "title": "ໜ້າອາຈານ: ໂຄລ ແຊນເລີ",
+      "bookPage": "ໜ້າປຶ້ມ",
+      "upload": "ອັບໂຫຼດປຶ້ມ",
+      "ownBooks": "ປຶ້ມຂອງຂ້ອຍ",
+      "topDownloads": "ການດາວໂຫຼດສູງສຸດ",
+      "feedbackActivity": "ກິດຈະກຳການຕອບກັບ",
+      "totalStudents": "ນັກສຶກສາທັງໝົດ",
+      "addCourse": "ເພີ່ມຫຼັກສູດ",
+      "schedule": "ຕາຕະລາງ",
+      "scheduleItems": {
+        "penTool": "ວິທີການໃຊ້ເຄື່ອງມືປາກກາ",
+        "shortCir": "ສ້າງ CIR ສັ້ນ",
+        "masking": "ເທັກນິກການປິດບັງ"
+      },
+      "calendar": {
+        "nextMonth": "→",
+        "prevMonth": "←",
+        "month": "ເດືອນພຶດສະພາ 2025"
+      }
+    },
+    "student": {
+      "title": "ໜ້າຫຼັກນັກສຶກສາ", 
+      "books": "ປຶ້ມ",
+      "popularBooks": "ປຶ້ມຍອດນິຍົມ: ທົດສອບ",
+      "downloads": "ການດາວໂຫຼດຂອງຂ້ອຍ",
+      "latestBooks": "ປຶ້ມອັບເດດໃໝ່ຈາກອາຈານ",
+      "showingLatest": "ສະແດງ {count} ປຶ້ມຫຼ້າສຸດ",
+      "dashboard": {
+        "title": "ໜ້າຫຼັກນັກສຶກສາ",
+        "welcome": "ຍິນດີຕ້ອນຮັບ",
+        "welcomeMessage": "ຍິນດີຕ້ອນຮັບສູ່ລະບົບຫ້ອງສະໝຸດດິຈິຕອນ",
+        "recentBooks": "ປຶ້ມໃໝ່",
+        "popularBooks": "ປຶ້ມຍອດນິຍົມ",
+        "downloads": "ການດາວໂຫຼດຂອງຂ້ອຍ",
+        "latestBooks": "ປຶ້ມໃໝ່",
+        "table": {
+          "title": "ຫົວຂໍ້",
+          "author": "ຜູ້ຂຽນ",
+          "date": "ວັນທີ"
+        }
+      },
+      "books": {
+        "view": "ເບິ່ງປຶ້ມ",
+        "download": "ດາວໂຫຼດປຶ້ມ",
+        "search": "ຄົ້ນຫາປຶ້ມ",
+        "filter": "ກັ່ນຕອງປຶ້ມ",
+        "branchList": "ສາຂາທີ່ມີປື້ມໃນລະບົບ",
+        "availableBooks": "ປຶ້ມທີ່ມີໃຫ້",
+        "branches": {
+          "agriculture": "ກະສິກຳ ແລະ ສີ່ງແວດລ້ອມປ່າໄມ້",
+          "business": "ການບໍລິຫານທຸລະກິດ",
+          "education": "ການສືກສາ ແລະ ການພັັດທະນາ",
+          "economics": "ເສດຖະສາດ",
+          "animalScience": "ວິທະຍາສາດການລ້ຽງສັດ",
+          "computerScience": "ວິສະວະກຳຄອມພິວເຕີ ແລະ ເຕັກໂນໂລຊີຂໍ໡ູນຂ່າວສານ"
+        },
+        "totalBooks": "ຈຳນວນປຶ້ມທັງໝົດ: {count}"
+      }
+    },
+    "public": {
+      "home": "ໜ້າຫຼັກ",
+      "about": "ກ່ຽວກັບ",
+      "news": "ຂ່າວສານ",
+      "login": "ເຂົ້າສູ່ລະບົບ",
+      "register": "ລົງທະບຽນ"
+    }
+  },
+  "dashboard": {
+    "admin": {
+      "title": "ໜ້າຫຼັກຜູ້ຄວບຄຸມລະບົບ",
+      "userManagement": "ການຈັດການຜູ້ໃຊ້",
+      "faculty": "ຄະນະ",
+      "department": "ພາກວິຊາ", 
+      "branch": "ສາຂາ",
+      "bookUpload": "ອັບໂຫຼດປຶ້ມ"
+    },
+    "teacher": {
+      "title": "ໜ້າອາຈານ: ໂຄລ ແຊນເລີ",
+      "bookPage": "ໜ້າປຶ້ມ",
+      "upload": "ອັບໂຫຼດປຶ້ມ",
+      "ownBooks": "ປຶ້ມຂອງຂ້ອຍ",
+      "topDownloads": "ການດາວໂຫຼດສູງສຸດ",
+      "feedbackActivity": "ກິດຈະກຳການຕອບກັບ",
+      "totalStudents": "ນັກສຶກສາທັງໝົດ",
+      "addCourse": "ເພີ່ມຫຼັກສູດ",
+      "schedule": "ຕາຕະລາງ",
+      "scheduleItems": {
+        "penTool": "ວິທີການໃຊ້ເຄື່ອງມືປາກກາ",
+        "shortCir": "ສ້າງ CIR ສັ້ນ",
+        "masking": "ເທັກນິກການປິດບັງ"
+      },
+      "calendar": {
+        "nextMonth": "→",
+        "prevMonth": "←",
+        "month": "ເດືອນພຶດສະພາ 2025"
+      }
+    },
+    "student": {
+      "title": "ໜ້າຫຼັກນັກສຶກສາ", 
+      "books": "ປຶ້ມ",
+      "popularBooks": "ປຶ້ມຍອດນິຍົມ: ທົດສອບ",
+      "downloads": "ການດາວໂຫຼດຂອງຂ້ອຍ",
+      "latestBooks": "ປຶ້ມອັບເດດໃໝ່ຈາກອາຈານ",
+      "showingLatest": "ສະແດງ {count} ປຶ້ມຫຼ້າສຸດ",
+      "dashboard": {
+        "title": "ໜ້າຫຼັກນັກສຶກສາ",
+        "welcome": "ຍິນດີຕ້ອນຮັບ",
+        "welcomeMessage": "ຍິນດີຕ້ອນຮັບສູ່ລະບົບຫ້ອງສະໝຸດດິຈິຕອນ",
+        "recentBooks": "ປຶ້ມໃໝ່",
+        "popularBooks": "ປຶ້ມຍອດນິຍົມ",
+        "downloads": "ການດາວໂຫຼດຂອງຂ້ອຍ",
+        "latestBooks": "ປຶ້ມໃໝ່",
+        "table": {
+          "title": "ຫົວຂໍ້",
+          "author": "ຜູ້ຂຽນ",
+          "date": "ວັນທີ"
+        }
+      },
+      "books": {
+        "view": "ເບິ່ງປຶ້ມ",
+        "download": "ດາວໂຫຼດປຶ້ມ",
+        "search": "ຄົ້ນຫາປຶ້ມ",
+        "filter": "ກັ່ນຕອງປຶ້ມ",
+        "branchList": "ສາຂາທີ່ມີປື້ມໃນລະບົບ",
+        "availableBooks": "ປຶ້ມທີ່ມີໃຫ້",
+        "branches": {
+          "agriculture": "ກະສິກຳ ແລະ ສີ່ງແວດລ້ອມປ່າໄມ້",
+          "business": "ການບໍລິຫານທຸລະກິດ",
+          "education": "ການສືກສາ ແລະ ການພັັດທະນາ",
+          "economics": "ເສດຖະສາດ",
+          "animalScience": "ວິທະຍາສາດການລ້ຽງສັດ",
+          "computerScience": "ວິສະວະກຳຄອມພິວເຕີ ແລະ ເຕັກໂນໂລຊີຂໍ໡ູນຂ່າວສານ"
+        },
+        "totalBooks": "ຈຳນວນປຶ້ມທັງໝົດ: {count}"
+      }
+    },
+    "public": {
+      "home": "ໜ້າຫຼັກ",
+      "about": "ກ່ຽວກັບ",
+      "news": "ຂ່າວສານ",
+      "login": "ເຂົ້າສູ່ລະບົບ",
+      "register": "ລົງທະບຽນ"
+    }
+  },
+  "dashboard": {
+    "admin": {
+      "title": "ໜ້າຫຼັກຜູ້ຄວບຄຸມລະບົບ",
+      "userManagement": "ການຈັດການຜູ້ໃຊ້",
+      "faculty": "ຄະນະ",
+      "department": "ພາກວິຊາ", 
+      "branch": "ສາຂາ",
+      "bookUpload": "ອັບໂຫຼດປຶ້ມ"
+    },
+    "teacher": {
+      "title": "ໜ້າອາຈານ: ໂຄລ ແຊນເລີ",
+      "bookPage": "ໜ້າປຶ້ມ",
+      "upload": "ອັບໂຫຼດປຶ້ມ",
+      "ownBooks": "ປຶ້ມຂອງຂ້ອຍ",
+      "topDownloads": "ການດາວໂຫຼດສູງສຸດ",
+      "feedbackActivity": "ກິດຈະກຳການຕອບກັບ",
+      "totalStudents": "ນັກສຶກສາທັງໝົດ",
+      "addCourse": "ເພີ່ມຫຼັກສູດ",
+      "schedule": "ຕາຕະລາງ",
+      "scheduleItems": {
+        "penTool": "ວິທີການໃຊ້ເຄື່ອງມືປາກກາ",
+        "shortCir": "ສ້າງ CIR ສັ້ນ",
+        "masking": "ເທັກນິກການປິດບັງ"
+      },
+      "calendar": {
+        "nextMonth": "→",
+        "prevMonth": "←",
+        "month": "ເດືອນພຶດສະພາ 2025"
+      }
+    },
+    "student": {
+      "title": "ໜ້າຫຼັກນັກສຶກສາ", 
+      "books": "ປຶ້ມ",
+      "popularBooks": "ປຶ້ມຍອດນິຍົມ: ທົດສອບ",
+      "downloads": "ການດາວໂຫຼດຂອງຂ້ອຍ",
+      "latestBooks": "ປຶ້ມອັບເດດໃໝ່ຈາກອາຈານ",
+      "showingLatest": "ສະແດງ {count} ປຶ້ມຫຼ້າສຸດ",
+      "dashboard": {
+        "title": "ໜ້າຫຼັກນັກສຶກສາ",
+        "welcome": "ຍິນດີຕ້ອນຮັບ",
+        "welcomeMessage": "ຍິນດີຕ້ອນຮັບສູ່ລະບົບຫ້ອງສະໝຸດດິຈິຕອນ",
+        "recentBooks": "ປຶ້ມໃໝ່",
+        "popularBooks": "ປຶ້ມຍອດນິຍົມ",
+        "downloads": "ການດາວໂຫຼດຂອງຂ້ອຍ",
+        "latestBooks": "ປຶ້ມໃໝ່",
+        "table": {
+          "title": "ຫົວຂໍ້",
+          "author": "ຜູ້ຂຽນ",
+          "date": "ວັນທີ"
+        }
+      },
+      "books": {
+        "view": "ເບິ່ງປຶ້ມ",
+        "download": "ດາວໂຫຼດປຶ້ມ",
+        "search": "ຄົ້ນຫາປຶ້ມ",
+        "filter": "ກັ່ນຕອງປຶ້ມ",
+        "branchList": "ສາຂາທີ່ມີປື້ມໃນລະບົບ",
+        "availableBooks": "ປຶ້ມທີ່ມີໃຫ້",
+        "branches": {
+          "agriculture": "ກະສິກຳ ແລະ ສີ່ງແວດລ້ອມປ່າໄມ້",
+          "business": "ການບໍລິຫານທຸລະກິດ",
+          "education": "ການສືກສາ ແລະ ການພັັດທະນາ",
+          "economics": "ເສດຖະສາດ",
+          "animalScience": "ວິທະຍາສາດການລ້ຽງສັດ",
+          "computerScience": "ວິສະວະກຳຄອມພິວເຕີ ແລະ ເຕັກໂນໂລຊີຂໍ໡ູນຂ່າວສານ"
+        },
+        "totalBooks": "ຈຳນວນປຶ້ມທັງໝົດ: {count}"
+      }
+    },
+    "public": {
+      "home": "ໜ້າຫຼັກ",
+      "about": "ກ່ຽວກັບ",
+      "news": "ຂ່າວສານ",
+      "login": "ເຂົ້າສູ່ລະບົບ",
+      "register": "ລົງທະບຽນ"
+    }
+  },
+  "dashboard": {
+    "admin": {
+      "title": "ໜ້າຫຼັກຜູ້ຄວບຄຸມລະບົບ",
+      "userManagement": "ການຈັດການຜູ້ໃຊ້",
+      "faculty": "ຄະນະ",
+      "department": "ພາກວິຊາ", 
+      "branch": "ສາຂາ",
+      "bookUpload": "ອັບໂຫຼດປຶ້ມ"
+    },
+    "teacher": {
+      "title": "ໜ້າອາຈານ: ໂຄລ ແຊນເລີ",
+      "bookPage": "ໜ້າປຶ້ມ",
+      "upload": "ອັບໂຫຼດປຶ້ມ",
+      "ownBooks": "ປຶ້ມຂອງຂ້ອຍ",
+      "topDownloads": "ການດາວໂຫຼດສູງສຸດ",
+      "feedbackActivity": "ກິດຈະກຳການຕອບກັບ",
+      "totalStudents": "ນັກສຶກສາທັງໝົດ",
+      "addCourse": "ເພີ່ມຫຼັກສູດ",
+      "schedule": "ຕາຕະລາງ",
+      "scheduleItems": {
+        "penTool": "ວິທີການໃຊ້ເຄື່ອງມືປາກກາ",
+        "shortCir": "ສ້າງ CIR ສັ້ນ",
+        "masking": "ເທັກນິກການປິດບັງ"
+      },
+      "calendar": {
+        "nextMonth": "→",
+        "prevMonth": "←",
+        "month": "ເດືອນພຶດສະພາ 2025"
+      }
+    },
+    "student": {
+      "title": "ໜ້າຫຼັກນັກສຶກສາ", 
+      "books": "ປຶ້ມ",
+      "popularBooks": "ປຶ້ມຍອດນິຍົມ: ທົດສອບ",
+      "downloads": "ການດາວໂຫຼດຂອງຂ້ອຍ",
+      "latestBooks": "ປຶ້ມອັບເດດໃໝ່ຈາກອາຈານ",
+      "showingLatest": "ສະແດງ {count} ປຶ້ມຫຼ້າສຸດ",
+      "dashboard": {
+        "title": "ໜ້າຫຼັກນັກສຶກສາ",
+        "welcome": "ຍິນດີຕ້ອນຮັບ",
+        "welcomeMessage": "ຍິນດີຕ້ອນຮັບສູ່ລະບົບຫ້ອງສະໝຸດດິຈິຕອນ",
+        "recentBooks": "ປຶ້ມໃໝ່",
+        "popularBooks": "ປຶ້ມຍອດນິຍົມ",
+        "downloads": "ການດາວໂຫຼດຂອງຂ້ອຍ",
+        "latestBooks": "ປຶ້ມໃໝ່",
+        "table": {
+          "title": "ຫົວຂໍ້",
+          "author": "ຜູ້ຂຽນ",
+          "date": "ວັນທີ"
+        }
+      },
+      "books": {
+        "view": "ເບິ່ງປຶ້ມ",
+        "download": "ດາວໂຫຼດປຶ້ມ",
+        "search": "ຄົ້ນຫາປຶ້ມ",
+        "filter": "ກັ່ນຕອງປຶ້ມ",
+        "branchList": "ສາຂາທີ່ມີປື້ມໃນລະບົບ",
+        "availableBooks": "ປຶ້ມທີ່ມີໃຫ້",
+        "branches": {
+          "agriculture": "ກະສິກຳ ແລະ ສີ່ງແວດລ້ອມປ່າໄມ້",
+          "business": "ການບໍລິຫານທຸລະກິດ",
+          "education": "ການສືກສາ ແລະ ການພັັດທະນາ",
+          "economics": "ເສດຖະສາດ",
+          "animalScience": "ວິທະຍາສາດການລ້ຽງສັດ",
+          "computerScience": "ວິສະວະກຳຄອມພິວເຕີ ແລະ ເຕັກໂນໂລຊີຂໍ໡ູນຂ່າວສານ"
+        },
+        "totalBooks": "ຈຳນວນປຶ້ມທັງໝົດ: {count}"
+      }
+    },
+    "public": {
+      "home": "ໜ້າຫຼັກ",
+      "about": "ກ່ຽວກັບ",
+      "news": "ຂ່າວສານ",
+      "login": "ເຂົ້າສູ່ລະບົບ",
+      "register": "ລົງທະບຽນ"
+    }
+  },
+  "dashboard": {
+    "admin": {
+      "title": "ໜ້າຫຼັກຜູ້ຄວບຄຸມລະບົບ",
+      "userManagement": "ການຈັດການຜູ້ໃຊ້",
+      "faculty": "ຄະນະ",
+      "department": "ພາກວິຊາ", 
+      "branch": "ສາຂາ",
+      "bookUpload": "ອັບໂຫຼດປຶ້ມ"
+    },
+    "teacher": {
+      "title": "ໜ້າອາຈານ: ໂຄລ ແຊນເລີ",
+      "bookPage": "ໜ້າປຶ້ມ",
+      "upload": "ອັບໂຫຼດປຶ້ມ",
+      "ownBooks": "ປຶ້ມຂອງຂ້ອຍ",
+      "topDownloads": "ການດາວໂຫຼດສູງສຸດ",
+      "feedbackActivity": "ກິດຈະກຳການຕອບກັບ",
+      "totalStudents": "ນັກສຶກສາທັງໝົດ",
+      "addCourse": "ເພີ່ມຫຼັກສູດ",
+      "schedule": "ຕາຕະລາງ",
+      "scheduleItems": {
+        "penTool": "ວິທີການໃຊ້ເຄື່ອງມືປາກກາ",
+        "shortCir": "ສ້າງ CIR ສັ້ນ",
+        "masking": "ເທັກນິກການປິດບັງ"
+      },
+      "calendar": {
+        "nextMonth": "→",
+        "prevMonth": "←",
+        "month": "ເດືອນພຶດສະພາ 2025"
+      }
+    },
+    "student": {
+      "title": "ໜ້າຫຼັກນັກສຶກສາ", 
+      "books": "ປຶ້ມ",
+      "popularBooks": "ປຶ້ມຍອດນິຍົມ: ທົດສອບ",
+      "downloads": "ການດາວໂຫຼດຂອງຂ້ອຍ",
+      "latestBooks": "ປຶ້ມອັບເດດໃໝ່ຈາກອາຈານ",
+      "showingLatest": "ສະແດງ {count} ປຶ້ມຫຼ້າສຸດ",
+      "dashboard": {
+        "title": "ໜ້າຫຼັກນັກສຶກສາ",
+        "welcome": "ຍິນດີຕ້ອນຮັບ",
+        "welcomeMessage": "ຍິນດີຕ້ອນຮັບສູ່ລະບົບຫ້ອງສະໝຸດດິຈິຕອນ",
+        "recentBooks": "ປຶ້ມໃໝ່",
+        "popularBooks": "ປຶ້ມຍອດນິຍົມ",
+        "downloads": "ການດາວໂຫຼດຂອງຂ້ອຍ",
+        "latestBooks": "ປຶ້ມໃໝ່",
+        "table": {
+          "title": "ຫົວຂໍ້",
+          "author": "ຜູ້ຂຽນ",
+          "date": "ວັນທີ"
+        }
+      },
+      "books": {
+        "view": "ເບິ່ງປຶ້ມ",
+        "download": "ດາວໂຫຼດປຶ້ມ",
+        "search": "ຄົ້ນຫາປຶ້ມ",
+        "filter": "ກັ່ນຕອງປຶ້ມ",
+        "branchList": "ສາຂາທີ່ມີປື້ມໃນລະບົບ",
+        "availableBooks": "ປຶ້ມທີ່ມີໃຫ້",
+        "branches": {
+          "agriculture": "ກະສິກຳ ແລະ ສີ່ງແວດລ້ອມປ່າໄມ້",
+          "business": "ການບໍລິຫານທຸລະກິດ",
+          "education": "ການສືກສາ ແລະ ການພັັດທະນາ",
+          "economics": "ເສດຖະສາດ",
+          "animalScience": "ວິທະຍາສາດການລ້ຽງສັດ",
+          "computerScience": "ວິສະວະກຳຄອມພິວເຕີ ແລະ ເຕັກໂນໂລຊີຂໍ໡ູນຂ່າວສານ"
+        },
+        "totalBooks": "ຈຳນວນປຶ້ມທັງໝົດ: {count}"
+      }
+    },
+    "public": {
+      "home": "ໜ້າຫຼັກ",
+      "about": "ກ່ຽວກັບ",
+      "news": "ຂ່າວສານ",
+      "login": "ເຂົ້າສູ່ລະບົບ",
+      "register": "ລົງທະບຽນ"
+    }
+  },
+  "dashboard": {
+    "admin": {
+      "title": "ໜ້າຫຼັກຜູ້ຄວບຄຸມລະບົບ",
+      "userManagement": "ການຈັດການຜູ້ໃຊ້",
+      "faculty": "ຄະນະ",
+      "department": "ພາກວິຊາ", 
+      "branch": "ສາຂາ",
+      "bookUpload": "ອັບໂຫຼດປຶ້ມ"
+    },
+    "teacher": {
+      "title": "ໜ້າອາຈານ: ໂຄລ ແຊນເລີ",
+      "bookPage": "ໜ້າປຶ້ມ",
+      "upload": "ອັບໂຫຼດປຶ້ມ",
+      "ownBooks": "ປຶ້ມຂອງຂ້ອຍ",
+      "topDownloads": "ການດາວໂຫຼດສູງສຸດ",
+      "feedbackActivity": "ກິດຈະກຳການຕອບກັບ",
+      "totalStudents": "ນັກສຶກສາທັງໝົດ",
+      "addCourse": "ເພີ່ມຫຼັກສູດ",
+      "schedule": "ຕາຕະລາງ",
+      "scheduleItems": {
+        "penTool": "ວິທີການໃຊ້ເຄື່ອງມືປາກກາ",
+        "shortCir": "ສ້າງ CIR ສັ້ນ",
+        "masking": "ເທັກນິກການປິດບັງ"
+      },
+      "calendar": {
+        "nextMonth": "→",
+        "prevMonth": "←",
+        "month": "ເດືອນພຶດສະພາ 2025"
+      }
+    },
+    "student": {
+      "title": "ໜ້າຫຼັກນັກສຶກສາ", 
+      "books": "ປຶ້ມ",
+      "popularBooks": "ປຶ້ມຍອດນິຍົມ: ທົດສອບ",
+      "downloads": "ການດາວໂຫຼດຂອງຂ້ອຍ",
+      "latestBooks": "ປຶ້ມອັບເດດໃໝ່ຈາກອາຈານ",
+      "showingLatest": "ສະແດງ {count} ປຶ້ມຫຼ້າສຸດ",
+      "dashboard": {
+        "title": "ໜ້າຫຼັກນັກສຶກສາ",
+        "welcome": "ຍິນດີຕ້ອນຮັບ",
+        "welcomeMessage": "ຍິນດີຕ້ອນຮັບສູ່ລະບົບຫ້ອງສະໝຸດດິຈິຕອນ",
+        "recentBooks": "ປຶ້ມໃໝ່",
+        "popularBooks": "ປຶ້ມຍອດນິຍົມ",
+        "downloads": "ການດາວໂຫຼດຂອງຂ້ອຍ",
+        "latestBooks": "ປຶ້ມໃໝ່",
+        "table": {
+          "title": "ຫົວຂໍ້",
+          "author": "ຜູ້ຂຽນ",
+          "date": "ວັນທີ"
+        }
+      },
+      "books": {
+        "view": "ເບິ່ງປຶ້ມ",
+        "download": "ດາວໂຫຼດປຶ້ມ",
+        "search": "ຄົ້ນຫາປຶ້ມ",
+        "filter": "ກັ່ນຕອງປຶ້ມ",
+        "branchList": "ສາຂາທີ່ມີປື້ມໃນລະບົບ",
+        "availableBooks": "ປຶ້ມທີ່ມີໃຫ້",
+        "branches": {
+          "agriculture": "ກະສິກຳ ແລະ ສີ່ງແວດລ້ອມປ່າໄມ້",
+          "business": "ການບໍລິຫານທຸລະກິດ",
+          "education": "ການສືກສາ ແລະ ການພັັດທະນາ",
+          "economics": "ເສດຖະສາດ",
+          "animalScience": "ວິທະຍາສາດການລ້ຽງສັດ",
+          "computerScience": "ວິສະວະກຳຄອມພິວເຕີ ແລະ ເຕັກໂນໂລຊີຂໍ໡ູນຂ່າວສານ"
+        },
+        "totalBooks": "ຈຳນວນປຶ້ມທັງໝົດ: {count}"
+      }
+    },
+    "public": {
+      "home": "ໜ້າຫຼັກ",
+      "about": "ກ່ຽວກັບ",
+      "news": "ຂ່າວສານ",
+      "login": "ເຂົ້າສູ່ລະບົບ",
+      "register": "ລົງທະບຽນ"
+    }
+  },
+  "dashboard": {
+    "admin": {
+      "title": "ໜ້າຫຼັກຜູ້ຄວບຄຸມລະບົບ",
+      "userManagement": "ການຈັດການຜູ້ໃຊ້",
+      "faculty": "ຄະນະ",
+      "department": "ພາກວິຊາ", 
+      "branch": "ສາຂາ",
+      "bookUpload": "ອັບໂຫຼດປຶ້ມ"
+    },
+    "teacher": {
+      "title": "ໜ້າອາຈານ: ໂຄລ ແຊນເລີ",
+      "bookPage": "ໜ້າປຶ້ມ",
+      "upload": "ອັບໂຫຼດປຶ້ມ",
+      "ownBooks": "ປຶ້ມຂອງຂ້ອຍ",
+      "topDownloads": "ການດາວໂຫຼດສູງສຸດ",
+      "feedbackActivity": "ກິດຈະກຳການຕອບກັບ",
+      "totalStudents": "ນັກສຶກສາທັງໝົດ",
+      "addCourse": "ເພີ່ມຫຼັກສູດ",
+      "schedule": "ຕາຕະລາງ",
+      "scheduleItems": {
+        "penTool": "ວິທີການໃຊ້ເຄື່ອງມືປາກກາ",
+        "shortCir": "ສ້າງ CIR ສັ້ນ",
+        "masking": "ເທັກນິກການປິດບັງ"
+      },
+      "calendar": {
+        "nextMonth": "→",
+        "prevMonth": "←",
+        "month": "ເດືອນພຶດສະພາ 2025"
+      }
+    },
+    "student": {
+      "title": "ໜ້າຫຼັກນັກສຶກສາ", 
+      "books": "ປຶ້ມ",
+      "popularBooks": "ປຶ້ມຍອດນິຍົມ: ທົດສອບ",
+      "downloads": "ການດາວໂຫຼດຂອງຂ້ອຍ",
+      "latestBooks": "ປຶ້ມອັບເດດໃໝ່ຈາກອາຈານ",
+      "showingLatest": "ສະແດງ {count} ປຶ້ມຫຼ້າສຸດ",
+      "dashboard": {
+        "title": "ໜ້າຫຼັກນັກສຶກສາ",
+        "welcome": "ຍິນດີຕ້ອນຮັບ",
+        "welcomeMessage": "ຍິນດີຕ້ອນຮັບສູ່ລະບົບຫ້ອງສະໝຸດດິຈິຕອນ",
+        "recentBooks": "ປຶ້ມໃໝ່",
+        "popularBooks": "ປຶ້ມຍອດນິຍົມ",
+        "downloads": "ການດາວໂຫຼດຂອງຂ້ອຍ",
+        "latestBooks": "ປຶ້ມໃໝ່",
+        "table": {
+          "title": "ຫົວຂໍ້",
+          "author": "ຜູ້ຂຽນ",
+          "date": "ວັນທີ"
+        }
+      },
+      "books": {
+        "view": "ເບິ່ງປຶ້ມ",
+        "download": "ດາວໂຫຼດປຶ້ມ",
+        "search": "ຄົ້ນຫາປຶ້ມ",
+        "filter": "ກັ່ນຕອງປຶ້ມ",
+        "branchList": "ສາຂາທີ່ມີປື້ມໃນລະບົບ",
+        "availableBooks": "ປຶ້ມທີ່ມີໃຫ້",
+        "branches": {
+          "agriculture": "ກະສິກຳ ແລະ ສີ່ງແວດລ້ອມປ່າໄມ້",
+          "business": "ການບໍລິຫານທຸລະກິດ",
+          "education": "ການສືກສາ ແລະ ການພັັດທະນາ",
+          "economics": "ເສດຖະສາດ",
+          "animalScience": "ວິທະຍາສາດການລ້ຽງສັດ",
+          "computerScience": "ວິສະວະກຳຄອມພິວເຕີ ແລະ ເຕັກໂນໂລຊີຂໍ໡ູນຂ່າວສານ"
+        },
+        "totalBooks": "ຈຳນວນປຶ້ມທັງໝົດ: {count}"
+      }
+    },
+    "public": {
+      "home": "ໜ້າຫຼັກ",
+      "about": "ກ່ຽວກັບ",
+      "news": "ຂ່າວສານ",
+      "login": "ເຂົ້າສູ່ລະບົບ",
+      "register": "ລົງທະບຽນ"
+    }
+  },
+  "dashboard": {
+    "admin": {
+      "title": "ໜ້າຫຼັກຜູ້ຄວບຄຸມລະບົບ",
+      "userManagement": "ການຈັດການຜູ້ໃຊ້",
+      "faculty": "ຄະນະ",
+      "department": "ພາກວິຊາ", 
+      "branch": "ສາຂາ",
+      "bookUpload": "ອັບໂຫຼດປຶ້ມ"
+    },
+    "teacher": {
+      "title": "ໜ້າອາຈານ: ໂຄລ ແຊນເລີ",
+      "bookPage": "ໜ້າປຶ້ມ",
+      "upload": "ອັບໂຫຼດປຶ້ມ",
+      "ownBooks": "ປຶ້ມຂອງຂ້ອຍ",
+      "topDownloads": "ການດາວໂຫຼດສູງສຸດ",
+      "feedbackActivity": "ກິດຈະກຳການຕອບກັບ",
+      "totalStudents": "ນັກສຶກສາທັງໝົດ",
+      "addCourse": "ເພີ່ມຫຼັກສູດ",
+      "schedule": "ຕາຕະລາງ",
+      "scheduleItems": {
+        "penTool": "ວິທີການໃຊ້ເຄື່ອງມືປາກກາ",
+        "shortCir": "ສ້າງ CIR ສັ້ນ",
+        "masking": "ເທັກນິກການປິດບັງ"
+      },
+      "calendar": {
+        "nextMonth": "→",
+        "prevMonth": "←",
+        "month": "ເດືອນພຶດສະພາ 2025"
+      }
+    },
+    "student": {
+      "title": "ໜ້າຫຼັກນັກສຶກສາ", 
+      "books": "ປຶ້ມ",
+      "popularBooks": "ປຶ້ມຍອດນິຍົມ: ທົດສອບ",
+      "downloads": "ການດາວໂຫຼດຂອງຂ້ອຍ",
+      "latestBooks": "ປຶ້ມອັບເດດໃໝ່ຈາກອາຈານ",
+      "showingLatest": "ສະແດງ {count} ປຶ້ມຫຼ້າສຸດ",
+      "dashboard": {
+        "title": "ໜ້າຫຼັກນັກສຶກສາ",
+        "welcome": "ຍິນດີຕ້ອນຮັບ",
+        "welcomeMessage": "ຍິນດີຕ້ອນຮັບສູ່ລະບົບຫ້ອງສະໝຸດດິຈິຕອນ",
+        "recentBooks": "ປຶ້ມໃໝ່",
+        "popularBooks": "ປຶ້ມຍອດນິຍົມ",
+        "downloads": "ການດາວໂຫຼດຂອງຂ້ອຍ",
+        "latestBooks": "ປຶ້ມໃໝ່",
+        "table": {
+          "title": "ຫົວຂໍ້",
+          "author": "ຜູ້ຂຽນ",
+          "date": "ວັນທີ"
+        }
+      },
+      "books": {
+        "view": "ເບິ່ງປຶ້ມ",
+        "download": "ດາວໂຫຼດປຶ້ມ",
+        "search": "ຄົ້ນຫາປຶ້ມ",
+        "filter": "ກັ່ນຕອງປຶ້ມ",
+        "branchList": "ສາຂາທີ່ມີປື້ມໃນລະບົບ",
+        "availableBooks": "ປຶ້ມທີ່ມີໃຫ້",
+        "branches": {
+          "agriculture": "ກະສິກຳ ແລະ ສີ່ງແວດລ້ອມປ່າໄມ້",
+          "business": "ການບໍລິຫານທຸລະກິດ",
+          "education": "ການສືກສາ ແລະ ການພັັດທະນາ",
+          "economics": "ເສດຖະສາດ",
+          "animalScience": "ວິທະຍາສາດການລ້ຽງສັດ",
+          "computerScience": "ວິສະວະກຳຄອມພິວເຕີ ແລະ ເຕັກໂນໂລຊີຂໍ໡ູນຂ່າວສານ"
+        },
+        "totalBooks": "ຈຳນວນປຶ້ມທັງໝົດ: {count}"
+      }
+    },
+    "public": {
+      "home": "ໜ້າຫຼັກ",
+      "about": "ກ່ຽວກັບ",
+      "news": "ຂ່າວສານ",
+      "login": "ເຂົ້າສູ່ລະບົບ",
+      "register": "ລົງທະບຽນ"
     }
   },
   "home": {
@@ -207,7 +862,7 @@
       "back": "ກັບຄືນ",
       "actions": "ການດຳເນີນການ",
       "search": "ຄົ້ນຫາ",
-      "noData": "ບໍ່ມີຂໍ້ມູນ",
+      "noData": "ບໍ່ມີຂໍ໡ູນ",
       "confirmDelete": "ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບອັນນີ້?",
       "update": "ອັບເດດ",
       "deleteWarning": "ທ່ານແນ່ໃຈບໍ່ວ່າຕ້ອງການລຶບລາຍການນີ້?",
@@ -227,10 +882,10 @@
       "title": "ການຈັດການປຶ້ມ",
       "uploadBook": "ອັບໂຫຼດປຶ້ມ",
       "bookList": "ລາຍການປຶ້ມ",
-      "adminOwnBook": "ປຶ້ມຂອງຜູ້ບໍລິຫານ",
+      "adminOwnBook": "ປຶ້ມຂອງຜູໍບໍລິຫານ",
       "viewAsUser": "ເບິ່ງແບບຜູ້ໃຊ້",
       "adminOwnBooks": {
-        "title": "ປຶ້ມຂອງຜູ້ບໍລິຫານ",
+        "title": "ປຶ້ມຂອງຜູໍບໍລິຫານ",
         "ownerBook": "ເຈົ້າຂອງປຶ້ມ",
         "yourBooks": "ປຶ້ມຂອງທ່ານ: {count}",
         "myBooks": "ປຶ້ມຂອງຂ້ອຍ",
@@ -248,7 +903,8 @@
         "branchColumn": "ສາຂາ",
         "yearColumn": "ປີ",
         "actionsColumn": "ດຳເນີນການ",
-        "viewPdf": "ເບິ່ງ PDF"
+        "viewPdf": "ເບິ່ງ PDF",
+        "uploadDate": "ວັນທີອັບໂຫຼດ"
       },
       "authRequired": "ທ່ານຕ້ອງເຂົ້າສູ່ລະບົບເພື່ອອັບເດດປຶ້ມ"
     },
@@ -262,7 +918,7 @@
       "dropzone": "ວາງໄຟລ໌ທີ່ນີ້ ຫຼື ຄລິກເພື່ອອັບໂຫຼດ",
       "sessionInfo": {
         "title": "ຖ້າທ່ານເຫັນຂໍ້ຄວາມນີ້:",
-        "checkAccount": "ກວດສອບວ່າທ່ານໃຊ້ບັນຊີຖືກຕ້ອງ",
+               "checkAccount": "ກວດສອບວ່າທ່ານໃຊ້ບັນຊີຖືກຕ້ອງ",
         "sessionExpired": "ເຊດຊັນຂອງທ່ານໝົດອາຍຸແລ້ວ",
         "tryAgain": "ລອງເຂົ້າສູ່ລະບົບອີກຄັ້ງ"
       }
@@ -321,15 +977,15 @@
       "confirm": "ແມ່ນແລ້ວ, ຂ້ອຍແນ່ໃຈ",
       "cancel": "ບໍ່, ຍົກເລີກ",
       "addSuccess": "ເພີ່ມຄະນະສຳເລັດແລ້ວ",
-      "addError": "ເກີດຂໍ້ຜິດພາດໃນການເພີ່ມຄະນະ",
+      "addError": "ເກີດຂໍໜິດພາດໃນການເພີ່ມຄະນະ",
       "updateSuccess": "ອັບເດຕຄະນະສຳເລັດແລ້ວ",
-      "updateError": "ເກີດຂໍ້ຜິດພາດໃນການອັບເດຕຄະນະ",
+      "updateError": "ເກີດຂໍໜິດພາດໃນການອັບເດຕຄະນະ",
       "deleteSuccess": "ລຶບຄະນະສຳເລັດແລ້ວ",
-      "deleteError": "ເກີດຂໍ້ຜິດພາດໃນການລຶບຄະນະ",
+      "deleteError": "ເກີດຂໍໜິດພາດໃນການລຶບຄະນະ",
       "deleted": "ລຶບແລ້ວ!"
     },
     "department": {
-      "title": "ການຈັດການພາກວິຊາ",
+      "title": "ການຈັດການພາກວິຊາ I",
       "addDepartment": "ເພີ່ມພາກວິຊາ",
       "departmentName": "ຊື່ພາກວິຊາ",
       "faculty": "ຄະນະ",
@@ -406,7 +1062,7 @@
         "created": "ວັນທີສ້າງ",
         "actions": "ຈັດການ"
       },
-      "noDataAvailable": "ບໍ່ມີຂໍ້ມູນ"
+      "noDataAvailable": "ບໍ່ມີຂໍ໡ູນ"
     },
     "components": {
       "bookEdit": {
@@ -415,22 +1071,9 @@
         "dropFiles": "ວາງໄຟລ໌ທີ່ນີ້ ຫຼື ຄລິກເພື່ອອັບໂຫຼດ",
         "currentFile": "ໄຟລ໌ປະຈຸບັນ: ຄລິກເພື່ອປ່ຽນ",
         "fileSelected": "ເລືອກໄຟລ໌:",
-        "currentFile": "ໄຟລ໌ປະຈຸບັນ:",
         "viewPDF": "ເບິ່ງ PDF",
         "download": "ດາວໂຫຼດ",
-        "currentCover": "ຮູບປົກປະຈຸບັນ:",
-        "fields": {
-          "title": "ຫົວຂໍ້",
-          "author": "ຜູ້ຂຽນ",
-          "branch": "ສາຂາ",
-          "selectBranch": "ເລືອກສາຂາ",
-          "year": "ປີ",
-          "abstract": "ບົດຄັດຫຍໍ້"
-        },
-        "buttons": {
-          "cancel": "ຍົກເລີກ",
-          "update": "ອັບເດຕປຶ້ມ"
-        }
+        "currentCover": "ຮູບປົກປະຈຸບັນ:"
       },
       "downloads": {
         "title": "ປຶ້ມທີ່ຖືກດາວໂຫຼດທັງໝົດ",
@@ -504,7 +1147,7 @@
       "downloadedBy": "ດາວໂຫຼດໂດຍ",
       "downloadDate": "ວັນທີດາວໂຫຼດ",
       "loading": "ກຳລັງໂຫຼດຂໍ້ມູນ...",
-      "error": "ເກີດຂໍ້ຜິດພາດ: {error}",
+      "error": "ເກີດຂໍໜິດພາດໃນການເຊື່ອມຕໍ່ກັບເຊີເວີ",
       "noRecords": "ບໍ່ພົບບັນທຶກການດາວໂຫຼດ",
       "previous": "ກ່ອນໜ້າ",
       "next": "ຕໍ່ໄປ",
@@ -512,20 +1155,20 @@
       "unauthorized": "ບໍ່ໄດ້ຮັບອະນຸຍາດ",
       "sessionExpired": "ເຊສຊັນຂອງທ່ານໝົດອາຍຸແລ້ວ ກະລຸນາເຂົ້າສູ່ລະບົບໃໝ່",
       "goToLogin": "ໄປໜ້າເຂົ້າສູ່ລະບົບ",
-      "apiError": "ເກີດຂໍ້ຜິດພາດໃນການເຊື່ອມຕໍ່ກັບເຊີເວີ",
+      "apiError": "ເກີດຂໍໜິດພາດໃນການເຊື່ອມຕໍ່ກັບເຊີເວີ",
       "invalidDate": "ວັນທີບໍ່ຖືກຕ້ອງ",
       "invalidJson": "ຂໍ້ມູນຈາກເຊີເວີບໍ່ຖືກຕ້ອງ",
       "bookFallback": "ປຶ້ມ {bookId}",
       "userFallback": "ຜູ້ໃຊ້ {userId}",
       "systemUser": "ລະບົບ",
       "unknownBook": "ປຶ້ມທີ່ບໍ່ຮູ້ຈັກ",
-      "anonymous": "ຜູ້ໃຊ້ທີ່ບໍ່ລະບຸຊື່",
+      "anonymous": "ຜູໃຊ້ທີ່ບໍ່ລະບຸຊື່",
       "dateNotAvailable": "ບໍ່ມີວັນທີ"
     }
   },
   "teacher": {
     "dashboard": {
-      "title": "ໜ້າຫຼັກອາຈານ",
+      "title": "ໜ້າອາຈານ",
       "welcome": "ຍິນດີຕ້ອນຮັບ",
       "myBooks": "ປຶ້ມຂອງຂ້ອຍ",
       "uploads": "ການອັບໂຫຼດຂອງຂ້ອຍ",
@@ -608,9 +1251,10 @@
       "welcome": "ຍິນດີຕ້ອນຮັບ",
       "welcomeMessage": "ຍິນດີຕ້ອນຮັບສູ່ລະບົບຫ້ອງສະໝຸດດິຈິຕອນ",
       "recentBooks": "ປຶ້ມໃໝ່",
-      "popularBooks": "ປຶ້ມຍອດນິຍົມ",
+      "popularBooks": "ປຶ້ມຍອດນິຍົມ: ທົດສອບ",
       "downloads": "ການດາວໂຫຼດຂອງຂ້ອຍ",
-      "latestBooks": "ປຶ້ມໃໝ່",
+      "latestBooks": "ປຶ້ມອັບເດດໃໝ່ຈາກອາຈານ",
+      "showingLatest": "ສະແດງ {count} ປຶ້ມຫຼ້າສຸດ",
       "table": {
         "title": "ຫົວຂໍ້",
         "author": "ຜູ້ຂຽນ",
@@ -677,65 +1321,10 @@
     "adminPanel": "ແຜງຄວບຄຸມຜູ້ບໍລິຫານ",
     "dashboard": "ໜ້າຫຼັກ",
     "userManagement": "ຈັດການຜູ້ໃຊ້",
-    "facultyManagement": "ຈັດການຄະນະ",
+    "facultyManagement": "ຈັດການຄະນະ", 
     "departmentManagement": "ຈັດການພາກວິຊາ",
     "branchManagement": "ຈັດການສາຂາວິຊາ",
     "bookManagement": "ຈັດການປຶ້ມ",
     "newsManagement": "ຈັດການຂ່າວສານ"
-  },
-  "homepage": {
-    "layout": {
-      "title": "ຫ້ອງສະໝຸດດິຈິຕອນ",
-      "menu": {
-        "home": "ໜ້າຫຼັກ",
-        "about": "ກ່ຽວກັບ",
-        "news": "ຂ່າວສານ",
-        "login": "ເຂົ້າສູ່ລະບົບ",
-        "register": "ລົງທະບຽນ"
-      },
-      "footer": {
-        "about": "ກ່ຽວກັບພວກເຮົາ",
-        "contact": "ຕິດຕໍ່",
-        "copyright": "© 2024 ຫ້ອງສະໝຸດດິຈິຕອນ ມໄສ. ສະຫງວນລິຂະສິດ."
-      }
-    },
-    "nav": {
-      "home": "ໜ້າຫຼັກ",
-      "about": "ກ່ຽວກັບ",
-      "news": "ຂ່າວສານ",
-      "login": "ເຂົ້າສູ່ລະບົບ",
-      "register": "ລົງທະບຽນ",
-      "language": "ພາສາ"
-    }
-  },
-  "calendar": {
-    "title": "ປະຕິທິນ",
-    "weekdays": {
-      "sun": "ອາທິດ",
-      "mon": "ຈັນ", 
-      "tue": "ອັງຄານ",
-      "wed": "ພຸດ",
-      "thu": "ພະຫັດ",
-      "fri": "ສຸກ",
-      "sat": "ເສົາ"
-    },
-    "months": {
-      "january": "ມັງກອນ",
-      "february": "ກຸມພາ",
-      "march": "ມີນາ", 
-      "april": "ເມສາ",
-      "may": "ພຶດສະພາ",
-      "june": "ມິຖຸນາ",
-      "july": "ກໍລະກົດ",
-      "august": "ສິງຫາ",
-      "september": "ກັນຍາ",
-      "october": "ຕຸລາ",
-      "november": "ພະຈິກ",
-      "december": "ທັນວາ"
-    },
-    "navigation": {
-      "previous": "ເດືອນກ່ອນ",
-      "next": "ເດືອນຕໍ່ໄປ"
-    }
   }
 }

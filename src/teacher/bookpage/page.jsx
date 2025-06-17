@@ -10,8 +10,8 @@ function BookPage() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searching, setSearching] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
   // Add state for download status
@@ -191,84 +191,85 @@ function BookPage() {
   }, []);
 
   // Function to search for books
-  const searchBooks = async (term) => {
-    if (!term.trim()) {
-      // If search term is empty, fetch all books
-      setSearching(false);
-      const fetchBooks = async () => {
-        try {
-          const token = getAuthToken();
-          if (!token) throw new Error("No authentication token found");
-  
-          const response = await fetch(`${API_BASE_URL}/v1/books`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          });
-  
-          if (!response.ok) {
-            throw new Error(`Failed to fetch books: ${response.status} ${response.statusText}`);
-          }
-  
-          const result = await response.json();
-          const bookData = result.data?.books || result.data || result || [];
-          setBooks(Array.isArray(bookData) ? bookData : []);
-        } catch (error) {
-          setError(error.message);
-          setBooks([]);
-        } finally {
-          setLoading(false);
-        }
-      };
-  
+  const searchBooks = async () => {
+    if (!searchTerm.trim()) {
       fetchBooks();
       return;
     }
-
-    setSearching(true);
-    setLoading(true);
+    
+    setIsSearching(true);
+    setError(null);
     
     try {
       const token = getAuthToken();
       if (!token) throw new Error("No authentication token found");
 
-      const response = await fetch(`${API_BASE_URL}/v1/books/searchbook?title=${encodeURIComponent(term)}`, {
-        method: "GET",
+      // First try to get all books and do client-side search
+      const allBooksResponse = await fetch(`${API_BASE_URL}/v1/books`, {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
-        },
+          'Accept': 'application/json'
+        }
       });
 
-      if (!response.ok) {
-        throw new Error(`Search failed: ${response.status} ${response.statusText}`);
+      if (!allBooksResponse.ok) {
+        throw new Error('Failed to fetch books for search');
       }
 
-      const result = await response.json();
+      const allBooks = await allBooksResponse.json();
+      const booksData = Array.isArray(allBooks) ? allBooks : 
+                       allBooks.data?.books ? allBooks.data.books :
+                       allBooks.data ? allBooks.data : [];
+
+      // Client-side search across multiple fields
+      const searchResults = booksData.filter(book => {
+        const searchFields = {
+          title: (book.title || '').toLowerCase(),
+          author: (book.author || book.writer || '').toLowerCase(),
+          year: String(book.year || ''),
+          branch: (book.branch || '').toLowerCase()
+        };
+
+        const searchTermLower = searchTerm.trim().toLowerCase();
+        return Object.values(searchFields).some(field => 
+          field.includes(searchTermLower)
+        );
+      });
+
+      setBooks(searchResults);
       
-      // Adjust this based on your API response structure
-      const searchResults = result.data || result || [];
-      setBooks(Array.isArray(searchResults) ? searchResults : []);
     } catch (error) {
-      setError(error.message);
+      console.error("Error searching books:", error);
+      setError("Failed to search books. Please try again.");
+      setBooks([]);
     } finally {
-      setLoading(false);
+      setIsSearching(false);
     }
   };
 
   // Handle search input change with debouncing
   const handleSearchChange = (e) => {
-    const value = e.target.value;
-    setSearchTerm(value);
+    // Allow more characters including Lao script, numbers, and basic punctuation
+    const sanitizedValue = e.target.value.replace(/[^\w\s\u0E80-\u0EFF\d.,()-]/g, '');
+    setSearchTerm(sanitizedValue);
+    searchBooks(sanitizedValue);
+  };
+
+  // Add handleKeyPress function
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      searchBooks();
+    }
+  };
+
+  // Add resetSearch function
+  const resetSearch = async () => {
+    if (!searchTerm.trim()) return;
     
-    // Debounce search to avoid too many API calls
-    const timeoutId = setTimeout(() => {
-      searchBooks(value);
-    }, 500); // 500ms delay
-    
-    return () => clearTimeout(timeoutId);
+    setSearchTerm("");
+    setIsSearching(true);
+    await fetchBooks();
+    setIsSearching(false);
   };
 
   // Function to truncate title if longer than 50 characters
@@ -585,22 +586,52 @@ function BookPage() {
         
         <div className="w-full flex flex-col overflow-auto p-6 rounded-2xl">
           <div className="flex justify-between items-center mb-6">
-            <input
-              type="text"
-              placeholder={t('teacher.books.searchPlaceholder')}
-              className="p-2 border w-full border-gray-300 rounded-lg max-w-1/2"
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
+            <div className="relative w-full md:w-1/2 flex">
+              <input
+                type="text"
+                placeholder={t('teacher.books.searchPlaceholder')}
+                className="p-2 pr-10 outline-none border border-sky-500 rounded-l-lg w-full"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                onKeyPress={handleKeyPress}
+              />
+              <button
+                onClick={searchBooks}
+                disabled={isSearching || !searchTerm.trim()}
+                className="px-3 bg-blue-500 text-white rounded-r-lg hover:bg-blue-600 flex items-center justify-center"
+              >
+                {isSearching ? (
+                  <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                ) : (
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                  </svg>
+                )}
+              </button>
+              {searchTerm && (
+                <button
+                  onClick={resetSearch}
+                  className="ml-2 px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-600 rounded-lg flex items-center"
+                  title="Clear search and show all books"
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
+                  </svg>
+                </button>
+              )}
+            </div>
           </div>
 
           <h3 className="text-lg font-semibold text-gray-700">
-            {searching ? `${t('teacher.books.searchResults')} "${searchTerm}"` : t('teacher.books.availableBooks')}
+            {isSearching ? `${t('teacher.books.searchResults')} "${searchTerm}"` : t('teacher.books.availableBooks')}
           </h3>
 
           {loading ? (
             <p className="text-center text-gray-500">
-              {searching ? t('teacher.books.searchingBooks') : t('teacher.books.loadingBooks')}
+              {isSearching ? t('teacher.books.searchingBooks') : t('teacher.books.loadingBooks')}
             </p>
           ) : error ? (
             <p className="text-center text-red-500">Error: {error}</p>
@@ -720,7 +751,7 @@ function BookPage() {
             </div>
           ) : (
             <p className="text-center text-gray-500">
-              {searching ? `${t('teacher.books.noBooksFound')} "${searchTerm}"` : t('teacher.books.noBooksAvailable')}
+              {isSearching ? `${t('teacher.books.noBooksFound')} "${searchTerm}"` : t('teacher.books.noBooksAvailable')}
             </p>
           )}
         </div>

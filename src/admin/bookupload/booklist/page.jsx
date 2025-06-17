@@ -8,9 +8,11 @@ import "sweetalert2/src/sweetalert2.scss";
 import { FaTrash, FaEdit } from "react-icons/fa";
 import { getAuthToken, authenticatedFetch, isAuthenticated, logout } from "../../../utils/auth";
 import { API_BASE_URL } from "../../../utils/api";
+import { useNavigate } from 'react-router-dom';
 
 function BookList() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [books, setBooks] = useState([]);
   const [bookCount, setBookCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
@@ -180,133 +182,8 @@ function BookList() {
     reader.readAsDataURL(file);
   };
 
-  const updateBook = (book) => {
-    setTitle(book.title);
-    setAuthor(book.author);
-    setBranchId(book.branch_id._id);
-    setYear(book.year);
-    setAbstract(book.abstract);
-    setFile(null);
-    setPreview(book.book_file.url);
-
-    Swal.fire({
-      title: t("admin.bookList.dialogs.updateBook.title"),
-      html: `
-        <form id="update-book-form" class="p-4 space-y-4">
-          <div>
-            <label class="block text-lg font-medium text-gray-700">${t("admin.bookEdit.fields.title")}</label>
-            <input type="text" id="title" value="${book.title}" class="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
-          </div>
-          <div>
-            <label class="block text-lg font-medium text-gray-700">${t("admin.bookEdit.fields.author")}</label>
-            <input type="text" id="author" value="${book.author}" class="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
-          </div>
-          <div>
-            <label class="block text-lg font-medium text-gray-700">${t("admin.bookEdit.fields.branch")}</label>
-            <select id="branchId" class="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-              <option value="">${t("admin.bookEdit.fields.selectBranch")}</option>
-              ${branches.map(
-                (branch) => `<option value="${branch._id}" ${branch._id === book.branch_id._id ? "selected" : ""}>${branch.branch_name}</option>`
-              ).join("")}
-            </select>
-          </div>
-          <div>
-            <label class="block text-lg font-medium text-gray-700">${t("admin.bookEdit.fields.year")}</label>
-            <input type="text" id="year" value="${book.year}" class="mt-1 block w-full h-12 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
-          </div>
-          <div>
-            <label class="block text-lg font-medium text-gray-700">${t("admin.bookEdit.fields.abstract")}</label>
-            <textarea id="abstract" class="mt-1 block w-full h-64 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">${book.abstract}</textarea>
-          </div>
-          <div class="border-4 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer">
-            <input type="file" accept="application/pdf" id="fileInput" class="hidden" />
-            <label for="fileInput" class="block text-lg font-medium text-gray-700">${file ? file.name : t("admin.bookEdit.dropFiles")}</label>
-          </div>
-          ${preview ? `<div class="mt-4"><embed src="${preview}" type="application/pdf" width="100%" height="400px" /></div>` : ""}
-        </form>
-      `,
-      showCancelButton: true,
-      confirmButtonText: t("admin.bookList.actions.update"),
-      cancelButtonText: t("admin.bookList.actions.cancel"),
-      preConfirm: () => {
-        const updatedData = {
-          title: document.getElementById("title").value,
-          author: document.getElementById("author").value,
-          branch_id: document.getElementById("branchId").value,
-          year: document.getElementById("year").value,
-          abstract: document.getElementById("abstract").value,
-          book_file: document.getElementById("fileInput").files[0],
-        };
-        handleUpdateBook(book._id, updatedData);
-      },
-      didOpen: () => {
-        document.getElementById("fileInput").addEventListener("change", (e) => {
-          const file = e.target.files[0];
-          if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              const previewContainer = document.querySelector('.swal2-html-container');
-              if (previewContainer) {
-                const existingPreview = previewContainer.querySelector('div.mt-4');
-                if (existingPreview) {
-                  existingPreview.innerHTML = `<embed src="${reader.result}" type="application/pdf" width="100%" height="400px" />`;
-                } else {
-                  const newPreview = document.createElement('div');
-                  newPreview.className = 'mt-4';
-                  newPreview.innerHTML = `<embed src="${reader.result}" type="application/pdf" width="100%" height="400px" />`;
-                  previewContainer.appendChild(newPreview);
-                }
-              }
-            };
-            reader.readAsDataURL(file);
-          }
-        });
-      }
-    });
-  };
-
-  const handleUpdateBook = async (bookId, updatedData) => {
-    const formdata = new FormData();
-
-    Object.keys(updatedData).forEach((key) => {
-      if (updatedData[key] !== undefined && updatedData[key] !== null) {
-        formdata.append(key, updatedData[key]);
-      }
-    });
-
-    try {
-      const response = await authenticatedFetch(`${API_BASE_URL}/v1/books/${bookId}`, {
-        method: "PATCH",
-        body: formdata,
-        credentials: 'include'
-      });
-
-      if (!response.ok) {
-        throw new Error(`Update failed: ${response.statusText}`);
-      }
-
-      const result = await response.json();
-
-      if (result.success) {
-        Swal.fire({
-          title: t("admin.bookList.dialogs.updateSuccess.title"),
-          text: t("admin.bookList.dialogs.updateSuccess.text"),
-          icon: "success",
-          timer: 2000,
-          showConfirmButton: false,
-        });
-        fetchBooks();
-      } else {
-        throw new Error(result.message || t("admin.bookList.dialogs.updateError"));
-      }
-    } catch (error) {
-      console.error(error);
-      Swal.fire({
-        title: t("admin.common.error"),
-        text: `${t("admin.bookList.dialogs.updateError")}: ${error.message}`,
-        icon: "error"
-      });
-    }
+  const handleEdit = (bookId) => {
+    navigate(`/admin/bookupdate/${bookId}`);
   };
 
   const searchBooks = async (query) => {
@@ -314,51 +191,81 @@ function BookList() {
       fetchBooks();
       return;
     }
-
+    
+    setLoading(true);
+    setError(null);
+    
     try {
+      // Get all books first for client-side search
       const response = await authenticatedFetch(
-        `${API_BASE_URL}/v1/books?title=${encodeURIComponent(query)}&page=${currentPage}&limit=${itemsPerPage}&sort=-createdAt`
+        `${API_BASE_URL}/v1/books?page=${currentPage}&limit=${itemsPerPage}&sort=-createdAt`
       );
 
       if (!response.ok) {
-        throw new Error(`Search failed: ${response.statusText}`);
+        throw new Error('Failed to fetch books for search');
       }
 
       const result = await response.json();
+      let allBooks = [];
 
       if (result.success) {
-        const books = Array.isArray(result.data.books) ? result.data.books : [];
-        const totalCount = result.data.total || 0;
-
-        setBooks(books);
-        setBookCount(totalCount);
-        setTotalPages(Math.ceil(totalCount / itemsPerPage));
-      } else {
-        console.error('Search failed:', result.message);
-        setBooks([]);
-        setBookCount(0);
+        if (Array.isArray(result.data)) {
+          allBooks = result.data;
+        } else if (result.data?.books) {
+          allBooks = result.data.books;
+        }
       }
+
+      // Client-side search across multiple fields
+      const searchResults = allBooks.filter(book => {
+        const searchFields = {
+          title: (book.title || '').toLowerCase(),
+          author: (book.author || '').toLowerCase(),
+          year: String(book.year || ''),
+          branch: getBranchName(book.branch_id).toLowerCase()
+        };
+
+        const searchTermLower = query.trim().toLowerCase();
+        return Object.values(searchFields).some(field => 
+          field.includes(searchTermLower)
+        );
+      });
+
+      setBooks(searchResults);
+      setBookCount(searchResults.length);
+      setTotalPages(Math.ceil(searchResults.length / itemsPerPage));
+      
     } catch (error) {
-      console.error('Search error:', error);
+      console.error("Error searching books:", error);
+      setError("Failed to search books. Please try again.");
       setBooks([]);
       setBookCount(0);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSearch = (event) => {
-    setSearchQuery(event.target.value);
-    searchBooks(event.target.value);
+    const sanitizedValue = event.target.value.replace(/[^\w\s\u0E80-\u0EFF\d.,()-]/g, '');
+    setSearchQuery(sanitizedValue);
+    searchBooks(sanitizedValue);
   };
 
-  const handleViewPdf = (e, publicId) => {
-    e.stopPropagation();
-    const pdfUrl = `${API_BASE_URL}/uploads/${publicId}`;
-    window.open(pdfUrl, '_blank', 'noopener,noreferrer');
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      searchBooks(searchQuery);
+    }
   };
 
-  const truncateText = (text, maxLength) => {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + "...";
+  const truncateText = (text, maxLength = 60) => {
+    if (!text) return '';
+    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+  };
+
+  // Add reset search function
+  const resetSearch = () => {
+    setSearchQuery('');
+    fetchBooks();
   };
 
   const getBranchName = (branchId) => {
@@ -505,6 +412,7 @@ function BookList() {
                 type="text"
                 value={searchQuery}
                 onChange={handleSearch}
+                onKeyPress={handleKeyPress}
                 placeholder={t('admin.bookManagement.list.search')}
                 className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 shadow-sm"
               />
@@ -513,6 +421,17 @@ function BookList() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
+              {searchQuery && (
+                <button
+                  onClick={resetSearch}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  title={t('admin.bookList.clearSearch')}
+                >
+                  <svg className="h-5 w-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
             </div>
           </div>
           {error && (
@@ -596,7 +515,7 @@ function BookList() {
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  updateBook(book);
+                                  handleEdit(book._id);
                                 }}
                                 className="text-sky-600 hover:text-sky-800 transition-colors duration-200"
                               >
