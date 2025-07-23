@@ -46,7 +46,7 @@ function HomPage() {
             return dateB - dateA;
           });
 
-          setBooks(booksData.slice(0, 10));
+          setBooks(booksData); // Show all books, not just the latest 10
         } else {
           setBooks([]);
         }
@@ -103,7 +103,7 @@ function HomPage() {
                   </h3>
                   <p className="text-gray-600 mb-2">{t('home.featured.author')}: {book.author || 'Unknown Author'}</p>
                   <button
-                    onClick={() => navigate('/login')}
+                    onClick={() => navigate(`/homepagebook/${book.id || book._id || index}`)}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition"
                   >
                     {t('home.featured.viewDetails')}

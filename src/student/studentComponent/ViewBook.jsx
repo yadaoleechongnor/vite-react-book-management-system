@@ -28,99 +28,49 @@ const StudentViewBookPage = () => {
 
   // Fetch book data
   useEffect(() => {
-    const fetchBookData = async () => {
-      if (!bookId) {
-        setLoading(false);
-        setError("No book ID provided");
-        return;
-      }
-
+    const fetchBookDetails = async () => {
       try {
         const token = getAuthToken();
         if (!token) throw new Error("No authentication token found");
 
-        const response = await fetch(`${API_BASE_URL}/v1/books/${bookId}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+        // First fetch book data
+        const bookResponse = await fetch(`${API_BASE_URL}/v1/books/${bookId}`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (!response.ok) {
-          throw new Error(`Failed to fetch book: ${response.status}`);
+        if (!bookResponse.ok) throw new Error(`Failed to fetch book: ${bookResponse.status}`);
+
+        const bookResult = await bookResponse.json();
+        console.log("Book Data:", bookResult);
+        const bookData = bookResult.data?.book || bookResult.data || bookResult;
+
+        // Set book details without branch if not available
+        setTitle(bookData.title || "ບໍ່ມີຫົວຂໍ້");
+        setAuthor(bookData.author || bookData.writer || "ບໍ່ມີຜູ້ຂຽນ");
+        setYear(bookData.year || "2024");
+        setAbstract(bookData.abstract || "");
+        setFileUrl(bookData.book_file?.url || bookData.fileUrl || bookData.pdf);
+        setCoverImage(bookData.cover_image?.url || bookData.coverImage || bookData.cover);
+
+        // Only set branchName if data exists
+        const branchData = bookData.branch_id || bookData.branch;
+        if (branchData && typeof branchData === 'object' && (branchData.branch_name || branchData.name)) {
+          setBranchName(branchData.branch_name || branchData.name);
+        } else {
+          setBranchName(""); // Set empty string to hide branch section
         }
 
-        const result = await response.json();
-        
-        // Process book data
-        const bookData = result.data?.book || result.data || result;
-        
-        // Set book details
-        setTitle(bookData.title || "");
-        setAuthor(bookData.author || "ທ້າວ ບຸນເລ ີ່ອນ ພົງສະຫວັນ");
-        
-        // Handle branch information which could be an object or just an ID
-        let branch = "Unknown Branch";
-        if (bookData.branch_id) {
-          if (typeof bookData.branch_id === 'object' && bookData.branch_id.branch_name) {
-            branch = bookData.branch_id.branch_name;
-          } else if (typeof bookData.branch_id === 'object' && bookData.branch_id.name) {
-            branch = bookData.branch_id.name;
-          }
-        } else if (bookData.branch && typeof bookData.branch === 'object') {
-          if (bookData.branch.branch_name) {
-            branch = bookData.branch.branch_name;
-          } else if (bookData.branch.name) {
-            branch = bookData.branch.name;
-          }
-        } else if (bookData.branch_name) {
-          branch = bookData.branch_name;
-        }
-        setBranchName(branch);
-        
-        // Set year explicitly to 2024 if it matches, otherwise use the value from API
-        const bookYear = bookData.year === 2024 ? "2024" : (bookData.year || "2024");
-        setYear(bookYear);
-        
-        setAbstract(bookData.abstract || "");
-        
-        // Set file URL if available
-        if (bookData.book_file?.url) {
-          setFileUrl(bookData.book_file.url);
-        }
-        
-        // Set cover image if available
-        if (bookData.cover_image) {
-          setCoverImage(bookData.cover_image);
-        }
-        
-        // Set uploaded by name if available
-        let uploadedBy = "Unknown User";
-        if (bookData.uploaded_by) {
-          if (typeof bookData.uploaded_by === 'object') {
-            if (bookData.uploaded_by.user_name) {
-              uploadedBy = bookData.uploaded_by.user_name;
-            } else if (bookData.uploaded_by.name) {
-              uploadedBy = bookData.uploaded_by.name;
-            } else if (bookData.uploaded_by.email) {
-              // Extract username from email
-              uploadedBy = bookData.uploaded_by.email.split('@')[0];
-            }
-          } else if (typeof bookData.uploaded_by === 'string') {
-            uploadedBy = bookData.uploaded_by;
-          }
-        } else if (bookData.uploaded_by_name) {
-          uploadedBy = bookData.uploaded_by_name;
-        }
-        setUploadedByName(uploadedBy);
-        
+        // Set uploader details
+        const uploaderData = bookData.uploaded_by || bookData.uploader;
+        const uploaderName = uploaderData?.email?.split('@')[0] || uploaderData?.name || "ບໍ່ມີຜູ້ອັບໂຫລດ";
+        setUploadedByName(uploaderName);
+
       } catch (error) {
-        console.error("Error fetching book:", error);
+        console.error("Error:", error);
         setError(error.message);
         Swal.fire({
-          title: "Error",
-          text: `Failed to load book data: ${error.message}`,
+          title: "ຜິດພາດ",
+          text: `ບໍ່ສາມາດໂຫລດຂໍ້ມູນປຶ້ມໄດ້: ${error.message}`,
           icon: "error",
         });
       } finally {
@@ -128,7 +78,7 @@ const StudentViewBookPage = () => {
       }
     };
 
-    fetchBookData();
+    fetchBookDetails();
   }, [bookId]);
 
   // Handle file download
@@ -151,7 +101,8 @@ const StudentViewBookPage = () => {
       // Record the download - this part works correctly
       const recordResponse = await fetch(`${API_BASE_URL}/downloads/books/${bookId}/record`, {
         method: "POST",
-        headers: {
+        headers:
+         {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
@@ -331,10 +282,13 @@ const StudentViewBookPage = () => {
                     <p className="text-base text-gray-800">{author || t('admin.common.noData')}</p>
                   </div>
                   
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">{t('admin.branch.title')}</p>
-                    <p className="text-base text-gray-800">{branchName}</p>
-                  </div>
+                  {/* Only show branch section if branchName has value */}
+                  {branchName && (
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">{t('admin.branch.title')}</p>
+                      <p className="text-base text-gray-800">{branchName}</p>
+                    </div>
+                  )}
                   
                   <div>
                     <p className="text-sm font-medium text-gray-500">{t('admin.bookList.columns.year')}</p>

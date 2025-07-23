@@ -49,6 +49,7 @@ import TeacherTopDownloaded from './teacher/TeacherComponent/TopDownloaded';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import TeacherFamousebookDetail from './teacher/TeacherComponent/TeacherFamousebookDetail';
+import HomepageBookdetail from './homepage/HomepageBookdetail';
 
 // Simple NotFound component
 const NotFound = () => (
@@ -93,6 +94,11 @@ function App() {
             <Route path="/" element={
               <PublicRoute>
                 < HomPage/>
+              </PublicRoute>
+            } />
+            <Route path="/homepagebook/:id" element={
+              <PublicRoute>
+                < HomepageBookdetail/>
               </PublicRoute>
             } />
             <Route path="/about" element={
